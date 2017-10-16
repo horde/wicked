@@ -1101,7 +1101,7 @@
    <file name="index.php" role="horde" />
    <file name="opensearch.php" role="horde" />
    <file name="preview.php" role="horde" />
-   <file name="README" role="doc" />
+   <file name="README.rst" role="doc" />
   </dir> <!-- / -->
  </contents>
  <dependencies>
@@ -1275,7 +1275,7 @@
    <install as="wicked/index.php" name="index.php" />
    <install as="wicked/opensearch.php" name="opensearch.php" />
    <install as="wicked/preview.php" name="preview.php" />
-   <install as="README" name="README" />
+   <install as="README.rst" name="README.rst" />
    <install as="wicked" name="bin/wicked" />
    <install as="wicked-convert-to-utf8" name="bin/wicked-convert-to-utf8" />
    <install as="wicked-mail-filter" name="bin/wicked-mail-filter" />
