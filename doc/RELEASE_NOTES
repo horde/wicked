@@ -13,7 +13,7 @@ Mediawiki, Tiki Wiki, and its own markup engine. For more information on
 Wicked, visit http://www.horde.org/apps/wicked.
 
 For detailed installation and configuration instructions, please see
-http://www.horde.org/apps/wicked/docs/INSTALL
+http://www.horde.org/apps/wicked/doc/INSTALL
 
 The major changes compared to the Wicked version H5 (2.0.0) are:
     * Small bugfixes and improvements.

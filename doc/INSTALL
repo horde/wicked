@@ -29,7 +29,7 @@ To function properly, Wicked **requires** the following:
                   earlier versions of Horde will **not** work.
 
    .. Important:: Be sure to have completed all of the steps in the
-                  `horde/docs/INSTALL`_ file for the Horde Framework before
+                  `horde/doc/INSTALL`_ file for the Horde Framework before
                   installing Wicked. Many of Wicked's prerequisites are also
                   Horde prerequisites. Additionally, many of Wicked's optional
                   features are configured via the Horde install.
@@ -45,7 +45,7 @@ The following items are not required, but if present will enable advanced
 features in Wicked:
 
 1. The following PEAR packages:
-   (See `horde/docs/INSTALL`_ for instructions on installing PEAR packages)
+   (See `horde/doc/INSTALL`_ for instructions on installing PEAR packages)
 
    .. Important:: If you are going to install Wicked the recommended way,
                   i.e. using the PEAR installer, you can skip the remainder of
@@ -68,7 +68,7 @@ latest not yet released fixes, you can install Wicked from Git.
 Installing with PEAR
 ~~~~~~~~~~~~~~~~~~~~
 
-First follow the instructions in `horde/docs/INSTALL`_ to prepare a PEAR
+First follow the instructions in `horde/doc/INSTALL`_ to prepare a PEAR
 environment for Horde and install the Horde Framework.
 
 When installing Wicked through PEAR now, the installer will automatically
@@ -152,7 +152,7 @@ rewrite rules being configured on your web server. Since lighttpd does not
 support .htaccess files like Apache, there is also a configuration file for
 lighttpd included that contains the necessary rewrite rules. This file is::
 
-    docs/lighttpd-ansel.conf
+    doc/lighttpd-ansel.conf
 
 Instructions for using it are included in the file.
 
@@ -186,5 +186,5 @@ The Wicked team
 
 
 .. _README: README
-.. _`horde/docs/INSTALL`: ../../horde/docs/INSTALL
-.. _`horde/docs/TRANSLATIONS`: ../../horde/docs/TRANSLATIONS
+.. _`horde/doc/INSTALL`: ../../horde/doc/INSTALL
+.. _`horde/doc/TRANSLATIONS`: ../../horde/doc/TRANSLATIONS

@@ -200,10 +200,10 @@ is a list of Horde applications and projects at http://www.horde.org/apps.
     public function testLiteral()
     {
         $this->assertEquals(
-            'in the ``docs/`` directory
+            'in the ``doc/`` directory
 
 ',
-            $this->protectAgainstPearError($this->_getWiki()->transform('in the ``docs/`` directory', 'Rst'))
+            $this->protectAgainstPearError($this->_getWiki()->transform('in the ``doc/`` directory', 'Rst'))
         );
     }
 
@@ -213,16 +213,16 @@ is a list of Horde applications and projects at http://www.horde.org/apps.
             'The following documentation is available in the Horde distribution:
 
 :`COPYING`_:      Copyright and license information
-:`docs/CHANGES`_: Changes by release
+:`doc/CHANGES`_: Changes by release
 
 
 
 .. _`COPYING`: http://www.horde.org/licenses/lgpl
-.. _`docs/CHANGES`: CHANGES',
+.. _`doc/CHANGES`: CHANGES',
             $this->protectAgainstPearError($this->_getWiki()->transform('The following documentation is available in the Horde distribution:
 
 : [http://www.horde.org/licenses/lgpl COPYING] : Copyright and license information
-: ((CHANGES|docs/CHANGES)) : Changes by release
+: ((CHANGES|doc/CHANGES)) : Changes by release
 ', 'Rst'))
         );
     }

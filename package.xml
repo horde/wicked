@@ -16,7 +16,7 @@
   <email>chuck@horde.org</email>
   <active>yes</active>
  </lead>
- <date>2017-09-06</date>
+ <date>2017-10-16</date>
  <version>
   <release>3.0.0</release>
   <api>3.0.0</api>
@@ -103,14 +103,14 @@
     </dir> <!-- /data/Tiki -->
     <file name=".htaccess" role="horde" />
    </dir> <!-- /data -->
-   <dir name="docs">
+   <dir name="doc">
     <file name="CHANGES" role="doc" />
     <file name="CREDITS" role="doc" />
     <file name="INSTALL" role="doc" />
     <file name="lighttpd-wicked.conf" role="doc" />
     <file name="RELEASE_NOTES" role="doc" />
     <file name="TODO" role="doc" />
-   </dir> <!-- /docs -->
+   </dir> <!-- /doc -->
    <dir name="js">
     <file name="edit.js" role="horde" />
     <file name="history.js" role="horde" />
@@ -894,6 +894,7 @@
      </dir> <!-- /lib/Text_Wiki/Text -->
      <file name=".gitignore" role="horde" />
      <file name=".travis.yml" role="horde" />
+     <file name="composer.json" role="horde" />
      <file name="package.xml" role="horde" />
      <file name="packageBBCode.xml" role="horde" />
      <file name="packageCowiki.xml" role="horde" />
@@ -1044,7 +1045,7 @@
      <file name="_page.html.php" role="horde" />
     </dir> <!-- /templates/pagelist -->
     <file name=".htaccess" role="horde" />
-    </dir> <!-- /templates -->
+   </dir> <!-- /templates -->
    <dir name="test">
     <dir name="Wicked">
      <dir name="fixtures">
@@ -1091,7 +1092,7 @@
      </dir> <!-- /themes/default/graphics -->
      <file name="screen.css" role="horde" />
     </dir> <!-- /themes/default -->
-    </dir> <!-- /themes -->
+   </dir> <!-- /themes -->
    <file name=".htaccess" role="horde" />
    <file name="COPYING" role="doc" />
    <file name="diff.php" role="horde" />
@@ -1310,12 +1311,12 @@
    <install as="wicked/data/Tiki/Wiki/SandBox" name="data/Tiki/Wiki/SandBox" />
    <install as="wicked/data/Tiki/Wiki/TextFormat" name="data/Tiki/Wiki/TextFormat" />
    <install as="wicked/data/Tiki/Wiki/Usage" name="data/Tiki/Wiki/Usage" />
-   <install as="CHANGES" name="docs/CHANGES" />
-   <install as="CREDITS" name="docs/CREDITS" />
-   <install as="INSTALL" name="docs/INSTALL" />
-   <install as="lighttpd-wicked.conf" name="docs/lighttpd-wicked.conf" />
-   <install as="RELEASE_NOTES" name="docs/RELEASE_NOTES" />
-   <install as="TODO" name="docs/TODO" />
+   <install as="CHANGES" name="doc/CHANGES" />
+   <install as="CREDITS" name="doc/CREDITS" />
+   <install as="INSTALL" name="doc/INSTALL" />
+   <install as="lighttpd-wicked.conf" name="doc/lighttpd-wicked.conf" />
+   <install as="RELEASE_NOTES" name="doc/RELEASE_NOTES" />
+   <install as="TODO" name="doc/TODO" />
    <install as="wicked/js/edit.js" name="js/edit.js" />
    <install as="wicked/js/history.js" name="js/history.js" />
    <install as="wicked/js/toc.js" name="js/toc.js" />
@@ -1348,6 +1349,7 @@
    <install as="wicked/lib/Page/StandardPage.php" name="lib/Page/StandardPage.php" />
    <install as="wicked/lib/Text_Wiki/.gitignore" name="lib/Text_Wiki/.gitignore" />
    <install as="wicked/lib/Text_Wiki/.travis.yml" name="lib/Text_Wiki/.travis.yml" />
+   <install as="wicked/lib/Text_Wiki/composer.json" name="lib/Text_Wiki/composer.json" />
    <install as="wicked/lib/Text_Wiki/package.xml" name="lib/Text_Wiki/package.xml" />
    <install as="wicked/lib/Text_Wiki/packageBBCode.xml" name="lib/Text_Wiki/packageBBCode.xml" />
    <install as="wicked/lib/Text_Wiki/packageCowiki.xml" name="lib/Text_Wiki/packageCowiki.xml" />
@@ -2143,7 +2145,7 @@
    <install as="wicked/themes/default/graphics/WikiHome.png" name="themes/default/graphics/WikiHome.png" />
    <install as="wicked/themes/default/graphics/WikiUsage.png" name="themes/default/graphics/WikiUsage.png" />
    <install as="wicked/themes/default/graphics/za.png" name="themes/default/graphics/za.png" />
-   </filelist>
+  </filelist>
  </phprelease>
  <changelog>
   <release>
@@ -2429,7 +2431,7 @@
    <stability>
     <release>beta</release>
     <api>beta</api></stability>
-   <date>2017-09-06</date>
+   <date>2017-10-16</date>
    <license uri="http://www.horde.org/licenses/gpl">GPL-2.0</license>
    <notes>
 * [jan] Complete the reST renderer.
