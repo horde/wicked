@@ -105,11 +105,11 @@
    </dir> <!-- /data -->
    <dir name="doc">
     <file name="CHANGES" role="doc" />
-    <file name="CREDITS" role="doc" />
-    <file name="INSTALL" role="doc" />
+    <file name="CREDITS.rst" role="doc" />
+    <file name="INSTALL.rst" role="doc" />
     <file name="lighttpd-wicked.conf" role="doc" />
     <file name="RELEASE_NOTES" role="doc" />
-    <file name="TODO" role="doc" />
+    <file name="TODO.rst" role="doc" />
    </dir> <!-- /doc -->
    <dir name="js">
     <file name="edit.js" role="horde" />
@@ -1306,11 +1306,11 @@
    <install as="wicked/diff.php" name="diff.php" />
    <install as="wicked/display.php" name="display.php" />
    <install as="CHANGES" name="doc/CHANGES" />
-   <install as="CREDITS" name="doc/CREDITS" />
-   <install as="INSTALL" name="doc/INSTALL" />
+   <install as="CREDITS.rst" name="doc/CREDITS.rst" />
+   <install as="INSTALL.rst" name="doc/INSTALL.rst" />
    <install as="lighttpd-wicked.conf" name="doc/lighttpd-wicked.conf" />
    <install as="RELEASE_NOTES" name="doc/RELEASE_NOTES" />
-   <install as="TODO" name="doc/TODO" />
+   <install as="TODO.rst" name="doc/TODO.rst" />
    <install as="wicked/history.php" name="history.php" />
    <install as="wicked/index.php" name="index.php" />
    <install as="wicked/js/edit.js" name="js/edit.js" />

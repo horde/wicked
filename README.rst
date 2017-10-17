@@ -183,7 +183,7 @@ The Wicked team
 .. _README: README.rst
 .. _LICENSE: http://www.horde.org/licenses/gpl
 .. _doc/CHANGES: doc/CHANGES
-.. _doc/CREDITS: doc/CREDITS
+.. _doc/CREDITS: doc/CREDITS.rst
 .. _INSTALL:
-.. _doc/INSTALL: doc/INSTALL
-.. _doc/TODO: doc/TODO
+.. _doc/INSTALL: doc/INSTALL.rst
+.. _doc/TODO: doc/TODO.rst
