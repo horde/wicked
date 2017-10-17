@@ -16,7 +16,7 @@
   <email>chuck@horde.org</email>
   <active>yes</active>
  </lead>
- <date>2017-10-16</date>
+ <date>2017-10-17</date>
  <version>
   <release>3.0.0</release>
   <api>3.0.0</api>
@@ -1094,11 +1094,11 @@
     </dir> <!-- /themes/default -->
    </dir> <!-- /themes -->
    <file name=".htaccess" role="horde" />
-   <file name="COPYING" role="doc" />
    <file name="diff.php" role="horde" />
    <file name="display.php" role="horde" />
    <file name="history.php" role="horde" />
    <file name="index.php" role="horde" />
+   <file name="LICENSE" role="doc" />
    <file name="opensearch.php" role="horde" />
    <file name="preview.php" role="horde" />
    <file name="README.rst" role="doc" />
@@ -1268,14 +1268,6 @@
  <phprelease>
   <filelist>
    <install as="wicked/.htaccess" name=".htaccess" />
-   <install as="COPYING" name="COPYING" />
-   <install as="wicked/diff.php" name="diff.php" />
-   <install as="wicked/display.php" name="display.php" />
-   <install as="wicked/history.php" name="history.php" />
-   <install as="wicked/index.php" name="index.php" />
-   <install as="wicked/opensearch.php" name="opensearch.php" />
-   <install as="wicked/preview.php" name="preview.php" />
-   <install as="README.rst" name="README.rst" />
    <install as="wicked" name="bin/wicked" />
    <install as="wicked-convert-to-utf8" name="bin/wicked-convert-to-utf8" />
    <install as="wicked-mail-filter" name="bin/wicked-mail-filter" />
@@ -1311,26 +1303,28 @@
    <install as="wicked/data/Tiki/Wiki/SandBox" name="data/Tiki/Wiki/SandBox" />
    <install as="wicked/data/Tiki/Wiki/TextFormat" name="data/Tiki/Wiki/TextFormat" />
    <install as="wicked/data/Tiki/Wiki/Usage" name="data/Tiki/Wiki/Usage" />
+   <install as="wicked/diff.php" name="diff.php" />
+   <install as="wicked/display.php" name="display.php" />
    <install as="CHANGES" name="doc/CHANGES" />
    <install as="CREDITS" name="doc/CREDITS" />
    <install as="INSTALL" name="doc/INSTALL" />
    <install as="lighttpd-wicked.conf" name="doc/lighttpd-wicked.conf" />
    <install as="RELEASE_NOTES" name="doc/RELEASE_NOTES" />
    <install as="TODO" name="doc/TODO" />
+   <install as="wicked/history.php" name="history.php" />
+   <install as="wicked/index.php" name="index.php" />
    <install as="wicked/js/edit.js" name="js/edit.js" />
    <install as="wicked/js/history.js" name="js/history.js" />
    <install as="wicked/js/toc.js" name="js/toc.js" />
    <install as="wicked/lib/.htaccess" name="lib/.htaccess" />
    <install as="wicked/lib/Api.php" name="lib/Api.php" />
    <install as="wicked/lib/Application.php" name="lib/Application.php" />
-   <install as="wicked/lib/Driver.php" name="lib/Driver.php" />
-   <install as="wicked/lib/Exception.php" name="lib/Exception.php" />
-   <install as="wicked/lib/Page.php" name="lib/Page.php" />
-   <install as="wicked/lib/Test.php" name="lib/Test.php" />
-   <install as="wicked/lib/Wicked.php" name="lib/Wicked.php" />
    <install as="wicked/lib/Block/Page.php" name="lib/Block/Page.php" />
+   <install as="wicked/lib/Driver.php" name="lib/Driver.php" />
    <install as="wicked/lib/Driver/Sql.php" name="lib/Driver/Sql.php" />
+   <install as="wicked/lib/Exception.php" name="lib/Exception.php" />
    <install as="wicked/lib/Factory/Driver.php" name="lib/Factory/Driver.php" />
+   <install as="wicked/lib/Page.php" name="lib/Page.php" />
    <install as="wicked/lib/Page/AddPage.php" name="lib/Page/AddPage.php" />
    <install as="wicked/lib/Page/AllPages.php" name="lib/Page/AllPages.php" />
    <install as="wicked/lib/Page/AttachedFiles.php" name="lib/Page/AttachedFiles.php" />
@@ -1347,9 +1341,16 @@
    <install as="wicked/lib/Page/Search.php" name="lib/Page/Search.php" />
    <install as="wicked/lib/Page/StandardHistoryPage.php" name="lib/Page/StandardHistoryPage.php" />
    <install as="wicked/lib/Page/StandardPage.php" name="lib/Page/StandardPage.php" />
+   <install as="wicked/lib/Test.php" name="lib/Test.php" />
    <install as="wicked/lib/Text_Wiki/.gitignore" name="lib/Text_Wiki/.gitignore" />
    <install as="wicked/lib/Text_Wiki/.travis.yml" name="lib/Text_Wiki/.travis.yml" />
    <install as="wicked/lib/Text_Wiki/composer.json" name="lib/Text_Wiki/composer.json" />
+   <install as="wicked/lib/Text_Wiki/doc/BBCodeParser.php" name="lib/Text_Wiki/doc/BBCodeParser.php" />
+   <install as="wicked/lib/Text_Wiki/doc/BBCodeParser_V2.ini" name="lib/Text_Wiki/doc/BBCodeParser_V2.ini" />
+   <install as="wicked/lib/Text_Wiki/doc/BBtest.txt" name="lib/Text_Wiki/doc/BBtest.txt" />
+   <install as="wicked/lib/Text_Wiki/doc/parser.php" name="lib/Text_Wiki/doc/parser.php" />
+   <install as="wicked/lib/Text_Wiki/doc/README_BBCodeParser" name="lib/Text_Wiki/doc/README_BBCodeParser" />
+   <install as="wicked/lib/Text_Wiki/doc/test_Text_Wiki.php" name="lib/Text_Wiki/doc/test_Text_Wiki.php" />
    <install as="wicked/lib/Text_Wiki/package.xml" name="lib/Text_Wiki/package.xml" />
    <install as="wicked/lib/Text_Wiki/packageBBCode.xml" name="lib/Text_Wiki/packageBBCode.xml" />
    <install as="wicked/lib/Text_Wiki/packageCowiki.xml" name="lib/Text_Wiki/packageCowiki.xml" />
@@ -1357,30 +1358,14 @@
    <install as="wicked/lib/Text_Wiki/packageDoku.xml" name="lib/Text_Wiki/packageDoku.xml" />
    <install as="wicked/lib/Text_Wiki/packageMediawiki.xml" name="lib/Text_Wiki/packageMediawiki.xml" />
    <install as="wicked/lib/Text_Wiki/packageTiki.xml" name="lib/Text_Wiki/packageTiki.xml" />
-   <install as="wicked/lib/Text_Wiki/doc/BBCodeParser.php" name="lib/Text_Wiki/doc/BBCodeParser.php" />
-   <install as="wicked/lib/Text_Wiki/doc/BBCodeParser_V2.ini" name="lib/Text_Wiki/doc/BBCodeParser_V2.ini" />
-   <install as="wicked/lib/Text_Wiki/doc/BBtest.txt" name="lib/Text_Wiki/doc/BBtest.txt" />
-   <install as="wicked/lib/Text_Wiki/doc/parser.php" name="lib/Text_Wiki/doc/parser.php" />
-   <install as="wicked/lib/Text_Wiki/doc/README_BBCodeParser" name="lib/Text_Wiki/doc/README_BBCodeParser" />
-   <install as="wicked/lib/Text_Wiki/doc/test_Text_Wiki.php" name="lib/Text_Wiki/doc/test_Text_Wiki.php" />
    <install as="wicked/lib/Text_Wiki/tests/AllTests.php" name="lib/Text_Wiki/tests/AllTests.php" />
+   <install as="wicked/lib/Text_Wiki/tests/BBCode/7908.phpt" name="lib/Text_Wiki/tests/BBCode/7908.phpt" />
    <install as="wicked/lib/Text_Wiki/tests/Cowiki_Render_Url.phpt" name="lib/Text_Wiki/tests/Cowiki_Render_Url.phpt" />
    <install as="wicked/lib/Text_Wiki/tests/Creole_Parse_Url.phpt" name="lib/Text_Wiki/tests/Creole_Parse_Url.phpt" />
    <install as="wicked/lib/Text_Wiki/tests/Creole_Render_Url.phpt" name="lib/Text_Wiki/tests/Creole_Render_Url.phpt" />
    <install as="wicked/lib/Text_Wiki/tests/Default_Parse_BlockQuote.phpt" name="lib/Text_Wiki/tests/Default_Parse_BlockQuote.phpt" />
    <install as="wicked/lib/Text_Wiki/tests/Docbook_Render_Url.phpt" name="lib/Text_Wiki/tests/Docbook_Render_Url.phpt" />
    <install as="wicked/lib/Text_Wiki/tests/Doku_Render_Url.phpt" name="lib/Text_Wiki/tests/Doku_Render_Url.phpt" />
-   <install as="wicked/lib/Text_Wiki/tests/Latex_Render_Url.phpt" name="lib/Text_Wiki/tests/Latex_Render_Url.phpt" />
-   <install as="wicked/lib/Text_Wiki/tests/Plain_Render_Url.phpt" name="lib/Text_Wiki/tests/Plain_Render_Url.phpt" />
-   <install as="wicked/lib/Text_Wiki/tests/Text_Wiki_BugTests.php" name="lib/Text_Wiki/tests/Text_Wiki_BugTests.php" />
-   <install as="wicked/lib/Text_Wiki/tests/Text_Wiki_Generic_Transform_Tests.php" name="lib/Text_Wiki/tests/Text_Wiki_Generic_Transform_Tests.php" />
-   <install as="wicked/lib/Text_Wiki/tests/Text_Wiki_Parse_Mediawiki_Tests.php" name="lib/Text_Wiki/tests/Text_Wiki_Parse_Mediawiki_Tests.php" />
-   <install as="wicked/lib/Text_Wiki/tests/Text_Wiki_Parse_Tiki_Tests.php" name="lib/Text_Wiki/tests/Text_Wiki_Parse_Tiki_Tests.php" />
-   <install as="wicked/lib/Text_Wiki/tests/Text_Wiki_Render_Tests.php" name="lib/Text_Wiki/tests/Text_Wiki_Render_Tests.php" />
-   <install as="wicked/lib/Text_Wiki/tests/Text_Wiki_Render_Tiki_Tests.php" name="lib/Text_Wiki/tests/Text_Wiki_Render_Tiki_Tests.php" />
-   <install as="wicked/lib/Text_Wiki/tests/Text_Wiki_Tests.php" name="lib/Text_Wiki/tests/Text_Wiki_Tests.php" />
-   <install as="wicked/lib/Text_Wiki/tests/Xhtml_Render_Url.phpt" name="lib/Text_Wiki/tests/Xhtml_Render_Url.phpt" />
-   <install as="wicked/lib/Text_Wiki/tests/BBCode/7908.phpt" name="lib/Text_Wiki/tests/BBCode/7908.phpt" />
    <install as="wicked/lib/Text_Wiki/tests/fixtures/bug11649.txt" name="lib/Text_Wiki/tests/fixtures/bug11649.txt" />
    <install as="wicked/lib/Text_Wiki/tests/fixtures/mediawiki_syntax.txt" name="lib/Text_Wiki/tests/fixtures/mediawiki_syntax.txt" />
    <install as="wicked/lib/Text_Wiki/tests/fixtures/mediawiki_syntax_to_test_preformatted.txt" name="lib/Text_Wiki/tests/fixtures/mediawiki_syntax_to_test_preformatted.txt" />
@@ -1400,6 +1385,16 @@
    <install as="wicked/lib/Text_Wiki/tests/fixtures/text_wiki_sample_syntax_transformed_to_plain2.txt" name="lib/Text_Wiki/tests/fixtures/text_wiki_sample_syntax_transformed_to_plain2.txt" />
    <install as="wicked/lib/Text_Wiki/tests/fixtures/text_wiki_sample_syntax_transformed_to_xhtml.txt" name="lib/Text_Wiki/tests/fixtures/text_wiki_sample_syntax_transformed_to_xhtml.txt" />
    <install as="wicked/lib/Text_Wiki/tests/fixtures/tiki_syntax.txt" name="lib/Text_Wiki/tests/fixtures/tiki_syntax.txt" />
+   <install as="wicked/lib/Text_Wiki/tests/Latex_Render_Url.phpt" name="lib/Text_Wiki/tests/Latex_Render_Url.phpt" />
+   <install as="wicked/lib/Text_Wiki/tests/Plain_Render_Url.phpt" name="lib/Text_Wiki/tests/Plain_Render_Url.phpt" />
+   <install as="wicked/lib/Text_Wiki/tests/Text_Wiki_BugTests.php" name="lib/Text_Wiki/tests/Text_Wiki_BugTests.php" />
+   <install as="wicked/lib/Text_Wiki/tests/Text_Wiki_Generic_Transform_Tests.php" name="lib/Text_Wiki/tests/Text_Wiki_Generic_Transform_Tests.php" />
+   <install as="wicked/lib/Text_Wiki/tests/Text_Wiki_Parse_Mediawiki_Tests.php" name="lib/Text_Wiki/tests/Text_Wiki_Parse_Mediawiki_Tests.php" />
+   <install as="wicked/lib/Text_Wiki/tests/Text_Wiki_Parse_Tiki_Tests.php" name="lib/Text_Wiki/tests/Text_Wiki_Parse_Tiki_Tests.php" />
+   <install as="wicked/lib/Text_Wiki/tests/Text_Wiki_Render_Tests.php" name="lib/Text_Wiki/tests/Text_Wiki_Render_Tests.php" />
+   <install as="wicked/lib/Text_Wiki/tests/Text_Wiki_Render_Tiki_Tests.php" name="lib/Text_Wiki/tests/Text_Wiki_Render_Tiki_Tests.php" />
+   <install as="wicked/lib/Text_Wiki/tests/Text_Wiki_Tests.php" name="lib/Text_Wiki/tests/Text_Wiki_Tests.php" />
+   <install as="wicked/lib/Text_Wiki/tests/Xhtml_Render_Url.phpt" name="lib/Text_Wiki/tests/Xhtml_Render_Url.phpt" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki.php" name="lib/Text_Wiki/Text/Wiki.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/BBCode.php" name="lib/Text_Wiki/Text/Wiki/BBCode.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Cowiki.php" name="lib/Text_Wiki/Text/Wiki/Cowiki.php" />
@@ -1408,8 +1403,6 @@
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Doku.php" name="lib/Text_Wiki/Text/Wiki/Doku.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Mediawiki.php" name="lib/Text_Wiki/Text/Wiki/Mediawiki.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Parse.php" name="lib/Text_Wiki/Text/Wiki/Parse.php" />
-   <install as="wicked/lib/Text_Wiki/Text/Wiki/Render.php" name="lib/Text_Wiki/Text/Wiki/Render.php" />
-   <install as="wicked/lib/Text_Wiki/Text/Wiki/Tiki.php" name="lib/Text_Wiki/Text/Wiki/Tiki.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Parse/BBCode/Attribute.php" name="lib/Text_Wiki/Text/Wiki/Parse/BBCode/Attribute.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Parse/BBCode/Blockquote.php" name="lib/Text_Wiki/Text/Wiki/Parse/BBCode/Blockquote.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Parse/BBCode/Bold.php" name="lib/Text_Wiki/Text/Wiki/Parse/BBCode/Bold.php" />
@@ -1667,15 +1660,8 @@
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Parse/Tiki/Wickedblock.php" name="lib/Text_Wiki/Text/Wiki/Parse/Tiki/Wickedblock.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Parse/Tiki/Wikilink.php" name="lib/Text_Wiki/Text/Wiki/Parse/Tiki/Wikilink.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Parse/Tiki/Wikilink2.php" name="lib/Text_Wiki/Text/Wiki/Parse/Tiki/Wikilink2.php" />
+   <install as="wicked/lib/Text_Wiki/Text/Wiki/Render.php" name="lib/Text_Wiki/Text/Wiki/Render.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Cowiki.php" name="lib/Text_Wiki/Text/Wiki/Render/Cowiki.php" />
-   <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Creole.php" name="lib/Text_Wiki/Text/Wiki/Render/Creole.php" />
-   <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Docbook.php" name="lib/Text_Wiki/Text/Wiki/Render/Docbook.php" />
-   <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Doku.php" name="lib/Text_Wiki/Text/Wiki/Render/Doku.php" />
-   <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Latex.php" name="lib/Text_Wiki/Text/Wiki/Render/Latex.php" />
-   <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Plain.php" name="lib/Text_Wiki/Text/Wiki/Render/Plain.php" />
-   <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Rst.php" name="lib/Text_Wiki/Text/Wiki/Render/Rst.php" />
-   <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Tiki.php" name="lib/Text_Wiki/Text/Wiki/Render/Tiki.php" />
-   <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Xhtml.php" name="lib/Text_Wiki/Text/Wiki/Render/Xhtml.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Cowiki/Anchor.php" name="lib/Text_Wiki/Text/Wiki/Render/Cowiki/Anchor.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Cowiki/Blockquote.php" name="lib/Text_Wiki/Text/Wiki/Render/Cowiki/Blockquote.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Cowiki/Bold.php" name="lib/Text_Wiki/Text/Wiki/Render/Cowiki/Bold.php" />
@@ -1714,6 +1700,7 @@
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Cowiki/Underline.php" name="lib/Text_Wiki/Text/Wiki/Render/Cowiki/Underline.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Cowiki/Url.php" name="lib/Text_Wiki/Text/Wiki/Render/Cowiki/Url.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Cowiki/Wikilink.php" name="lib/Text_Wiki/Text/Wiki/Render/Cowiki/Wikilink.php" />
+   <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Creole.php" name="lib/Text_Wiki/Text/Wiki/Render/Creole.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Creole/Address.php" name="lib/Text_Wiki/Text/Wiki/Render/Creole/Address.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Creole/Anchor.php" name="lib/Text_Wiki/Text/Wiki/Render/Creole/Anchor.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Creole/Blockquote.php" name="lib/Text_Wiki/Text/Wiki/Render/Creole/Blockquote.php" />
@@ -1754,6 +1741,7 @@
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Creole/Underline.php" name="lib/Text_Wiki/Text/Wiki/Render/Creole/Underline.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Creole/Url.php" name="lib/Text_Wiki/Text/Wiki/Render/Creole/Url.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Creole/Wikilink.php" name="lib/Text_Wiki/Text/Wiki/Render/Creole/Wikilink.php" />
+   <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Docbook.php" name="lib/Text_Wiki/Text/Wiki/Render/Docbook.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Docbook/Anchor.php" name="lib/Text_Wiki/Text/Wiki/Render/Docbook/Anchor.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Docbook/Blockquote.php" name="lib/Text_Wiki/Text/Wiki/Render/Docbook/Blockquote.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Docbook/Bold.php" name="lib/Text_Wiki/Text/Wiki/Render/Docbook/Bold.php" />
@@ -1799,6 +1787,7 @@
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Docbook/Underline.php" name="lib/Text_Wiki/Text/Wiki/Render/Docbook/Underline.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Docbook/Url.php" name="lib/Text_Wiki/Text/Wiki/Render/Docbook/Url.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Docbook/Wikilink.php" name="lib/Text_Wiki/Text/Wiki/Render/Docbook/Wikilink.php" />
+   <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Doku.php" name="lib/Text_Wiki/Text/Wiki/Render/Doku.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Doku/Anchor.php" name="lib/Text_Wiki/Text/Wiki/Render/Doku/Anchor.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Doku/Blockquote.php" name="lib/Text_Wiki/Text/Wiki/Render/Doku/Blockquote.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Doku/Bold.php" name="lib/Text_Wiki/Text/Wiki/Render/Doku/Bold.php" />
@@ -1837,6 +1826,7 @@
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Doku/Underline.php" name="lib/Text_Wiki/Text/Wiki/Render/Doku/Underline.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Doku/Url.php" name="lib/Text_Wiki/Text/Wiki/Render/Doku/Url.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Doku/Wikilink.php" name="lib/Text_Wiki/Text/Wiki/Render/Doku/Wikilink.php" />
+   <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Latex.php" name="lib/Text_Wiki/Text/Wiki/Render/Latex.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Latex/Anchor.php" name="lib/Text_Wiki/Text/Wiki/Render/Latex/Anchor.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Latex/Blockquote.php" name="lib/Text_Wiki/Text/Wiki/Render/Latex/Blockquote.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Latex/Bold.php" name="lib/Text_Wiki/Text/Wiki/Render/Latex/Bold.php" />
@@ -1884,6 +1874,7 @@
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Latex/Underline.php" name="lib/Text_Wiki/Text/Wiki/Render/Latex/Underline.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Latex/Url.php" name="lib/Text_Wiki/Text/Wiki/Render/Latex/Url.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Latex/Wikilink.php" name="lib/Text_Wiki/Text/Wiki/Render/Latex/Wikilink.php" />
+   <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Plain.php" name="lib/Text_Wiki/Text/Wiki/Render/Plain.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Plain/Anchor.php" name="lib/Text_Wiki/Text/Wiki/Render/Plain/Anchor.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Plain/Blockquote.php" name="lib/Text_Wiki/Text/Wiki/Render/Plain/Blockquote.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Plain/Bold.php" name="lib/Text_Wiki/Text/Wiki/Render/Plain/Bold.php" />
@@ -1932,6 +1923,7 @@
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Plain/Underline.php" name="lib/Text_Wiki/Text/Wiki/Render/Plain/Underline.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Plain/Url.php" name="lib/Text_Wiki/Text/Wiki/Render/Plain/Url.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Plain/Wikilink.php" name="lib/Text_Wiki/Text/Wiki/Render/Plain/Wikilink.php" />
+   <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Rst.php" name="lib/Text_Wiki/Text/Wiki/Render/Rst.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Rst/Anchor.php" name="lib/Text_Wiki/Text/Wiki/Render/Rst/Anchor.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Rst/Blockquote.php" name="lib/Text_Wiki/Text/Wiki/Render/Rst/Blockquote.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Rst/Bold.php" name="lib/Text_Wiki/Text/Wiki/Render/Rst/Bold.php" />
@@ -1961,6 +1953,7 @@
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Rst/Underline.php" name="lib/Text_Wiki/Text/Wiki/Render/Rst/Underline.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Rst/Url.php" name="lib/Text_Wiki/Text/Wiki/Render/Rst/Url.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Rst/Wikilink.php" name="lib/Text_Wiki/Text/Wiki/Render/Rst/Wikilink.php" />
+   <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Tiki.php" name="lib/Text_Wiki/Text/Wiki/Render/Tiki.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Tiki/Anchor.php" name="lib/Text_Wiki/Text/Wiki/Render/Tiki/Anchor.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Tiki/Blockquote.php" name="lib/Text_Wiki/Text/Wiki/Render/Tiki/Blockquote.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Tiki/Bold.php" name="lib/Text_Wiki/Text/Wiki/Render/Tiki/Bold.php" />
@@ -2001,6 +1994,7 @@
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Tiki/Underline.php" name="lib/Text_Wiki/Text/Wiki/Render/Tiki/Underline.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Tiki/Url.php" name="lib/Text_Wiki/Text/Wiki/Render/Tiki/Url.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Tiki/Wikilink.php" name="lib/Text_Wiki/Text/Wiki/Render/Tiki/Wikilink.php" />
+   <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Xhtml.php" name="lib/Text_Wiki/Text/Wiki/Render/Xhtml.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Xhtml/Address.php" name="lib/Text_Wiki/Text/Wiki/Render/Xhtml/Address.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Xhtml/Anchor.php" name="lib/Text_Wiki/Text/Wiki/Render/Xhtml/Anchor.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Xhtml/Attribute.php" name="lib/Text_Wiki/Text/Wiki/Render/Xhtml/Attribute.php" />
@@ -2056,9 +2050,11 @@
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Xhtml/Wickedblock.php" name="lib/Text_Wiki/Text/Wiki/Render/Xhtml/Wickedblock.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Xhtml/Wikilink.php" name="lib/Text_Wiki/Text/Wiki/Render/Xhtml/Wikilink.php" />
    <install as="wicked/lib/Text_Wiki/Text/Wiki/Render/Xhtml/Wikilink2.php" name="lib/Text_Wiki/Text/Wiki/Render/Xhtml/Wikilink2.php" />
+   <install as="wicked/lib/Text_Wiki/Text/Wiki/Tiki.php" name="lib/Text_Wiki/Text/Wiki/Tiki.php" />
    <install as="wicked/lib/View/Helper/Navigation.php" name="lib/View/Helper/Navigation.php" />
+   <install as="wicked/lib/Wicked.php" name="lib/Wicked.php" />
+   <install as="LICENSE" name="LICENSE" />
    <install as="wicked/locale/.htaccess" name="locale/.htaccess" />
-   <install as="wicked/locale/wicked.pot" name="locale/wicked.pot" />
    <install as="wicked/locale/da/LC_MESSAGES/wicked.mo" name="locale/da/LC_MESSAGES/wicked.mo" />
    <install as="wicked/locale/da/LC_MESSAGES/wicked.po" name="locale/da/LC_MESSAGES/wicked.po" />
    <install as="wicked/locale/de/help.xml" name="locale/de/help.xml" />
@@ -2088,6 +2084,7 @@
    <install as="wicked/locale/sv/LC_MESSAGES/wicked.po" name="locale/sv/LC_MESSAGES/wicked.po" />
    <install as="wicked/locale/uk/LC_MESSAGES/wicked.mo" name="locale/uk/LC_MESSAGES/wicked.mo" />
    <install as="wicked/locale/uk/LC_MESSAGES/wicked.po" name="locale/uk/LC_MESSAGES/wicked.po" />
+   <install as="wicked/locale/wicked.pot" name="locale/wicked.pot" />
    <install as="wicked/locale/zh_TW/LC_MESSAGES/wicked.mo" name="locale/zh_TW/LC_MESSAGES/wicked.mo" />
    <install as="wicked/locale/zh_TW/LC_MESSAGES/wicked.po" name="locale/zh_TW/LC_MESSAGES/wicked.po" />
    <install as="wicked/migration/1_wicked_base_tables.php" name="migration/1_wicked_base_tables.php" />
@@ -2096,6 +2093,9 @@
    <install as="wicked/migration/4_wicked_single_revisions.php" name="migration/4_wicked_single_revisions.php" />
    <install as="wicked/migration/5_wicked_rename_pages.php" name="migration/5_wicked_rename_pages.php" />
    <install as="wicked/migration/6_wicked_fix_text_length.php" name="migration/6_wicked_fix_text_length.php" />
+   <install as="wicked/opensearch.php" name="opensearch.php" />
+   <install as="wicked/preview.php" name="preview.php" />
+   <install as="README.rst" name="README.rst" />
    <install as="wicked/templates/.htaccess" name="templates/.htaccess" />
    <install as="wicked/templates/diff/diff.html.php" name="templates/diff/diff.html.php" />
    <install as="wicked/templates/display/AttachedFiles.html.php" name="templates/display/AttachedFiles.html.php" />
@@ -2119,13 +2119,12 @@
    <install as="Wicked/AllTests.php" name="test/Wicked/AllTests.php" />
    <install as="Wicked/Autoload.php" name="test/Wicked/Autoload.php" />
    <install as="Wicked/bootstrap.php" name="test/Wicked/bootstrap.php" />
-   <install as="Wicked/phpunit.xml" name="test/Wicked/phpunit.xml" />
-   <install as="Wicked/TestCase.php" name="test/Wicked/TestCase.php" />
    <install as="Wicked/fixtures/cli_modular.rst" name="test/Wicked/fixtures/cli_modular.rst" />
    <install as="Wicked/fixtures/cli_modular.wiki" name="test/Wicked/fixtures/cli_modular.wiki" />
-   <install as="Wicked/Unit/RstTest.php" name="test/Wicked/Unit/RstTest.php" />
+   <install as="Wicked/phpunit.xml" name="test/Wicked/phpunit.xml" />
+   <install as="Wicked/TestCase.php" name="test/Wicked/TestCase.php" />
    <install as="Wicked/Unit/Driver/SqlTest.php" name="test/Wicked/Unit/Driver/SqlTest.php" />
-   <install as="wicked/themes/default/screen.css" name="themes/default/screen.css" />
+   <install as="Wicked/Unit/RstTest.php" name="test/Wicked/Unit/RstTest.php" />
    <install as="wicked/themes/default/block/screen.css" name="themes/default/block/screen.css" />
    <install as="wicked/themes/default/graphics/AllPages.png" name="themes/default/graphics/AllPages.png" />
    <install as="wicked/themes/default/graphics/az.png" name="themes/default/graphics/az.png" />
@@ -2145,6 +2144,7 @@
    <install as="wicked/themes/default/graphics/WikiHome.png" name="themes/default/graphics/WikiHome.png" />
    <install as="wicked/themes/default/graphics/WikiUsage.png" name="themes/default/graphics/WikiUsage.png" />
    <install as="wicked/themes/default/graphics/za.png" name="themes/default/graphics/za.png" />
+   <install as="wicked/themes/default/screen.css" name="themes/default/screen.css" />
   </filelist>
  </phprelease>
  <changelog>
@@ -2431,7 +2431,7 @@
    <stability>
     <release>beta</release>
     <api>beta</api></stability>
-   <date>2017-10-16</date>
+   <date>2017-10-17</date>
    <license uri="http://www.horde.org/licenses/gpl">GPL-2.0</license>
    <notes>
 * [jan] Complete the reST renderer.
