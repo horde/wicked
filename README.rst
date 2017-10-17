@@ -134,8 +134,8 @@ Documentation
 
 The following documentation is available in the Wicked distribution:
 
-:README_:            This file
-:COPYING_:           Copyright and license information
+:README_:           This file
+:LICENSE_:          Copyright and license information
 :`doc/CHANGES`_:    Changes by release
 :`doc/CREDITS`_:    Project developers
 :`doc/INSTALL`_:    Installation instructions and notes
@@ -172,7 +172,7 @@ appearances on IRC, on the channel #horde on the Freenode Network
 Licensing
 =========
 
-For licensing and copyright information, please see the file COPYING_ in the
+For licensing and copyright information, please see the file LICENSE_ in the
 Wicked distribution.
 
 Thanks,
@@ -181,7 +181,7 @@ The Wicked team
 
 
 .. _README: README
-.. _COPYING: http://www.horde.org/licenses/gpl
+.. _LICENSE: http://www.horde.org/licenses/gpl
 .. _doc/CHANGES: CHANGES
 .. _doc/CREDITS: CREDITS
 .. _INSTALL:
