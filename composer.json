@@ -17,7 +17,7 @@
         }
     ],
     "version": "3.0.0",
-    "time": "2016-11-09",
+    "time": "2017-10-20",
     "repositories": [
         {
             "type": "pear",
@@ -25,7 +25,7 @@
         }
     ],
     "require": {
-        "php": "^5.3",
+        "php": "^5.3 || ^7",
         "pear-pear.horde.org/horde": "^5",
         "pear-pear.horde.org/Horde_Auth": "^2",
         "pear-pear.horde.org/Horde_Autoloader": "^2",
@@ -46,13 +46,18 @@
         "pear-pear.horde.org/Horde_Url": "^2",
         "pear-pear.horde.org/Horde_Util": "^2",
         "pear-pear.horde.org/Horde_Vfs": "^2",
-        "pear-pear.php.net/Text_Wiki": "^1.2",
         "ext-gettext": "*"
     },
     "suggest": {
-        "pear-pear.php.net/Text_Figlet": "*",
-        "pear-pear.php.net/Text_Wiki_Creole": "^1",
-        "pear-pear.php.net/Text_Wiki_Mediawiki": "^2",
-        "pear-pear.php.net/Text_Wiki_Tiki": "^1"
+        "pear-pear.php.net/Text_Figlet": "*"
+    },
+    "replace": {
+        "pear-pear.horde.org/wicked": "3.*",
+        "pear-horde/wicked": "3.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Wicked": "lib/"
+        }
     }
 }
