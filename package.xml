@@ -16,7 +16,7 @@
   <email>chuck@horde.org</email>
   <active>yes</active>
  </lead>
- <date>2017-09-21</date>
+ <date>2017-10-27</date>
  <version>
   <release>2.0.9</release>
   <api>2.0.0</api>
@@ -878,6 +878,7 @@
      </dir> <!-- /lib/Text_Wiki/Text -->
      <file name=".gitignore" role="horde" />
      <file name=".travis.yml" role="horde" />
+     <file name="composer.json" role="horde" />
      <file name="package.xml" role="horde" />
      <file name="packageBBCode.xml" role="horde" />
      <file name="packageCowiki.xml" role="horde" />
@@ -1334,6 +1335,7 @@
    <install as="wicked/lib/Text_Wiki/packageDoku.xml" name="lib/Text_Wiki/packageDoku.xml" />
    <install as="wicked/lib/Text_Wiki/packageMediawiki.xml" name="lib/Text_Wiki/packageMediawiki.xml" />
    <install as="wicked/lib/Text_Wiki/packageTiki.xml" name="lib/Text_Wiki/packageTiki.xml" />
+   <install as="wicked/lib/Text_Wiki/composer.json" name="lib/Text_Wiki/composer.json" />
    <install as="wicked/lib/Text_Wiki/doc/BBCodeParser.php" name="lib/Text_Wiki/doc/BBCodeParser.php" />
    <install as="wicked/lib/Text_Wiki/doc/BBCodeParser_V2.ini" name="lib/Text_Wiki/doc/BBCodeParser_V2.ini" />
    <install as="wicked/lib/Text_Wiki/doc/BBtest.txt" name="lib/Text_Wiki/doc/BBtest.txt" />
@@ -2392,7 +2394,7 @@
    <stability>
     <release>stable</release>
     <api>stable</api></stability>
-   <date>2017-09-21</date>
+   <date>2017-10-27</date>
    <license uri="http://www.horde.org/licenses/gpl">GPL-2.0</license>
    <notes>
 * 
