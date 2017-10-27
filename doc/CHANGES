@@ -6,6 +6,13 @@ v3.0.0-git
 [jan] Add navigation between pages from the same hierarchy.
 
 
+------
+v2.0.8
+------
+
+[jan] SECURITY: Fix unauthorized access to page attachments.
+
+
 ---------
 v2.0.8RC1
 ---------
@@ -77,6 +84,13 @@ v2.0.1
 v2.0.0
 ------
 
+First stable release for Horde 5.
+
+
+---------
+v2.0.0RC2
+---------
+
 [jan] Fix generating the most recent changes.
 [jan] Request CAPTCHA when creating pages too.
 
@@ -104,6 +118,14 @@ v2.0.0beta1
 
 
 ------
+v1.0.3
+------
+
+[jan] Work around broken Text_Wiki header parser.
+[jan] Add reST renderers for blockquote and emphasis.
+
+
+------
 v1.0.2
 ------
 
@@ -120,26 +142,26 @@ v1.0.1
 [jan] Add Slovak translation (Martin Matuška <martin@matuska.org>).
 
 
-----
-v1.0
-----
+------
+v1.0.0
+------
 
 [jan] Fix links to existing pages with non-ascii or special characters (Bug
       #10672).
 
 
---------
-v1.0-RC1
---------
+---------
+v1.0.0RC1
+---------
 
 [jan] Fix rendering attached images with Mediawiki syntax (Bug #10570).
 [jan] Fix links to add new pages on pages with non-ascii names (Bug #10612).
 [gwr] Support rendering bold text and code section in the rst renderer.
 
 
------------
-v1.0-ALPHA1
------------
+------------
+v1.0.0alpha1
+------------
 
 [jan] Move all default pages into the Wiki/ namespace (Request #7021).
 [jan] Support Unicode wiki page names.
@@ -161,22 +183,22 @@ v1.0-ALPHA1
 [cjh] Fix saveTemplate API call (Duck <duck@obala.net>, Bug #7620).
 [jan] Add Italian translation (Fabio Pedretti <fabio.pedretti@ing.unibs.it>).
 [jan] Add Precedence and Auto-Submitted headers to notification messages.
-[cjh] Add an API method for fetching recent changes, and allow specifying
-      the number of days to look back in the RecentChanges page
-      (Duck <duck@obala.net>, Request #7230).
+[cjh] Add an API method for fetching recent changes, and allow specifying the
+      number of days to look back in the RecentChanges page (Duck
+      <duck@obala.net>, Request #7230).
 [jan] Add script to convert data to UTF-8 in the backend.
-[cjh] Allow downloading from/uploading to a remote wiki server
-      (Duck <duck@obala.net>, Request #7191).
-[cjh] Add getMultiplePageInfo() and getPageHistory() API calls, along with
-      page checksums (Duck <duck@obala.net>, Request #7189).
+[cjh] Allow downloading from/uploading to a remote wiki server (Duck
+      <duck@obala.net>, Request #7191).
+[cjh] Add getMultiplePageInfo() and getPageHistory() API calls, along with page
+      checksums (Duck <duck@obala.net>, Request #7189).
 [cjh] Add Download this page as... link (Duck <duck@obala.net>, Request #7168).
 [cjh] Add renderPage() API call (duck@obala.net).
-[cjh] Add list(), getPageInfo(), show(), and pageExists() API calls
-      (Duck <duck@obala.net>, Request #7149).
+[cjh] Add list(), getPageInfo(), show(), and pageExists() API calls (Duck
+      <duck@obala.net>, Request #7149).
 [jan] Add display and edit API methods (Duck <duck@obala.net>, Request #6130).
 [jan] Add Japanese translation (Takeshi Taguchi <taguchi@iij.ad.jp>).
-[cjh] Fix permission checks for non-admins when deleting and reverting
-      (Bug #5806).
+[cjh] Fix permission checks for non-admins when deleting and reverting (Bug
+      #5806).
 [cjh] Fix removing the most recent revision with some databases (Bug #5807).
 [jan] Work around problems with Text_Wiki and PHP 5.2.5+ (Bug #5951).
 [mms] Compress download data.
@@ -197,15 +219,14 @@ v1.0-ALPHA1
 [cjh] Include matching context in PageSearch results (Request #2485).
 [cjh] Encode notification emails correctly (tasin@fhm.edu, Bug #3153).
 [cjh] Don't create pages until they have content (Bug #2534).
-[cjh] Run all revert actions through a non-JavaScript, POST
-      confirmation page.
+[cjh] Run all revert actions through a non-JavaScript, POST confirmation page.
 [cjh] Run all page/version deletion through a non-JavaScript, POST
       confirmation page.
 [ben] Better support for MS-SQL.
-[cjh] Add [[link ...]] syntax for calling $registry->link() in pages
-      (Bug #1474).
-[cjh] Fix Wiki Page Block when the page being displayed has attachments
-      (Bug #2258).
+[cjh] Add [[link ...]] syntax for calling $registry->link() in pages (Bug
+      #1474).
+[cjh] Fix Wiki Page Block when the page being displayed has attachments (Bug
+      #2258).
 [cjh] Only list standard pages in Wicked's "Back to" history (Bug #2252).
 [cjh] Delete all attachments to a page when that page is deleted.
 [cjh] Attachments can now be deleted (Bug #2246).
@@ -215,8 +236,8 @@ v1.0-ALPHA1
 [jan] Support type="htmlphp" attribute for code blocks.
 [cjh] Show a summary of any attachments on a page (Bug #1473).
 [cjh] Fix updating of attachments (Bug #1579).
-[cjh] Add a config option to toggle use of pretty URLS with mod_rewrite
-      (Bug #1878).
+[cjh] Add a config option to toggle use of pretty URLS with mod_rewrite (Bug
+      #1878).
 [jan] Support arbitrary charsets for page contents (with Text_Wiki > 1.0.0).
 [cjh] Require PERMS_EDIT to attach files to a page (tasin@fhm.edu, Bug #1880).
 [cjh] Send email on MergeOrRename (Bug #916).
@@ -249,10 +270,10 @@ v1.0-ALPHA1
 [cjh] Add MostPopular and LeastPopular wiki pages.
 [cjh] Log page views.
 [cjh] A parameter of autocreate=1 must now be passed to display.php for pages
-      that don't exist to be created automatically. This is done by default
-      for "?" links, but for external incoming links and results of the top
-      left jump box, users will get a form that allows them to confirm
-      creation of the new page.
+      that don't exist to be created automatically. This is done by default for
+      "?" links, but for external incoming links and results of the top left
+      jump box, users will get a form that allows them to confirm creation of
+      the new page.
 [cjh] Add AllPages Page and Block implementations.
 [cjh] Wicked now provides Horde_Blocks for doing TitleSearches and viewing
       RecentChanges.
