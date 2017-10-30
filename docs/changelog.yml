@@ -11,12 +11,22 @@
   notes: |
     [jan] Complete the reST renderer.
     [jan] Add navigation between pages from the same hierarchy.
+2.0.9:
+  api: 2.0.0
+  state:
+    release: stable
+    api: stable
+  date: 2017-10-27
+  license:
+    identifier: GPL-2.0
+    uri: http://www.horde.org/licenses/gpl
+  notes:
 2.0.8:
   api: 2.0.0
   state:
     release: stable
     api: stable
-  date: 2017-09-18
+  date: 2017-09-21
   license:
     identifier: GPL-2.0
     uri: http://www.horde.org/licenses/gpl
