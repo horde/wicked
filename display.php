@@ -89,15 +89,15 @@ case 'export':
 
     case 'rst':
         $format = 'Rst';
-        $ext = '';
-        $mime = 'text/text';
+        $ext = '.rst';
+        $mime = 'text/plain';
         break;
 
     case 'plain':
     default:
         $format = 'Plain';
         $ext = '.txt';
-        $mime = 'text/text';
+        $mime = 'text/plain';
         break;
     }
 
