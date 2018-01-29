@@ -1,6 +1,9 @@
-----------
-v2.0.9-git
-----------
+------
+v2.0.9
+------
+
+[jan] Use correct MIME type when exporting pages as plain text or ReST.
+
 
 
 ------
