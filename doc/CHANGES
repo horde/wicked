@@ -1,6 +1,6 @@
-----------
-v3.0.0-git
-----------
+------
+v3.0.0
+------
 
 [jan] Complete the reST renderer.
 [jan] Add navigation between pages from the same hierarchy.
@@ -9,6 +9,9 @@ v3.0.0-git
 ------
 v2.0.9
 ------
+
+[jan] Use .rst extension when exporting pages as ReST.
+[jan] Use correct MIME type when exporting pages as plain text or ReST.
 
 
 ------
