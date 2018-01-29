@@ -20,9 +20,9 @@
   license:
     identifier: GPL-2.0
     uri: http://www.horde.org/licenses/gpl
-  notes: |+
+  notes: |
+    [jan] Use .rst extension when exporting pages as ReST.
     [jan] Use correct MIME type when exporting pages as plain text or ReST.
-    
 2.0.8:
   api: 2.0.0
   state:
