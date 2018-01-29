@@ -2,8 +2,8 @@
 v2.0.9
 ------
 
+[jan] Use .rst extension when exporting pages as ReST.
 [jan] Use correct MIME type when exporting pages as plain text or ReST.
-
 
 
 ------
