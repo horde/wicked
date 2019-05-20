@@ -18,14 +18,14 @@
  <tbody>
 <?php foreach ($this->attachments as $attachment): ?>
   <tr>
-   <td><a href="<?php echo $attachment['url'] ?>"><?php echo $attachment['attachment_name'] ?></a></td>
+   <td><a href="<?php echo $attachment['url'] ?>"><?php echo $this->h($attachment['attachment_name']) ?></a></td>
    <td>
 <?php if ($attachment['delete_form']): ?>
      <form method="post" action="<?php echo $this->formAction ?>">
       <input type="hidden" name="cmd" value="delete" />
       <input type="hidden" name="actionID" value="special" />
       <input type="hidden" name="referrer" value="<?php echo $this->referrer ?>" />
-      <input type="hidden" name="filename" value="<?php echo $attachment['attachment_name'] ?>" />
+      <input type="hidden" name="filename" value="<?php echo $this->h($attachment['attachment_name']) ?>" />
       <input type="hidden" name="version" value="<?php echo $attachment['attachment_version'] ?>" />
       <input type="image" class="img" src="<?php echo $this->deleteButton ?>" />
      </form>
