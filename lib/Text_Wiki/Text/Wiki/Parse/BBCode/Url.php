@@ -143,7 +143,7 @@ class Text_Wiki_Parse_Url extends Text_Wiki_Parse {
                     if ($matches[2] === '=') {
                         $type = 'descr';
                     } elseif ($matches[2]) {
-                        $pre = $matches[1]{0};
+                        $pre = $matches[1][0];
                     }
                 }
                 $matches[2] = 'mailto:' . $matches[3];

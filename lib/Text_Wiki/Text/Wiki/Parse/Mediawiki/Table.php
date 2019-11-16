@@ -260,7 +260,7 @@ class Text_Wiki_Parse_Table extends Text_Wiki_Parse {
         }
         $param = array(
                 'type'  => 'cell_start',
-                'attr'  => $matches[1] && ($matches[1]{0} == '!') ? 'header': null,
+                'attr'  => $matches[1] && ($matches[1][0] == '!') ? 'header': null,
                 'span'  => 1,
                 'rowspan'  => 1,
                 'order' => $order

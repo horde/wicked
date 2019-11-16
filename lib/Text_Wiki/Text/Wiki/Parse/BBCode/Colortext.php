@@ -81,7 +81,7 @@ class Text_Wiki_Parse_Colortext extends Text_Wiki_Parse {
         }
 
         // needs to withdraw leading # as renderer put it in
-        $color = $matches[1]{0} == '#' ? substr($matches[1], 1) : $matches[1];
+        $color = $matches[1][0] == '#' ? substr($matches[1], 1) : $matches[1];
 
         // builds the option array
         $options = array('type' => 'start', 'level' => $this->_level, 'color' => $color);
