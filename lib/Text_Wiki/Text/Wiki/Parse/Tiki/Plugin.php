@@ -115,7 +115,7 @@ class Text_Wiki_Parse_Plugin extends Text_Wiki_Parse {
         preg_match_all($this->regexArgs, $matches[2], $args, PREG_PATTERN_ORDER);
         $attr = array();
         foreach ($args[1] as $i=>$name) {
-            if ($args[2][$i]{0} == '"' || $args[2][$i]{0} == "'") {
+            if ($args[2][$i][0] == '"' || $args[2][$i][0] == "'") {
                 $attr[$name] = substr($args[2][$i], 1, -1);
             } else {
                 $attr[$name] = trim($args[2][$i]);
