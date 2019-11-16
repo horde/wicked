@@ -27,6 +27,7 @@
  </stability>
  <license uri="http://www.horde.org/licenses/gpl">GPL-2.0</license>
  <notes>
+* [mjr] Fix Array and string offset access syntax with curly braces (Remi Collet &lt;remi@remirepo.net&gt;, PR #1).
 * [jan] Use .rst extension when exporting pages as ReST.
 * [jan] Use correct MIME type when exporting pages as plain text or ReST.
  </notes>
@@ -2536,6 +2537,7 @@
    <date>2017-10-27</date>
    <license uri="http://www.horde.org/licenses/gpl">GPL-2.0</license>
    <notes>
+* [mjr] Fix Array and string offset access syntax with curly braces (Remi Collet &lt;remi@remirepo.net&gt;, PR #1).
 * [jan] Use .rst extension when exporting pages as ReST.
 * [jan] Use correct MIME type when exporting pages as plain text or ReST.
    </notes>

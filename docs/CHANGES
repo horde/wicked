@@ -2,6 +2,8 @@
 v2.0.9
 ------
 
+[mjr] Fix Array and string offset access syntax with curly braces (Remi Collet
+      <remi@remirepo.net>, PR #1).
 [jan] Use .rst extension when exporting pages as ReST.
 [jan] Use correct MIME type when exporting pages as plain text or ReST.
 
