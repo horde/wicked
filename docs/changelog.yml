@@ -21,6 +21,7 @@
     identifier: GPL-2.0
     uri: http://www.horde.org/licenses/gpl
   notes: |
+    [jan] Fix XSS vulnerability in attachment download page (Reported by Gh05tPT).
     [mjr] Fix Array and string offset access syntax with curly braces (Remi Collet <remi@remirepo.net>, PR #1).
     [jan] Use .rst extension when exporting pages as ReST.
     [jan] Use correct MIME type when exporting pages as plain text or ReST.
