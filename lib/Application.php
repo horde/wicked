@@ -179,12 +179,13 @@ class Wicked_Application extends Horde_Registry_Application
         }
 
         try {
-            $data = $wicked->getAttachmentContents($page_id, $vars->file, $version);
+            $data = $wicked->getAttachmentContents($page_id, basename($vars->file), (int)$version);
             $wicked->logAttachmentDownload($page_id, $vars->file);
         } catch (Wicked_Exception $e) {
             // If we redirect here, we cause an infinite loop with inline
             // attachments.
             header('HTTP/1.1 404 Not Found');
+            header('Content-Type: text/plain');
             echo $e->getMessage();
             exit;
         }
