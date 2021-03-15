@@ -30,30 +30,31 @@ license:
   uri: http://www.horde.org/licenses/gpl
 dependencies:
   required:
-    php: ^5.3 || ^7
-    pear:
-      pear.horde.org/horde: ^5
-      pear.horde.org/Horde_Auth: ^2
-      pear.horde.org/Horde_Autoloader: ^2
-      pear.horde.org/Horde_Core: ^2
-      pear.horde.org/Horde_Db: ^2
-      pear.horde.org/Horde_Exception: ^2
-      pear.horde.org/Horde_Form: ^2
-      pear.horde.org/Horde_Http: ^2
-      pear.horde.org/Horde_Lock: ^2
-      pear.horde.org/Horde_Mail: ^2
-      pear.horde.org/Horde_Mime: ^2
-      pear.horde.org/Horde_Mime_Viewer: ^2
-      pear.horde.org/Horde_Notification: ^2
-      pear.horde.org/Horde_Perms: ^2
-      pear.horde.org/Horde_Prefs: ^2
-      pear.horde.org/Horde_Rpc: ^2
-      pear.horde.org/Horde_Text_Diff: ^2
-      pear.horde.org/Horde_Url: ^2
-      pear.horde.org/Horde_Util: ^2
-      pear.horde.org/Horde_Vfs: ^2
+    php: ^7
+    composer:
+      horde/horde: ^6
+      horde/auth: ^3
+      horde/autoloader: ^3
+      horde/core: ^3
+      horde/db: ^3
+      horde/exception: ^3
+      horde/form: ^3
+      horde/http: ^3
+      horde/lock: ^3
+      horde/mail: ^3
+      horde/mime: ^3
+      horde/mime_viewer: ^3
+      horde/notification: ^3
+      horde/perms: ^3
+      horde/prefs: ^3
+      horde/rpc: ^3
+      horde/text_diff: ^3
+      horde/url: ^3
+      horde/util: ^3
+      horde/vfs: ^3
     ext:
       gettext: '*'
   optional:
-    pear:
-      pear.php.net/Text_Figlet: '*'
+    composer:
+      pear/text_figlet: '*'
+      horde/test: '*'
