@@ -54,8 +54,11 @@ class Wicked_Page_AddPage extends Wicked_Page
 
     /**
      * Bail out if there's no page name.
+     *
+     * $param integer $mode    The page render mode.
+     * $param array   $params  Any page parameters.
      */
-    public function preDisplay()
+    public function preDisplay($mode, $params)
     {
         if (!strlen($this->referrer())) {
             $GLOBALS['notification']->push(_("Page name must not be empty"));
