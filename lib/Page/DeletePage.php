@@ -45,9 +45,11 @@ class Wicked_Page_DeletePage extends Wicked_Page
     /**
      * Retrieve this user's permissions for the referring page.
      *
+     * @param  string $pageName  The page name (unused in this method).
+     *
      * @return integer  The permissions bitmask.
      */
-    public function getPermissions()
+    public function getPermissions($pageName = null)
     {
         return parent::getPermissions($this->referrer());
     }
@@ -55,8 +57,11 @@ class Wicked_Page_DeletePage extends Wicked_Page
     /**
      * Send them back whence they came if they aren't allowed to
      * delete this page.
+     *
+     * $param integer $mode    The page render mode.
+     * $param array   $params  Any page parameters.
      */
-    public function preDisplay()
+    public function preDisplay($mode, $params)
     {
         $page = Wicked_Page::getPage($this->referrer());
         if (!$page->allows(Wicked::MODE_REMOVE)) {
