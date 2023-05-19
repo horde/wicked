@@ -83,8 +83,11 @@ class Wicked_Page_EditPage extends Wicked_Page
     /**
      * Send them back whence they came if they aren't allowed to edit
      * this page.
+     *
+     * $param integer $mode    The page render mode.
+     * $param array   $params  Any page parameters.
      */
-    public function preDisplay()
+    public function preDisplay($mode, $params)
     {
         if (!$this->allows(Wicked::MODE_EDIT)) {
             Wicked::url($this->referrer(), true)->redirect();
