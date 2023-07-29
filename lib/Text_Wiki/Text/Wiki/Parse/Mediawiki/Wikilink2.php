@@ -22,7 +22,7 @@ class Text_Wiki_Parse_Wikilink2 extends Text_Wiki_Parse_Wikilink
      * | - 'height' => 'NNNpx'
      *
      * @access public
-     * @param array &$matches The array of matches from parse().
+     * @param array $matches The array of matches from parse().
      * @return string token to be used as replacement
      */
     public function image($name, $text, $interlang, $colon)

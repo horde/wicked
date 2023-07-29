@@ -90,14 +90,14 @@ class Text_Wiki_Parse_Wikilink extends Text_Wiki_Parse {
      * 
      * @access public
      *
-     * @param array &$matches The array of matches from parse().
+     * @param array $matches The array of matches from parse().
      *
      * @return A delimited token to be used as a placeholder in
      * the source text, plus any text priot to the match.
      *
      */
     
-    function processDescr(&$matches)
+    function processDescr($matches)
     {
         // set the options
         $options = array(

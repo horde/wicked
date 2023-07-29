@@ -101,12 +101,12 @@ class Text_Wiki_Parse_List extends Text_Wiki_Parse {
      *
      * 'key' => the optional starting number/letter (not for items)
      *
-     * @param array &$matches The array of matches from parse().
+     * @param array $matches The array of matches from parse().
      * @return A delimited token to be used as a placeholder in
      * the source text and containing the original block of text
      * @access public
      */
-    function process(&$matches)
+    function process($matches)
     {
         if (!empty($matches[3])) {
             $this->_level++;
@@ -167,12 +167,12 @@ class Text_Wiki_Parse_List extends Text_Wiki_Parse {
      *
      * 'count' => the item ordeer at this level.
      *
-     * @param array &$matches The array of matches from parse().
+     * @param array $matches The array of matches from parse().
      * @return A delimited token to be used as a placeholder in
      * the source text and containing the original block of text
      * @access public
      */
-    function processElement(&$matches)
+    function processElement($matches)
     {
         return $this->wiki->addToken($this->rule, array(
                     'type' => $this->_type[$this->_level] . '_item_start',

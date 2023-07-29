@@ -133,12 +133,12 @@ class Text_Wiki_Parse_Table extends Text_Wiki_Parse {
      *
      * 'format' => table, row or cell optional styling ('xxx_start')
      *
-     * @param array &$matches The array of matches from parse().
+     * @param array $matches The array of matches from parse().
      * @return string the original text with tags replaced by delimited tokens
      * which point to the the token array containing their type and definition
      * @access public
      */
-    function process(&$matches)
+    function process($matches)
     {
         if (array_key_exists(4, $matches)) {
             $this->_level++;
@@ -194,12 +194,12 @@ class Text_Wiki_Parse_Table extends Text_Wiki_Parse {
      *
      * 'format' => row optional styling
      *
-     * @param array &$matches The array of matches from process() callback.
+     * @param array $matches The array of matches from process() callback.
      * @return string 2 delimited tokens pointing the row params
      * and containing the cells-parsed block of text between the tags
      * @access public
      */
-    function processRows(&$matches)
+    function processRows($matches)
     {
         $this->_countCells[$this->_level][$this->_countRows[$this->_level]] = 0;
         $sub = preg_replace_callback(
@@ -244,12 +244,12 @@ class Text_Wiki_Parse_Table extends Text_Wiki_Parse {
      *
      * 'format' => cell optional styling
      *
-     * @param array &$matches The array of matches from processRows() callback.
+     * @param array $matches The array of matches from processRows() callback.
      * @return string 2 delimited tokens pointing the cell params
      * and containing the block of text between the tags
      * @access public
      */
-    function processCells(&$matches)
+    function processCells($matches)
     {
         $order = & $this->_countCells[$this->_level][$this->_countRows[$this->_level]];
         while (isset($this->_spanCells[$this->_level][$order])) {
