@@ -30,7 +30,7 @@
  */
 class Wicked_TestCase extends Horde_Test_Case
 {
-    public function setUp()
+    public function setUp(): void
     {
         $text_wiki = __DIR__ . '/../../lib/Text_Wiki';
         set_include_path($text_wiki . PATH_SEPARATOR . get_include_path());

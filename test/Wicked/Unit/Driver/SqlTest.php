@@ -36,7 +36,7 @@ class Wicked_Unit_Driver_SqlTest extends Wicked_TestCase
      */
     public $wicked;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->markTestIncomplete('This is a very old test case that certainly does not work in its current form. But it may still be useful to be rescued.');
 
