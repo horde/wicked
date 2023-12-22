@@ -19,41 +19,35 @@
     "version": "3.0.0",
     "time": "2017-11-11",
     "repositories": [
-        {
-            "type": "pear",
-            "url": "https://pear.horde.org"
-        }
     ],
     "require": {
         "php": "^5.3 || ^7",
-        "pear-pear.horde.org/horde": "^5",
-        "pear-pear.horde.org/Horde_Auth": "^2",
-        "pear-pear.horde.org/Horde_Autoloader": "^2",
-        "pear-pear.horde.org/Horde_Core": "^2",
-        "pear-pear.horde.org/Horde_Db": "^2",
-        "pear-pear.horde.org/Horde_Exception": "^2",
-        "pear-pear.horde.org/Horde_Form": "^2",
-        "pear-pear.horde.org/Horde_Http": "^2",
-        "pear-pear.horde.org/Horde_Lock": "^2",
-        "pear-pear.horde.org/Horde_Mail": "^2",
-        "pear-pear.horde.org/Horde_Mime": "^2",
-        "pear-pear.horde.org/Horde_Mime_Viewer": "^2",
-        "pear-pear.horde.org/Horde_Notification": "^2",
-        "pear-pear.horde.org/Horde_Perms": "^2",
-        "pear-pear.horde.org/Horde_Prefs": "^2",
-        "pear-pear.horde.org/Horde_Rpc": "^2",
-        "pear-pear.horde.org/Horde_Text_Diff": "^2",
-        "pear-pear.horde.org/Horde_Url": "^2",
-        "pear-pear.horde.org/Horde_Util": "^2",
-        "pear-pear.horde.org/Horde_Vfs": "^2",
+        "horde/horde": "^5",
+        "horde/auth": "^2",
+        "horde/autoloader": "^2",
+        "horde/core": "^2",
+        "horde/db": "^2",
+        "horde/exception": "^2",
+        "horde/form": "^2",
+        "horde/http": "^2",
+        "horde/lock": "^2",
+        "horde/mail": "^2",
+        "horde/mime": "^2",
+        "horde/mime_viewer": "^2",
+        "horde/notification": "^2",
+        "horde/perms": "^2",
+        "horde/prefs": "^2",
+        "horde/rpc": "^2",
+        "horde/text_diff": "^2",
+        "horde/url": "^2",
+        "horde/util": "^2",
+        "horde/vfs": "^2",
         "ext-gettext": "*"
     },
     "suggest": {
-        "pear-pear.php.net/Text_Figlet": "*"
+        "pear/text_figlet": "*"
     },
     "replace": {
-        "pear-pear.horde.org/wicked": "3.*",
-        "pear-horde/wicked": "3.*"
     },
     "autoload": {
         "psr-0": {
