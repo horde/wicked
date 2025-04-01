@@ -75,12 +75,12 @@ class Wicked_Page_Search extends Wicked_Page
     /**
      * Renders this page in display mode.
      *
-     * @param string $searchtext  The title to search for.
+     * @param string $searchtext  The title to search for (optional).
      *
      * @return string  The content.
      * @throws Wicked_Exception
      */
-    public function display($searchtext)
+    public function display($searchtext = null)
     {
         global $injector, $notification, $page_output, $wicked;
 
