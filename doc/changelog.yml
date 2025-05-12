@@ -1,4 +1,17 @@
 ---
+3.0.2:
+  api: 3.0.0
+  state:
+    release: true
+    api: true
+  date: 2025-05-12
+  license:
+    identifier: GPL-2.0-only
+    uri: http://www.horde.org/licenses/gpl
+  notes: |
+    fix: Use a classmap autoloader for wicked
+    fix: Update Search.php to match baseclasses display() signature
+    fix: Do not use pass-by-reference for callbacks
 3.0.1:
   api: 3.0.0
   state:
@@ -9,7 +22,6 @@
     identifier: GPL-2.0
     uri: http://www.horde.org/licenses/gpl
   notes: |+
-    
 3.0.0:
   api: 3.0.0
   state:
@@ -36,6 +48,20 @@
     [mjr] Fix Array and string offset access syntax with curly braces (Remi Collet <remi@remirepo.net>, PR #1).
     [jan] Use .rst extension when exporting pages as ReST.
     [jan] Use correct MIME type when exporting pages as plain text or ReST.
+2.0.8-RC1:
+  api: 2.0.0
+  state:
+    release: beta
+    api: stable
+  date: 2017-09-15
+  license:
+    identifier: GPL-2.0
+    uri: http://www.horde.org/licenses/gpl
+  notes: |
+    Original version string was 2.0.8RC1
+    [jan] Officially support PHP 7.
+    [jan] Bundle Text_Wiki and fix it to run on PHP 7.
+    [mjr] Minor PHP 7 compatibility improvements.
 2.0.8:
   api: 2.0.0
   state:
@@ -47,19 +73,6 @@
     uri: http://www.horde.org/licenses/gpl
   notes: |
     [jan] SECURITY: Fix unauthorized access to page attachments.
-2.0.8RC1:
-  api: 2.0.0
-  state:
-    release: beta
-    api: stable
-  date: 2017-09-15
-  license:
-    identifier: GPL-2.0
-    uri: http://www.horde.org/licenses/gpl
-  notes: |
-    [jan] Officially support PHP 7.
-    [jan] Bundle Text_Wiki and fix it to run on PHP 7.
-    [mjr] Minor PHP 7 compatibility improvements.
 2.0.7:
   api: 2.0.0
   state:
@@ -144,6 +157,51 @@
     [jan] Fix rendering of full text search results.
     [jan] Fix rendering pages in portal blocks.
     [jan] Improve finding like pages if name contains digits.
+2.0.0-beta1:
+  api: 2.0.0
+  state:
+    release: beta
+    api: beta
+  date: 2013-06-11
+  license:
+    identifier: GPL-2.0
+    uri: http://www.horde.org/licenses/gpl
+  notes: |
+    Original version string was 2.0.0beta1
+    [jan] Fix parsing of headings in other than the default rule (Bug #12211).
+    [jan] Remove synchronization code.
+    [jan] Convert all templates to Horde_View.
+    [jan] Add Most Popular and Least Popular pages to sidebar selection.
+    [jan] Show at least 10 revisions on the RecentChanges page.
+    [jan] Fix sorting page lists by date.
+2.0.0-RC2:
+  api: 2.0.0
+  state:
+    release: beta
+    api: beta
+  date: 2013-08-22
+  license:
+    identifier: GPL-2.0
+    uri: http://www.horde.org/licenses/gpl
+  notes: |
+    Original version string was 2.0.0RC2
+    [jan] Fix generating the most recent changes.
+    [jan] Request CAPTCHA when creating pages too.
+2.0.0-RC1:
+  api: 2.0.0
+  state:
+    release: beta
+    api: beta
+  date: 2013-07-17
+  license:
+    identifier: GPL-2.0
+    uri: http://www.horde.org/licenses/gpl
+  notes: |
+    Original version string was 2.0.0RC1
+    [jan] Add table layout (Bug #12402).
+    [jan] Fix DB column width for page contents (Bug #12407).
+    [mjr] Fix creating a new page from search results (Bug #12381).
+    [jan] Fix syntax error in wicked CLI script (Bug #12378).
 2.0.0:
   api: 2.0.0
   state:
@@ -155,48 +213,6 @@
     uri: http://www.horde.org/licenses/gpl
   notes: |
     First stable release for Horde 5.
-2.0.0RC2:
-  api: 2.0.0
-  state:
-    release: beta
-    api: beta
-  date: 2013-08-22
-  license:
-    identifier: GPL-2.0
-    uri: http://www.horde.org/licenses/gpl
-  notes: |
-    [jan] Fix generating the most recent changes.
-    [jan] Request CAPTCHA when creating pages too.
-2.0.0RC1:
-  api: 2.0.0
-  state:
-    release: beta
-    api: beta
-  date: 2013-07-17
-  license:
-    identifier: GPL-2.0
-    uri: http://www.horde.org/licenses/gpl
-  notes: |
-    [jan] Add table layout (Bug #12402).
-    [jan] Fix DB column width for page contents (Bug #12407).
-    [mjr] Fix creating a new page from search results (Bug #12381).
-    [jan] Fix syntax error in wicked CLI script (Bug #12378).
-2.0.0beta1:
-  api: 2.0.0
-  state:
-    release: beta
-    api: beta
-  date: 2013-06-11
-  license:
-    identifier: GPL-2.0
-    uri: http://www.horde.org/licenses/gpl
-  notes: |
-    [jan] Fix parsing of headings in other than the default rule (Bug #12211).
-    [jan] Remove synchronization code.
-    [jan] Convert all templates to Horde_View.
-    [jan] Add Most Popular and Least Popular pages to sidebar selection.
-    [jan] Show at least 10 revisions on the RecentChanges page.
-    [jan] Fix sorting page lists by date.
 1.0.3:
   api: 1.0.0
   state:
@@ -234,31 +250,7 @@
     [gwr] Corrected teletype format for the reST renderer.
     [gwr] Support rendering lists in the reST renderer.
     [jan] Add Slovak translation (Martin Matuška <martin@matuska.org>).
-1.0.0:
-  api: 1.0.0
-  state:
-    release: stable
-    api: stable
-  date: 2011-10-27
-  license:
-    identifier: GPL-2.0
-    uri: http://www.horde.org/licenses/gpl
-  notes: |
-    [jan] Fix links to existing pages with non-ascii or special characters (Bug #10672).
-1.0.0RC1:
-  api: 1.0.0RC1
-  state:
-    release: beta
-    api: beta
-  date: 2011-10-11
-  license:
-    identifier: GPL-2.0
-    uri: http://www.horde.org/licenses/gpl
-  notes: |
-    [jan] Fix rendering attached images with Mediawiki syntax (Bug #10570).
-    [jan] Fix links to add new pages on pages with non-ascii names (Bug #10612).
-    [gwr] Support rendering bold text and code section in the rst renderer.
-1.0.0alpha1:
+1.0.0-alpha1:
   api: 1.0.0alpha1
   state:
     release: alpha
@@ -268,6 +260,7 @@
     identifier: GPL-2.0
     uri: http://www.horde.org/licenses/gpl
   notes: |
+    Original version string was 1.0.0alpha1
     [jan] Move all default pages into the Wiki/ namespace (Request #7021).
     [jan] Support Unicode wiki page names.
     [gwr] Added support for reStructuredText export.
@@ -374,3 +367,28 @@
     [jan] Add German translation.
     [jan] Allow keeping guests from editing and creating pages.
     [tjc] Initial version.
+1.0.0-RC1:
+  api: 1.0.0RC1
+  state:
+    release: beta
+    api: beta
+  date: 2011-10-11
+  license:
+    identifier: GPL-2.0
+    uri: http://www.horde.org/licenses/gpl
+  notes: |
+    Original version string was 1.0.0RC1
+    [jan] Fix rendering attached images with Mediawiki syntax (Bug #10570).
+    [jan] Fix links to add new pages on pages with non-ascii names (Bug #10612).
+    [gwr] Support rendering bold text and code section in the rst renderer.
+1.0.0:
+  api: 1.0.0
+  state:
+    release: stable
+    api: stable
+  date: 2011-10-27
+  license:
+    identifier: GPL-2.0
+    uri: http://www.horde.org/licenses/gpl
+  notes: |
+    [jan] Fix links to existing pages with non-ascii or special characters (Bug #10672).
