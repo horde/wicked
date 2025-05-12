@@ -1,5 +1,4 @@
 {
-    "minimum-stability": "dev",
     "name": "horde/wicked",
     "description": "Wiki application",
     "type": "horde-application",
@@ -17,15 +16,10 @@
             "role": "lead"
         }
     ],
-    "time": "2021-03-15",
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://horde-satis.maintaina.com/"
-        }
-    ],
+    "time": "2025-05-12",
+    "repositories": [],
     "require": {
-        "horde/horde-installer-plugin": "^2 || dev-FRAMEWORK_6_0",
+        "horde/horde-installer-plugin": "dev-FRAMEWORK_6_0 || ^2",
         "php": "^7.4 || ^8",
         "horde/horde": "^6 || dev-FRAMEWORK_6_0",
         "horde/auth": "^3 || dev-FRAMEWORK_6_0",
@@ -49,18 +43,32 @@
         "horde/vfs": "^3 || dev-FRAMEWORK_6_0",
         "ext-gettext": "*"
     },
+    "require-dev": {},
     "suggest": {
         "pear/text_figlet": "*",
         "horde/test": "* || dev-FRAMEWORK_6_0"
     },
     "autoload": {
-        "psr-0": {
-            "Wicked": "lib/"
+        "classmap": [
+            "lib/"
+        ],
+        "psr-4": {
+            "Horde\\Wicked\\": "/src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Horde\\Wicked\\Test\\": "test/"
         }
     },
     "bin": [
         "bin/wicked",
         "bin/wicked-convert-to-utf8",
         "bin/wicked-mail-filter"
-    ]
+    ],
+    "config": {
+        "allow-plugins": {
+            "horde/horde-installer-plugin": true
+        }
+    }
 }

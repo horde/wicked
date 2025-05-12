@@ -58,3 +58,8 @@ dependencies:
     composer:
       pear/text_figlet: '*'
       horde/test: '*'
+autoload:
+  classmap:
+    - lib/
+  psr-4:
+    Horde\Wicked\: /src
