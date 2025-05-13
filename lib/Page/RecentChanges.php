@@ -57,8 +57,8 @@ class Wicked_Page_RecentChanges extends Wicked_Page
 
             $createDate = $page->versionCreated();
             $tm = localtime($createDate, true);
-            $createDate = mktime(0, 0, 0, $tm['tm_mon'], $tm['tm_mday'],
-                                 $tm['tm_year'], $tm['tm_isdst']);
+            $createDate = mktime(0,0,0, $tm['tm_mon'], $tm['tm_mday'],
+                                 $tm['tm_year']);
 
             $version_url = $page->pageUrl()->add('version', $page->version());
             $diff_url = Horde::url('diff.php')->add(array(
