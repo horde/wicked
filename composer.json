@@ -52,6 +52,14 @@
         "classmap": [
             "lib/"
         ],
+        "exclude-from-classmap": [
+            "lib/Text_Wiki/Text/Wiki/Parse/BBCode/",
+            "lib/Text_Wiki/Text/Wiki/Parse/Doku/",
+            "lib/Text_Wiki/Text/Wiki/Parse/Tiki/",
+            "lib/Text_Wiki/Text/Wiki/Parse/Creole/",
+            "lib/Text_Wiki/Text/Wiki/Parse/Cowiki/",
+            "lib/Text_Wiki/Text/Wiki/Parse/Mediawiki/"
+        ],
         "psr-4": {
             "Horde\\Wicked\\": "/src"
         }
