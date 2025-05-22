@@ -52,6 +52,7 @@ dependencies:
       horde/url: ^3
       horde/util: ^3
       horde/vfs: ^3
+      php81_bc/strftime: ^0.7
     ext:
       gettext: '*'
   optional:

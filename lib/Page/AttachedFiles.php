@@ -11,7 +11,7 @@
  * @author   Jason M. Felice <jason.m.felice@gmail.com>
  * @package  Wicked
  */
-
+use function PHP81_BC\strftime;
 /**
  * Displays and handles attached files.
  *
