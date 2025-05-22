@@ -10,7 +10,7 @@
  * @author   Tyler Colbert <tyler@colberts.us>
  * @package  Wicked
  */
-
+use function PHP81_BC\strftime;
 /**
  * Abstract page class.
  *
