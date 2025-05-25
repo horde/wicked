@@ -25,7 +25,7 @@ class WickedParserHeading2 extends WikiParserBase
     {
         parent::__construct($obj);
         $this->wrappedParserClass = $obj->parserPrefix . 'ParserHeading';
-        $this->wrappedParser = new $this->wrappedParserClass($obj);
+        $this->wrappedParser = new $this->wrappedParserClass($obj, 'Heading2');
         if ($this->wrappedParser instanceof DefaultParserHeading) {
 //            $this->wrappedParser->regex = '/^(\++ *(.*)/mu';
         }
