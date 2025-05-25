@@ -1,0 +1,56 @@
+<?php
+namespace Horde\Wicked;
+use Horde\Text\Wiki\WikiParserBase;
+use Wicked;
+
+/**
+ * This parser parses "attributes," which carry meta-information about the
+ * page.  These attributes are in the form [[WikiWord: value]].
+ *
+ * @package Wicked
+ */
+class WickedParserAttribute extends WikiParserBase
+{
+    /**
+     * The regular expression used to find source text matching this rule (this
+     * is set in the constructor).
+     *
+     * @var string
+     */
+    public $regex;
+
+    public function __construct(WickedEngine $obj)
+    {
+        parent::__construct($obj);
+
+        $this->regex = '/((?:\[\[' . Wicked::REGEXP_WIKIWORD .
+                       ':\s+.*?\]\]\s*)+)/';
+    }
+
+    /**
+     * Generates a token entry for the matched text. Token options are:
+     *
+     * 'src'  => The image source, typically a relative path name.
+     * 'opts' => Any macro options following the source.
+     *
+     * @param array $matches  The array of matches from parse().
+     *
+     * @return  A delimited token number to be used as a placeholder in
+     *          the source text.
+     */
+    public function process($matches)
+    {
+        $options = array('attributes' => array());
+
+        $text = $matches[1];
+        while (preg_match('/^\[\[(' . Wicked::REGEXP_WIKIWORD . '):\s+(.*?)\]\]\s*(.*)$/s',
+                          $text, $sub)) {
+
+            $options['attributes'][] = array('name' => $sub[1],
+                                             'value' => $sub[2]);
+            $text = $sub[3];
+        }
+
+        return $this->wiki->addToken($this->rule, $options);
+    }
+}
