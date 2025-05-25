@@ -53,7 +53,7 @@ class WickedEngine extends TextWikiBase
             ];
             if (array_key_exists($rule, $ruleIdMap)) {
                 parent::loadParseObj($ruleIdMap[$rule]);
-                $this->parseObj[$rule] = $this->parseObj[$ruleIdMap[$rule]];
+                $this->parseObj[$rule] = clone($this->parseObj[$ruleIdMap[$rule]]);
                    // If the rule has an ID, we can map it to a custom rule.
             } else {
                 // If the rule does not have an ID, we cannot map it.
