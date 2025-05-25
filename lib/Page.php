@@ -11,6 +11,7 @@
  * @package  Wicked
  */
 use function PHP81_BC\strftime;
+use Horde\Wicked\WickedEngine;
 /**
  * Abstract page class.
  *
@@ -203,7 +204,7 @@ class Wicked_Page
      */
     public static function getCurrentPage()
     {
-        return Wicked_Page::getPage(rtrim(Horde_Util::getFormData('page'), '/'),
+        return Wicked_Page::getPage(rtrim(Horde_Util::getFormData('page') ?? '', '/'),
                                     Horde_Util::getFormData('version'),
                                     Horde_Util::getFormData('referrer'));
     }
@@ -445,8 +446,8 @@ class Wicked_Page
         }
 
         /* Create format-specific Text_Wiki object */
-        $class = 'Text_Wiki_' . $GLOBALS['conf']['wicked']['format'];
-        $this->_proc = new $class();
+        $class = $GLOBALS['conf']['wicked']['format'];
+        $this->_proc = $GLOBALS['injector']->get(WickedEngine::class);
 
         /* Use a non-printable delimiter character that is still a valid UTF-8
          * character. See http://pear.php.net/bugs/bug.php?id=12490. */
