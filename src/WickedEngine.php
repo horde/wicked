@@ -12,8 +12,11 @@
 namespace Horde\Wicked;
 use Horde\Text\Wiki\TextWikiBase;
 use Horde\Text\Wiki\TextWikiException;
+use Horde\Text\Wiki\GenericTextWikiException;
 use Horde\Injector\Injector;
 use Horde_Injector;
+use Throwable;
+use Wicked_Driver;
 /**
  * This is the wrapper engine. 
  * 
@@ -27,7 +30,12 @@ class WickedEngine extends TextWikiBase
     {
         // Load the backend parser configured in the config.
         // The config should be injected using a wrapper class. This global access is bad!
-        $this->parserPrefix = 'Horde\Text\Wiki\\' . $GLOBALS['conf']['wicked']['format'] ?? 'Default';
+        $backend = $GLOBALS['conf']['wicked']['format'] ?? 'Default';
+        $this->parserPrefix = 'Horde\Text\Wiki\\' . $backend;
+        $backendEngineClass = $this->parserPrefix . 'Engine';
+        $backendEngine = new $backendEngineClass();
+        // We only need the backend engine to extract defaults
+        $this->rules = $backendEngine->rules;
     }
 
     public function loadParseObj($rule)
@@ -40,8 +48,7 @@ class WickedEngine extends TextWikiBase
         }
         try {
             return parent::loadParseObj($rule);
-        } catch (TextWikiException $e) {
-            // If the rule does not have an ID, we cannot map it.
+        } catch (Throwable $e) {
             $ruleIdMap = [
                 'Code2' => 'Code',
                 'Freelink2' => 'Freelink',
@@ -55,11 +62,14 @@ class WickedEngine extends TextWikiBase
                 parent::loadParseObj($ruleIdMap[$rule]);
                 $this->parseObj[$rule] = clone($this->parseObj[$ruleIdMap[$rule]]);
                    // If the rule has an ID, we can map it to a custom rule.
-            } else {
+            } elseif($rule == 'Paragraph')  {
+                // Wicked's Page class just demands a paragraph parser, even if the backend doesn't have one.
+                $this->parseObj[$rule] = new \Horde\Text\Wiki\DefaultParserParagraph($this);
+            }
+            else {
                 // If the rule does not have an ID, we cannot map it.
                 throw $e;
             }
-            // The rule has not been intercepted by a custom rule, so we load the default parser. 
         }
     }
 
@@ -71,7 +81,27 @@ class WickedEngine extends TextWikiBase
             $this->renderObj[$rule] = $this->injector->get($candidateFcqn);
             return;
         }
-        parent::loadRenderObj($format, $rule);
+        try {
+            parent::loadRenderObj($format, $rule);
+        } catch (Throwable $e) {
+            // If the rule does not have an ID, we cannot map it.
+            $ruleIdMap = [
+                'Code2' => 'Code',
+                'Freelink2' => 'Freelink',
+                'Heading2' => 'Heading',
+                'Image2' => 'Image',
+                'Toc2' => 'Toc',
+                'Wikilink2' => 'Wikilink',
+                'Table2' => 'Table',
+            ];
+            if (array_key_exists($rule, $ruleIdMap)) {
+                parent::loadRenderObj($format, $ruleIdMap[$rule]);
+                $this->renderObj[$rule] = clone($this->renderObj[$ruleIdMap[$rule]]);
+            } else {
+                // If the rule does not have an ID, we cannot map it.
+                throw $e;
+            }
+        }
         return;
     }
 
