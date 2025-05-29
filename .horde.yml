@@ -8,6 +8,12 @@ type: application
 homepage: https://www.horde.org/apps/wicked
 authors:
   -
+    name: Ralf Lang
+    user: rlang
+    email: ralf.lang@ralf-lang.de
+    active: true
+    role: maintainer
+  -
     name: Jan Schneider
     user: jan
     email: jan@horde.org
@@ -30,7 +36,7 @@ license:
   uri: http://www.horde.org/licenses/gpl
 dependencies:
   required:
-    php: ^7.4 || ^8
+    php: ^8.1
     composer:
       horde/horde: ^6
       horde/auth: ^3
@@ -49,6 +55,7 @@ dependencies:
       horde/prefs: ^3
       horde/rpc: ^3
       horde/text_diff: ^3
+      horde/text_wiki: ^2
       horde/url: ^3
       horde/util: ^3
       horde/vfs: ^3
