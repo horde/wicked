@@ -29,12 +29,9 @@
    </case>
   </configswitch>
   <configenum name="format" quote="true" desc="Which Wiki format should
-  be used?">Default
+  be used?">yawiki
    <values>
-    <value desc="Default">Default</value>
-    <value desc="Creole">Creole</value>
-    <value desc="Mediawiki">Mediawiki</value>
-    <value desc="Tiki">Tiki</value>
+    <configspecial application="wicked" name="wiki-formats" />
    </values>
   </configenum>
   <configsection name="lock">
