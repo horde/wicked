@@ -93,7 +93,7 @@ class Wicked_Page_DeletePage extends Wicked_Page
 <?php Horde_Util::pformInput() ?>
 <input type="hidden" name="page" value="DeletePage" />
 <input type="hidden" name="actionID" value="special" />
-<input type="hidden" name="version" value="<?php echo htmlspecialchars($version) ?>" />
+<input type="hidden" name="version" value="<?php echo htmlspecialchars($version ?? '') ?>" />
 <input type="hidden" name="referrer" value="<?php echo htmlspecialchars($page->pageName()) ?>" />
 
 <h1 class="header">
