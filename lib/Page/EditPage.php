@@ -200,12 +200,12 @@ class Wicked_Page_EditPage extends Wicked_Page
         } else {
             if (!empty($GLOBALS['conf']['wicked']['captcha']) &&
                 !$GLOBALS['registry']->getAuth() &&
-                (Horde_String::lower(Horde_Util::getFormData('wicked_captcha')) != Horde_String::lower(Wicked::getCAPTCHA()))) {
+                (Horde_String::lower(Horde_Util::getFormData('wicked_captcha') ?? '') != Horde_String::lower(Wicked::getCAPTCHA()))) {
                 $notification->push(_("Random string did not match."), 'horde.error');
                 return;
             }
-            $text = Horde_Util::getFormData('page_text');
-            $changelog = Horde_Util::getFormData('changelog');
+            $text = Horde_Util::getFormData('page_text') ?? '';
+            $changelog = Horde_Util::getFormData('changelog') ?? '';
             if ($conf['wicked']['require_change_log'] && empty($changelog)) {
                 $notification->push(_("You must provide a change log."), 'horde.error');
                 $GLOBALS['page_output']->addInlineScript(array(
