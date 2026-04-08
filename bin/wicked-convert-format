@@ -1,0 +1,115 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Convert all wiki pages from one format to another.
+ *
+ * Usage: wicked-convert-format <source-parser> <target-renderer>
+ *
+ * Without arguments, prints usage and lists available formats.
+ *
+ * Copyright 2026 The Horde Project (http://www.horde.org/)
+ *
+ * See the enclosed file LICENSE for license information (GPL). If you
+ * did not receive this file, see http://www.horde.org/licenses/gpl.
+ *
+ * @package Wicked
+ */
+
+use Horde\Text\Wiki\SimpleFormatCatalog;
+
+require_once __DIR__ . '/../lib/Application.php';
+Horde_Registry::appInit('wicked', ['cli' => true]);
+
+$catalog = SimpleFormatCatalog::withDefaults();
+$source = strtolower($argv[1] ?? '');
+$target = strtolower($argv[2] ?? '');
+$changelog = $argv[3] ?? '';
+
+// No arguments or --help: print usage and available formats
+if ($source === '' || $target === '' || $source === '--help' || $source === '-h') {
+    $cli->writeln('Usage: ' . basename(__FILE__) . ' <source-parser> <target-renderer> [changelog]');
+    $cli->writeln();
+    $cli->writeln('Converts all wiki pages from source format to target format.');
+    $cli->writeln('Each page is parsed with the source parser, rendered with the');
+    $cli->writeln('target renderer, and saved back as a new revision.');
+    $cli->writeln('The previous version is preserved in page history.');
+    $cli->writeln();
+    $cli->writeln('Available parser formats (source):');
+    foreach ($catalog->getParserFormats() as $format) {
+        $cli->writeln('  ' . $format);
+    }
+    $cli->writeln();
+    $cli->writeln('Available renderer formats (target):');
+    foreach ($catalog->getRendererFormats() as $format) {
+        $cli->writeln('  ' . $format);
+    }
+    exit(0);
+}
+
+// Validate formats
+if (!$catalog->hasParser($source)) {
+    $cli->fatal('Unknown parser format: \'' . $source . '\'. Run without arguments to see available formats.');
+}
+if (!$catalog->hasRenderer($target)) {
+    $cli->fatal('Unknown renderer format: \'' . $target . '\'. Run without arguments to see available formats.');
+}
+
+$parser = $catalog->getParser($source);
+$renderer = $catalog->getRenderer($target);
+
+$defaultChangelog = sprintf('Converted from %s to %s', $source, $target);
+
+// Get all real pages (no special pages)
+$pages = $wicked->getPages(false);
+
+if (empty($pages)) {
+    $cli->writeln('No pages found.');
+    exit(0);
+}
+
+$cli->writeln(sprintf('Converting %d pages: %s -> %s', count($pages), $source, $target));
+$cli->writeln(str_repeat('-', 60));
+
+$converted = 0;
+$unchanged = 0;
+$errors = 0;
+
+foreach ($pages as $id => $name) {
+    try {
+        $page = $wicked->retrieveByName($name);
+        $oldText = $page['page_text'] ?? '';
+
+        if ($oldText === '') {
+            $cli->writeln($name . ': empty, skipped');
+            $unchanged++;
+            continue;
+        }
+
+        $ast = $parser->parse($oldText);
+        $newText = $renderer->render($ast);
+
+        if ($newText === $oldText) {
+            $cli->writeln($name . ': unchanged');
+            $unchanged++;
+        } else {
+            $wicked->updateText(
+                $name,
+                $newText,
+                $changelog !== '' ? $changelog : $defaultChangelog,
+            );
+            $cli->writeln($name . ': converted');
+            $converted++;
+        }
+    } catch (Throwable $e) {
+        $cli->message($name . ': ERROR - ' . $e->getMessage(), 'cli.warning');
+        $errors++;
+    }
+}
+
+$cli->writeln(str_repeat('-', 60));
+$cli->writeln(sprintf(
+    'Done. %d converted, %d unchanged, %d errors.',
+    $converted,
+    $unchanged,
+    $errors,
+));
