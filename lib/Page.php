@@ -369,13 +369,13 @@ class Wicked_Page
         }
 
         $view->name = $this->pageName();
-        if ($this->referrer()) {
+        if ($this->referrer() !== null && $this->referrer() !== '') {
             $view->referrer = Wicked::url($this->referrer())->link()
                 . htmlspecialchars($this->referrer()) . '</a>';
         }
         $view->isOld = $this->isOld();
         if ($this->isLocked()) {
-            $this->locked = Horde::img('locked.png', _("Locked"));
+            $view->locked = Horde::img('locked.png', _("Locked"));
         }
 
         return $view->render('display/title') . $inner;
