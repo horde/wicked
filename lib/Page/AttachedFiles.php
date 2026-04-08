@@ -196,7 +196,7 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
                             $version, $filename, $this->referrer()),
                     'horde.success');
             } catch (Wicked_Exception $e) {
-                $notification->push($result->getMessage(), 'horde.error');
+                $notification->push($e->getMessage(), 'horde.error');
             }
             return;
         }
