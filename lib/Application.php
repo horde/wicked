@@ -26,6 +26,9 @@ if (!defined('HORDE_BASE')) {
 }
 
 use Horde\Util\Variables;
+use Horde\Wicked\HordeWikilinkUrlResolver;
+use Horde\Wicked\WickedEngine;
+use Horde\Wicked\WikilinkUrlResolver;
 
 /* Load the Horde Framework core (needed to autoload
  * Horde_Registry_Application::). */
@@ -50,6 +53,29 @@ class Wicked_Application extends Horde_Registry_Application
     protected function _bootstrap()
     {
         $GLOBALS['injector']->bindFactory('Wicked_Driver', 'Wicked_Factory_Driver', 'create');
+
+        $GLOBALS['injector']->bindImplementation(
+            WikilinkUrlResolver::class,
+            HordeWikilinkUrlResolver::class,
+        );
+
+        $GLOBALS['injector']->bindClosure(
+            WickedEngine::class,
+            function ($injector) {
+                $format = $GLOBALS['conf']['wicked']['format'] ?? 'yawiki';
+                $blockFactory = $injector->has('Horde_Core_Factory_BlockCollection')
+                    ? $injector->get('Horde_Core_Factory_BlockCollection')
+                    : null;
+
+                return new WickedEngine(
+                    storageDriver: $injector->get('Wicked_Driver'),
+                    registry: $injector->get('Horde_Registry'),
+                    urlResolver: $injector->get(WikilinkUrlResolver::class),
+                    format: $format,
+                    blockFactory: $blockFactory,
+                );
+            },
+        );
     }
 
     /**
@@ -95,6 +121,28 @@ class Wicked_Application extends Horde_Registry_Application
                 $menu->add($url, $pages[$pagename], 'wicked-' . str_replace('/', '', $pagename), null, null, null, $cellclass);
             }
         }
+    }
+
+    /**
+     * Returns values for <configspecial> configuration settings.
+     *
+     * @param string $what  The configuration setting to return.
+     *
+     * @return array  The values for the requested configuration setting.
+     */
+    public function configSpecialValues($what)
+    {
+        if ($what === 'wiki-formats') {
+            $catalog = \Horde\Text\Wiki\SimpleFormatCatalog::withDefaults();
+            $formats = [];
+            foreach ($catalog->getParserFormats() as $format) {
+                $formats[$format] = ucfirst($format);
+            }
+            // Legacy compat: existing configs may have 'Default'
+            $formats['default'] = 'Default (Yawiki)';
+            return $formats;
+        }
+        return [];
     }
 
     /**
