@@ -12,13 +12,16 @@ declare(strict_types=1);
 namespace Horde\Wicked\Controller;
 
 use Horde;
-use Horde_Util;
+use Horde_Notification_Handler;
+use Horde_PageOutput;
+use Horde_Session;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Wicked;
+use Wicked_Driver;
 use Wicked_Exception;
 use Wicked_Page;
 use Wicked_Page_StandardPage;
@@ -39,13 +42,15 @@ class PageController implements RequestHandlerInterface
     public function __construct(
         private ResponseFactoryInterface $responseFactory,
         private StreamFactoryInterface $streamFactory,
+        private Horde_Notification_Handler $notification,
+        private Horde_PageOutput $pageOutput,
+        private Horde_Session $session,
+        private Wicked_Driver $driver,
     ) {
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        global $notification, $page_output, $session;
-
         $route = $request->getAttribute('route', []);
         $pageName = rtrim($route['page'] ?? 'Wiki/Home', '/');
         $queryParams = $request->getQueryParams();
@@ -58,7 +63,7 @@ class PageController implements RequestHandlerInterface
         try {
             $page = Wicked_Page::getPage($pageName, $version, $referrer);
         } catch (Wicked_Exception $e) {
-            $notification->push(
+            $this->notification->push(
                 _("Internal error viewing requested page"),
                 'horde.error'
             );
@@ -81,7 +86,7 @@ class PageController implements RequestHandlerInterface
                             ->add('page', $page->pageName())
                     );
                 }
-                $notification->push(
+                $this->notification->push(
                     _("This page does not have a history"),
                     'horde.error'
                 );
@@ -95,7 +100,7 @@ class PageController implements RequestHandlerInterface
                 return $this->export($page, $queryParams);
 
             default:
-                $GLOBALS['wicked']->logPageView($page->pageName());
+                $this->driver->logPageView($page->pageName());
                 break;
         }
 
@@ -106,7 +111,7 @@ class PageController implements RequestHandlerInterface
                     _("You don't have permission to view this page.")
                 );
             }
-            $notification->push(
+            $this->notification->push(
                 _("You don't have permission to view this page."),
                 'horde.error'
             );
@@ -116,7 +121,7 @@ class PageController implements RequestHandlerInterface
         $page->preDisplay(Wicked::MODE_DISPLAY, $params);
 
         if ($page->isLocked()) {
-            $notification->push(
+            $this->notification->push(
                 sprintf(
                     _("This page is locked by %s for %d Minutes."),
                     $page->getLockRequestor(),
@@ -131,28 +136,28 @@ class PageController implements RequestHandlerInterface
         Wicked::setTopbar();
 
         ob_start();
-        $page_output->header(['title' => $page->pageTitle()]);
-        $notification->notify(['listeners' => 'status']);
+        $this->pageOutput->header(['title' => $page->pageTitle()]);
+        $this->notification->notify(['listeners' => 'status']);
         try {
             echo $page->render(Wicked::MODE_DISPLAY, $params);
         } catch (Wicked_Exception $e) {
-            $notification->push($e);
+            $this->notification->push($e);
         }
-        $page_output->footer();
+        $this->pageOutput->footer();
         $html = ob_get_clean();
 
         // Session history tracking
-        $history = $session->get('wicked', 'history', \Horde_Session::TYPE_ARRAY);
+        $history = $this->session->get('wicked', 'history', Horde_Session::TYPE_ARRAY);
         if (
             $page instanceof Wicked_Page_StandardPage
             && (!isset($history[0]) || $history[0] !== $page->pageName())
         ) {
             array_unshift($history, $page->pageName());
-            $session->set('wicked', 'history', $history);
+            $this->session->set('wicked', 'history', $history);
         }
         if (count($history) > 10) {
             array_pop($history);
-            $session->set('wicked', 'history', $history);
+            $this->session->set('wicked', 'history', $history);
         }
 
         return $this->htmlResponse($html);
@@ -160,10 +165,8 @@ class PageController implements RequestHandlerInterface
 
     private function lock(Wicked_Page $page): ResponseInterface
     {
-        global $notification;
-
         if (!$page->allows(Wicked::MODE_LOCKING)) {
-            $notification->push(
+            $this->notification->push(
                 _("You are not allowed to lock this page"),
                 'horde.error'
             );
@@ -171,7 +174,7 @@ class PageController implements RequestHandlerInterface
             try {
                 $page->lock();
             } catch (Wicked_Exception $e) {
-                $notification->push(
+                $this->notification->push(
                     sprintf(_("Page failed to lock: %s"), $e->getMessage()),
                     'horde.error'
                 );
@@ -185,19 +188,17 @@ class PageController implements RequestHandlerInterface
 
     private function unlock(Wicked_Page $page): ResponseInterface
     {
-        global $notification;
-
         if (!$page->allows(Wicked::MODE_UNLOCKING)) {
-            $notification->push(
+            $this->notification->push(
                 _("You are not allowed to unlock this page"),
                 'horde.error'
             );
         } else {
             try {
                 $page->unlock();
-                $notification->push(_("Page unlocked"), 'horde.success');
+                $this->notification->push(_("Page unlocked"), 'horde.success');
             } catch (Wicked_Exception $e) {
-                $notification->push(
+                $this->notification->push(
                     sprintf(
                         _("Page failed to unlock: %s"),
                         $e->getMessage()
@@ -214,10 +215,8 @@ class PageController implements RequestHandlerInterface
 
     private function export(Wicked_Page $page, array $queryParams): ResponseInterface
     {
-        global $notification;
-
         if (!$page->allows(Wicked::MODE_DISPLAY)) {
-            $notification->push(
+            $this->notification->push(
                 _("You don't have permission to view this page."),
                 'horde.error'
             );
@@ -259,7 +258,7 @@ class PageController implements RequestHandlerInterface
             $wiki = $page->getProcessor($format);
             $text = $wiki->transform($page->getText(), $format);
         } catch (Wicked_Exception $e) {
-            $notification->push($e);
+            $this->notification->push($e);
             return $this->redirectResponse(
                 (string) Wicked::url($page->pageName())
             );
