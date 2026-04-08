@@ -42,6 +42,7 @@ class Wicked_Factory_Driver extends Horde_Core_Factory_Injector
         }
         $signature = serialize(array($driver, $GLOBALS['conf']['storage']['params']['driverconfig']));
         if (empty($this->_instances[$signature])) {
+            $params = [];
             switch ($driver) {
             case 'Sql':
                 $params = array('db' => $this->getDb($injector));
