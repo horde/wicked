@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2010-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2010-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -107,14 +108,14 @@ class Wicked_Application extends Horde_Registry_Application
         global $conf, $page;
 
         if (!empty($conf['menu']['pages'])) {
-            $pages = array(
+            $pages = [
                 'Wiki/Home' => _("_Home"),
                 'Wiki/Usage' => _("_Usage"),
                 'RecentChanges' => _("_Recent Changes"),
                 'AllPages' => _("_All Pages"),
                 'MostPopular' => _("Most Popular"),
                 'LeastPopular' => _("Least Popular"),
-            );
+            ];
             foreach ($conf['menu']['pages'] as $pagename) {
                 /* Determine who we should say referred us. */
                 $curpage = isset($page) ? $page->pageName() : null;
@@ -123,8 +124,8 @@ class Wicked_Application extends Horde_Registry_Application
                 /* Determine if we should depress the button. We have to do
                  * this on our own because all the buttons go to the same .php
                  * file, just with different args. */
-                if (!strstr($_SERVER['PHP_SELF'], 'prefs.php') &&
-                    $curpage === $pagename) {
+                if (!strstr($_SERVER['PHP_SELF'], 'prefs.php')
+                    && $curpage === $pagename) {
                     $cellclass = 'current';
                 } else {
                     $cellclass = '__noselection';
@@ -152,7 +153,7 @@ class Wicked_Application extends Horde_Registry_Application
             ];
             $sidebar->addRow([
                 'label' => _("Attachments"),
-                'url' => new \Horde_Url($registry->get('webroot', 'wicked') . '/admin/attachments'),
+                'url' => new Horde_Url($registry->get('webroot', 'wicked') . '/admin/attachments'),
                 'cssClass' => 'horde-admin',
             ], 'admin');
         }
@@ -168,7 +169,7 @@ class Wicked_Application extends Horde_Registry_Application
     public function configSpecialValues($what)
     {
         if ($what === 'wiki-formats') {
-            $catalog = \Horde\Text\Wiki\SimpleFormatCatalog::withDefaults();
+            $catalog = Horde\Text\Wiki\SimpleFormatCatalog::withDefaults();
             $formats = [];
             foreach ($catalog->getParserFormats() as $format) {
                 $formats[$format] = ucfirst($format);
@@ -196,21 +197,22 @@ class Wicked_Application extends Horde_Registry_Application
             ],
         ];
 
-        foreach (array('AllPages', 'LeastPopular', 'MostPopular', 'RecentChanges') as $val) {
-            $perms['pages:' . $val] = array(
-                'title' => $val
-            );
+        foreach (['AllPages', 'LeastPopular', 'MostPopular', 'RecentChanges'] as $val) {
+            $perms['pages:' . $val] = [
+                'title' => $val,
+            ];
         }
 
         try {
             $pages = $GLOBALS['wicked']->getPages();
             sort($pages);
             foreach ($pages as $pagename) {
-                $perms['pages:' .$GLOBALS['wicked']->getPageId($pagename)] = array(
-                    'title' => $pagename
-                );
+                $perms['pages:' . $GLOBALS['wicked']->getPageId($pagename)] = [
+                    'title' => $pagename,
+                ];
             }
-        } catch (Wicked_Exception $e) {}
+        } catch (Wicked_Exception $e) {
+        }
 
         return $perms;
     }
@@ -242,7 +244,8 @@ class Wicked_Application extends Horde_Registry_Application
                         $version = $attachment['attachment_version'];
                     }
                 }
-            } catch (Wicked_Exception $e) {}
+            } catch (Wicked_Exception $e) {
+            }
 
             if (empty($version)) {
                 // If we redirect here, we cause an infinite loop with inline
@@ -253,7 +256,7 @@ class Wicked_Application extends Horde_Registry_Application
         }
 
         try {
-            $data = $wicked->getAttachmentContents($page_id, basename($vars->file), (int)$version);
+            $data = $wicked->getAttachmentContents($page_id, basename($vars->file), (int) $version);
             $wicked->logAttachmentDownload($page_id, $vars->file);
         } catch (Wicked_Exception $e) {
             // If we redirect here, we cause an infinite loop with inline
@@ -264,16 +267,16 @@ class Wicked_Application extends Horde_Registry_Application
             exit;
         }
 
-        $type = Horde_Mime_Magic::analyzeData($data, isset($conf['mime']['magic_db']) ? $conf['mime']['magic_db'] : null);
+        $type = Horde_Mime_Magic::analyzeData($data, $conf['mime']['magic_db'] ?? null);
         if ($type === false) {
             $type = Horde_Mime_Magic::filenameToMime($vars->file, false);
         }
 
-        return array(
+        return [
             'data' => $data,
             'file' => $vars->file,
-            'type' => $type
-        );
+            'type' => $type,
+        ];
     }
 
 }

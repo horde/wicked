@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2003-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -22,34 +23,34 @@
 class Wicked
 {
     /** Display mode. */
-    const MODE_DISPLAY = 0;
+    public const MODE_DISPLAY = 0;
 
     /** The edit screen. */
-    const MODE_EDIT = 1;
+    public const MODE_EDIT = 1;
 
     /** Page can be removed. */
-    const MODE_REMOVE = 2;
+    public const MODE_REMOVE = 2;
 
     /** Display the page history. */
-    const MODE_HISTORY = 3;
+    public const MODE_HISTORY = 3;
 
     /** Diff two versions of the page. */
-    const MODE_DIFF = 4;
+    public const MODE_DIFF = 4;
 
     /** Page can be locked. */
-    const MODE_LOCKING = 7;
+    public const MODE_LOCKING = 7;
 
     /** Page can be unlocked. */
-    const MODE_UNLOCKING = 8;
+    public const MODE_UNLOCKING = 8;
 
     /** The ability to add a page. */
-    const MODE_CREATE = 9;
+    public const MODE_CREATE = 9;
 
     /** Raw content mode. */
-    const MODE_CONTENT = 10;
+    public const MODE_CONTENT = 10;
 
     /** Like display, but for a block. */
-    const MODE_BLOCK = 11;
+    public const MODE_BLOCK = 11;
 
     /** Our wiki word regexp (needed many places).
        "(!?" .                       // START WikiPage pattern (1)
@@ -68,10 +69,10 @@ class Wicked
        "[-_A-Za-z0-9\xc0-\xfe]" .    // 1 dash, alpha, digit, or underscore
        ")?)?)");                     // end subpatterns (/4)(/3)(/2)
      */
-    const REGEXP_WIKIWORD = "(!?[A-Z\xc0-\xde][A-Za-z0-9\xc0-\xfe]*[a-z0-9\xdf-\xfe]+\/?[A-Z\xc0-\xde][A-Za-z0-9\xc0-\xfe\/]*)((\#[A-Za-z0-9\xc0-\xfe]([-_A-Za-z0-9\xc0-\xfe:.]*[-_A-Za-z0-9\xc0-\xfe])?)?)";
+    public const REGEXP_WIKIWORD = "(!?[A-Z\xc0-\xde][A-Za-z0-9\xc0-\xfe]*[a-z0-9\xdf-\xfe]+\/?[A-Z\xc0-\xde][A-Za-z0-9\xc0-\xfe\/]*)((\#[A-Za-z0-9\xc0-\xfe]([-_A-Za-z0-9\xc0-\xfe:.]*[-_A-Za-z0-9\xc0-\xfe])?)?)";
 
     /** Where we store our attachments in VFS. */
-    const VFS_ATTACH_PATH = '.horde/wicked/attachments';
+    public const VFS_ATTACH_PATH = '.horde/wicked/attachments';
 
     /**
      * Puts together the URL to a Wicked page. Uses mod_rewrite or GET
@@ -91,7 +92,7 @@ class Wicked
             $script = Horde::url('display.php')->add('page', $page);
         }
 
-        $url = Horde::url($script, $full, array('append_session' => $append_session));
+        $url = Horde::url($script, $full, ['append_session' => $append_session]);
         if (!$full) {
             $url->url = preg_replace('|^([a-zA-Z][a-zA-Z0-9+.-]{0,19})://[^/]*|', '', $url->url);
         }
@@ -106,7 +107,7 @@ class Wicked
      * @param string $message  The message text to send out.
      * @param array $headers   Additional headers to add to the email.
      */
-    public static function mail($message, $headers = array())
+    public static function mail($message, $headers = [])
     {
         global $conf, $registry;
 
@@ -125,9 +126,9 @@ class Wicked
         /* In case we don't get a user's email address to send the
          * notification from, what should we fall back to for the From:
          * header? */
-        $default_from_addr = !empty($conf['wicked']['guest_address']) ?
-            $conf['wicked']['guest_address'] :
-            $conf['wicked']['notify_address'];
+        $default_from_addr = !empty($conf['wicked']['guest_address'])
+            ? $conf['wicked']['guest_address']
+            : $conf['wicked']['notify_address'];
         if ($GLOBALS['registry']->getAuth()) {
             $identity = $GLOBALS['injector']->getInstance('Horde_Core_Factory_Identity')->create();
             $from = $identity->getValue('fullname');
@@ -143,13 +144,13 @@ class Wicked
             $from_addr = $default_from_addr;
         }
 
-        $mail = new Horde_Mime_Mail(array(
+        $mail = new Horde_Mime_Mail([
             'body' => $message,
             'To' => $conf['wicked']['notify_address'],
             'From' => $from . '<' . $from_addr . '>',
             'User-Agent' => 'Wicked ' . $GLOBALS['registry']->getVersion(),
             'Precedence' => 'bulk',
-            'Auto-Submitted' => 'auto-replied'));
+            'Auto-Submitted' => 'auto-replied']);
         foreach (array_keys($headers) as $hkey) {
             $mail->addHeader($hkey, $headers[$hkey]);
         }
@@ -202,16 +203,16 @@ class Wicked
         $topbar = $GLOBALS['injector']->getInstance('Horde_View_Topbar');
         $topbar->search = true;
         $topbar->searchAction = Horde::url('display.php');
-        $topbar->searchParameters = array('page' => 'Search');
+        $topbar->searchParameters = ['page' => 'Search'];
     }
 
     public static function addFeedLink()
     {
-        $GLOBALS['page_output']->addLinkTag(array(
+        $GLOBALS['page_output']->addLinkTag([
             'href' => Horde::url('opensearch.php', true, -1),
             'rel' => 'search',
             'title' => $GLOBALS['registry']->get('name') . ' (' . Horde::url('', true) . ')',
-            'type' => 'application/opensearchdescription+xml'
-        ));
+            'type' => 'application/opensearchdescription+xml',
+        ]);
     }
 }

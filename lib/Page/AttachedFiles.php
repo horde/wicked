@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2003-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -12,6 +13,7 @@
  * @package  Wicked
  */
 use function PHP81_BC\strftime;
+
 /**
  * Displays and handles attached files.
  *
@@ -28,11 +30,11 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
      *
      * @var array
      */
-    public $supportedModes = array(
+    public $supportedModes = [
         Wicked::MODE_CONTENT => true,
         Wicked::MODE_EDIT => true,
         Wicked::MODE_REMOVE => true,
-        Wicked::MODE_DISPLAY => true);
+        Wicked::MODE_DISPLAY => true];
 
     /**
      * The page for which we'd like to manipulate attachments.
@@ -71,8 +73,10 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
         global $wicked, $notification, $registry;
 
         if (!$wicked->pageExists($this->referrer())) {
-            throw new Wicked_Exception(sprintf(_("Referrer \"%s\" does not exist."),
-                                               $this->referrer()));
+            throw new Wicked_Exception(sprintf(
+                _("Referrer \"%s\" does not exist."),
+                $this->referrer()
+            ));
         }
 
         $referrer_id = $wicked->getPageId($this->referrer());
@@ -87,9 +91,10 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
 
             $attachments[$idx]['url'] = $registry->downloadUrl(
                 $attach['attachment_name'],
-                array('page' => $referrer_id,
-                      'file' => $attach['attachment_name'],
-                      'version' => $attach['attachment_version']));
+                ['page' => $referrer_id,
+                    'file' => $attach['attachment_name'],
+                    'version' => $attach['attachment_version']]
+            );
 
             $attachments[$idx]['delete_form'] = $this->allows(Wicked::MODE_REMOVE);
 
@@ -112,9 +117,13 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
         try {
             $attachments = $this->content();
         } catch (Wicked_Exception $e) {
-            $notification->push(sprintf(_("Error retrieving attachments: %s"),
-                                        $e->getMessage()),
-                                'horde.error');
+            $notification->push(
+                sprintf(
+                    _("Error retrieving attachments: %s"),
+                    $e->getMessage()
+                ),
+                'horde.error'
+            );
             throw $e;
         }
 
@@ -126,15 +135,22 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
         $view->deleteButton = Horde_Themes::img('delete.png');
         $view->referrerLink = Wicked::url($this->referrer());
 
-        $refreshIcon = Horde::link($this->pageUrl())
-            . Horde::img('reload.png',
-                         sprintf(_("Reload \"%s\""), $this->pageTitle()))
+        /**
+         * ARCHITECTURE VIOLATION: Using deprecated Horde::img()
+         * @deprecated Use Horde_Themes_Image::tag() instead
+         * @see Horde_Deprecated::img()
+         */
+$refreshIcon = Horde::link($this->pageUrl())
+            . Horde::img(
+                'reload.png',
+                sprintf(_("Reload \"%s\""), $this->pageTitle())
+            )
             . '</a>';
         $view->refreshIcon = $refreshIcon;
         $view->attachments = $attachments;
 
         /* Get an array of unique filenames for the update form. */
-        $files = array();
+        $files = [];
         foreach ($attachments as $attachment) {
             $files[$attachment['attachment_name']] = true;
         }
@@ -145,7 +161,12 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
         $view->canAttach = $this->allows(Wicked::MODE_EDIT);
         $view->requireChangelog = $conf['wicked']['require_change_log'];
 
-        $view->requiredMarker = Horde::img('required.png', '*');
+        /**
+         * ARCHITECTURE VIOLATION: Using deprecated Horde::img()
+         * @deprecated Use Horde_Themes_Image::tag() instead
+         * @see Horde_Deprecated::img()
+         */
+$view->requiredMarker = Horde::img('required.png', '*');
         $view->referrer = $this->referrer();
         $view->formInput = Horde_Util::formInput();
 
@@ -177,7 +198,7 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
         // Only allow POST commands.
         $cmd = Horde_Util::getPost('cmd');
         $version = Horde_Util::getFormData('version');
-        $is_update = (bool)Horde_Util::getFormData('is_update');
+        $is_update = (bool) Horde_Util::getFormData('is_update');
         $filename = Horde_Util::getFormData('filename');
         $change_log = Horde_Util::getFormData('change_log');
 
@@ -189,12 +210,20 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
             }
 
             try {
-                $wicked->removeAttachment($wicked->getPageId($this->referrer()),
-                                          $filename, $version);
+                $wicked->removeAttachment(
+                    $wicked->getPageId($this->referrer()),
+                    $filename,
+                    $version
+                );
                 $notification->push(
-                    sprintf(_("Successfully deleted version %s of \"%s\" from \"%s\""),
-                            $version, $filename, $this->referrer()),
-                    'horde.success');
+                    sprintf(
+                        _("Successfully deleted version %s of \"%s\" from \"%s\""),
+                        $version,
+                        $filename,
+                        $this->referrer()
+                    ),
+                    'horde.success'
+                );
             } catch (Wicked_Exception $e) {
                 $notification->push($e->getMessage(), 'horde.error');
             }
@@ -215,7 +244,8 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
         if (strpos($filename, ' ') !== false) {
             $notification->push(
                 _("Attachments with spaces can't be embedded into a page."),
-                'horde.warning');
+                'horde.warning'
+            );
         }
 
         $data = file_get_contents($_FILES['attachment_file']['tmp_name']);
@@ -226,16 +256,20 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
 
         if (!$this->allows(Wicked::MODE_EDIT)) {
             $notification->push(
-                sprintf(_("You do not have permission to edit \"%s\""),
-                        $this->referrer()),
-                'horde.error');
+                sprintf(
+                    _("You do not have permission to edit \"%s\""),
+                    $this->referrer()
+                ),
+                'horde.error'
+            );
             return;
         }
 
         if ($conf['wicked']['require_change_log'] && empty($change_log)) {
             $notification->push(
                 _("You must enter a change description to attach this file."),
-                'horde.error');
+                'horde.error'
+            );
             return;
         }
 
@@ -243,9 +277,13 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
         try {
             $attachments = $wicked->getAttachedFiles($referrer_id);
         } catch (Wicked_Exception $e) {
-            $notification->push(sprintf(_("Error retrieving attachments: %s"),
-                                        $e->getMessage()),
-                                'horde.error');
+            $notification->push(
+                sprintf(
+                    _("Error retrieving attachments: %s"),
+                    $e->getMessage()
+                ),
+                'horde.error'
+            );
             return;
         }
 
@@ -260,24 +298,30 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
         if ($is_update) {
             if (!$found) {
                 $notification->push(
-                    sprintf(_("Can't update \"%s\": no such attachment."),
-                            $filename),
-                    'horde.error');
+                    sprintf(
+                        _("Can't update \"%s\": no such attachment."),
+                        $filename
+                    ),
+                    'horde.error'
+                );
                 return;
             }
         } else {
             if ($found) {
                 $notification->push(
-                    sprintf(_("There is already an attachment named \"%s\"."),
-                            $filename),
-                    'horde.error');
+                    sprintf(
+                        _("There is already an attachment named \"%s\"."),
+                        $filename
+                    ),
+                    'horde.error'
+                );
                 return;
             }
         }
 
-        $file = array('page_id'         => $referrer_id,
-                      'attachment_name' => $filename,
-                      'change_log'      => $change_log);
+        $file = ['page_id'         => $referrer_id,
+            'attachment_name' => $filename,
+            'change_log'      => $change_log];
 
         try {
             $wicked->attachFile($file, $data);
@@ -288,19 +332,27 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
         }
 
         if ($is_update) {
-            $message = sprintf(_("Updated attachment \"%s\" on page \"%s\"."),
-                               $filename, $this->referrer());
+            $message = sprintf(
+                _("Updated attachment \"%s\" on page \"%s\"."),
+                $filename,
+                $this->referrer()
+            );
         } else {
-            $message = sprintf(_("New attachment \"%s\" to page \"%s\"."),
-                               $filename, $this->referrer());
+            $message = sprintf(
+                _("New attachment \"%s\" to page \"%s\"."),
+                $filename,
+                $this->referrer()
+            );
         }
         $notification->push($message, 'horde.success');
 
         $url = Wicked::url($this->referrer(), true, -1);
-        Wicked::mail($message . ' ' . _("View page: ") . $url . "\n",
-                     array('Subject' => '[' . $registry->get('name')
-                           . '] attachment: ' . $this->referrer() . ', '
-                           . $filename));
+        Wicked::mail(
+            $message . ' ' . _("View page: ") . $url . "\n",
+            ['Subject' => '[' . $registry->get('name')
+                 . '] attachment: ' . $this->referrer() . ', '
+                 . $filename]
+        );
     }
 
 }

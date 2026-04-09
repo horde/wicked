@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2004-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2004-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -21,7 +22,7 @@ class Wicked_Block_Page extends Horde_Core_Block
 {
     /**
      */
-    public function __construct($app, $params = array())
+    public function __construct($app, $params = [])
     {
         parent::__construct($app, $params);
 
@@ -48,13 +49,13 @@ class Wicked_Block_Page extends Horde_Core_Block
      */
     protected function _params()
     {
-        return array(
-            'page' => array(
+        return [
+            'page' => [
                 'type' => 'text',
                 'name' => _("Name of wiki page to display"),
-                'default' => 'Wiki/Home'
-            )
-        );
+                'default' => 'Wiki/Home',
+            ],
+        ];
     }
 
 }

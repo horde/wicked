@@ -38,8 +38,7 @@ class PreviewController implements RequestHandlerInterface
         private Horde_PageOutput $pageOutput,
         private WickedEngine $engine,
         private Horde_Injector $injector,
-    ) {
-    }
+    ) {}
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

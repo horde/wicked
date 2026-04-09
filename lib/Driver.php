@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2003-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -26,7 +27,7 @@ abstract class Wicked_Driver
      *
      * @var array
      */
-    protected $_params = array();
+    protected $_params = [];
 
     /**
      * VFS object for storing attachments.
@@ -40,7 +41,7 @@ abstract class Wicked_Driver
      *
      * @param array $params  A hash containing connection parameters.
      */
-    public function __construct($params = array())
+    public function __construct($params = [])
     {
         $this->_params = $params;
     }
@@ -69,7 +70,7 @@ abstract class Wicked_Driver
      * @param string $pagename     The name of the page to retrieve
      *
      */
-    abstract function retrieveByName($pagename);
+    abstract public function retrieveByName($pagename);
 
     /**
      * Retrieves a historic version of a page.
@@ -78,14 +79,14 @@ abstract class Wicked_Driver
      * @param string $version   The version to retrieve.
      *
      */
-    abstract function retrieveHistory($pagename, $version);
+    abstract public function retrieveHistory($pagename, $version);
 
     /**
      * Logs a hit to $pagename.
      *
      * @param string $pagename  The page that was viewed.
      */
-    abstract function logPageView($pagename);
+    abstract public function logPageView($pagename);
 
     /**
      * Creates a new page.
@@ -93,27 +94,27 @@ abstract class Wicked_Driver
      * @param string $pagename  The new page's name.
      * @param string $text      The new page's text.
      */
-    abstract function newPage($pagename, $text);
+    abstract public function newPage($pagename, $text);
 
-    abstract function updateText($pagename, $text, $changelog);
+    abstract public function updateText($pagename, $text, $changelog);
 
-    abstract function renamePage($pagename, $newname);
+    abstract public function renamePage($pagename, $newname);
 
     public function getPageId($pagename)
     {
         $pages = $this->getPages();
         $ids = array_flip($pages);
-        return isset($ids[$pagename]) ? $ids[$pagename] : false;
+        return $ids[$pagename] ?? false;
     }
 
     public function getPage($pagename)
     {
-        return array();
+        return [];
     }
 
     public function getPageById($id)
     {
-        return array();
+        return [];
     }
 
     public function getSpecialPages()
@@ -124,7 +125,7 @@ abstract class Wicked_Driver
         }
 
         $dh = opendir(WICKED_BASE . '/lib/Page');
-        $pages = array();
+        $pages = [];
         while (($dent = readdir($dh)) !== false) {
             if (!preg_match('/(.*)\.php$/', $dent, $matches)) {
                 continue;
@@ -141,7 +142,7 @@ abstract class Wicked_Driver
 
     public function getPages($special = true)
     {
-        return array();
+        return [];
     }
 
     public function pageExists($pagename)
@@ -149,9 +150,9 @@ abstract class Wicked_Driver
         return in_array($pagename, $this->getPages());
     }
 
-    abstract function getAllPages();
+    abstract public function getAllPages();
 
-    abstract function getHistory($pagename);
+    abstract public function getHistory($pagename);
 
     /**
      * Returns the most recently changed pages.
@@ -160,7 +161,7 @@ abstract class Wicked_Driver
      *
      * @return array  Pages.
      */
-    abstract function getRecentChanges($days = 3);
+    abstract public function getRecentChanges($days = 3);
 
     /**
      * Returns the most recently changed pages.
@@ -169,7 +170,7 @@ abstract class Wicked_Driver
      *
      * @return array  Pages.
      */
-    abstract function mostRecent($limit = 10);
+    abstract public function mostRecent($limit = 10);
 
     /**
      * Returns the most popular pages.
@@ -178,7 +179,7 @@ abstract class Wicked_Driver
      *
      * @return array  Pages.
      */
-    abstract function mostPopular($limit = 10);
+    abstract public function mostPopular($limit = 10);
 
     /**
      * Returns the least popular pages.
@@ -187,7 +188,7 @@ abstract class Wicked_Driver
      *
      * @return array  Pages.
      */
-    abstract function leastPopular($limit = 10);
+    abstract public function leastPopular($limit = 10);
 
     /**
      * Finds pages with matches in text or title.
@@ -196,11 +197,11 @@ abstract class Wicked_Driver
      *
      * @return array  A list of pages
      */
-    abstract function searchText($searchtext);
+    abstract public function searchText($searchtext);
 
-    abstract function getBackLinks($pagename);
+    abstract public function getBackLinks($pagename);
 
-    abstract function getLikePages($pagename);
+    abstract public function getLikePages($pagename);
 
     /**
      * Retrieves data on files attached to a page.
@@ -213,7 +214,7 @@ abstract class Wicked_Driver
      * @return array  An array of key/value arrays describing the attached
      *                files.
      */
-    abstract function getAttachedFiles($pageId, $allversions = false);
+    abstract public function getAttachedFiles($pageId, $allversions = false);
 
     /**
      * Returns all attachments across all pages.
@@ -275,8 +276,8 @@ abstract class Wicked_Driver
         $fileList = $this->getAttachedFiles($pageId, true);
         foreach ($fileList as $file) {
             $fileversion = $file['attachment_version'];
-            if ($file['attachment_name'] == $attachment &&
-                (is_null($version) || $fileversion == $version)) {
+            if ($file['attachment_name'] == $attachment
+                && (is_null($version) || $fileversion == $version)) {
                 /* Skip any attachments that don't exist so they can
                  * be cleared out of the backend. */
                 if (!$vfs->exists($path, $attachment . ';' . $fileversion)) {
@@ -352,7 +353,7 @@ abstract class Wicked_Driver
         }
     }
 
-    abstract function removeVersion($pagename, $version);
+    abstract public function removeVersion($pagename, $version);
 
     public function removeAllVersions($pagename)
     {
@@ -360,7 +361,7 @@ abstract class Wicked_Driver
         $this->removeAllAttachments($this->getPageId($pagename));
     }
 
-    abstract function searchTitles($searchtext, $begin = false);
+    abstract public function searchTitles($searchtext, $begin = false);
 
     /**
      * Returns the charset used by the backend.

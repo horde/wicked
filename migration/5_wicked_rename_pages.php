@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Renames the default pages to move them into the Wiki/ namespace.
  *
- * Copyright 2011-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2011-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -14,12 +15,12 @@
  */
 class WickedRenamePages extends Horde_Db_Migration_Base
 {
-    protected $_pages = array('AddingPages'    => 'Wiki/AddingPages',
-                              'HowToUseWiki'   => 'Wiki/Usage',
-                              'SandBox'        => 'Wiki/SandBox',
-                              'WikiHome'       => 'Wiki/Home',
-                              'WikiPage'       => 'Wiki/Page',
-                              'WickedTextFormat' => 'Wiki/TextFormat');
+    protected $_pages = ['AddingPages'    => 'Wiki/AddingPages',
+        'HowToUseWiki'   => 'Wiki/Usage',
+        'SandBox'        => 'Wiki/SandBox',
+        'WikiHome'       => 'Wiki/Home',
+        'WikiPage'       => 'Wiki/Page',
+        'WickedTextFormat' => 'Wiki/TextFormat'];
 
     /**
      * Upgrade.
@@ -28,14 +29,16 @@ class WickedRenamePages extends Horde_Db_Migration_Base
     {
         foreach ($this->_pages as $old => $new) {
             $exists = $this->selectValue(
-                'SELECT 1 FROM wicked_pages WHERE page_name = ?', array($new));
+                'SELECT 1 FROM wicked_pages WHERE page_name = ?',
+                [$new]
+            );
             if ($exists) {
                 continue;
             }
             try {
                 $this->beginDbTransaction();
-                $this->update('UPDATE wicked_pages SET page_name = ? WHERE page_name = ?', array($new, $old));
-                $this->update('UPDATE wicked_history SET page_name = ? WHERE page_name = ?', array($new, $old));
+                $this->update('UPDATE wicked_pages SET page_name = ? WHERE page_name = ?', [$new, $old]);
+                $this->update('UPDATE wicked_history SET page_name = ? WHERE page_name = ?', [$new, $old]);
                 $this->commitDbTransaction();
             } catch (Horde_Db_Exception $e) {
                 $this->rollbackDbTransaction();
@@ -50,14 +53,16 @@ class WickedRenamePages extends Horde_Db_Migration_Base
     {
         foreach ($this->_pages as $old => $new) {
             $exists = $this->selectValue(
-                'SELECT 1 FROM wicked_pages WHERE page_name = ?', array($old));
+                'SELECT 1 FROM wicked_pages WHERE page_name = ?',
+                [$old]
+            );
             if ($exists) {
                 continue;
             }
             try {
                 $this->beginDbTransaction();
-                $this->update('UPDATE wicked_pages SET page_name = ? WHERE page_name = ?', array($old, $new));
-                $this->update('UPDATE wicked_history SET page_name = ? WHERE page_name = ?', array($old, $new));
+                $this->update('UPDATE wicked_pages SET page_name = ? WHERE page_name = ?', [$old, $new]);
+                $this->update('UPDATE wicked_history SET page_name = ? WHERE page_name = ?', [$old, $new]);
                 $this->commitDbTransaction();
             } catch (Horde_Db_Exception $e) {
                 $this->rollbackDbTransaction();

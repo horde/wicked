@@ -1,9 +1,12 @@
 <?php
+
 namespace Horde\Wicked;
+
 use Horde\Text\Wiki\WikiRendererBase;
 use Horde_Registry;
 use Horde_Url;
 use Horde_Exception;
+
 /**
  * @package Wicked
  */

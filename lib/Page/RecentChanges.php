@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2003-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -28,10 +29,10 @@ class Wicked_Page_RecentChanges extends Wicked_Page
      *
      * @var array
      */
-    public $supportedModes = array(
+    public $supportedModes = [
         Wicked::MODE_CONTENT => true,
-        Wicked::MODE_DISPLAY => true
-    );
+        Wicked::MODE_DISPLAY => true,
+    ];
 
     /**
      * Renders this page in content mode.
@@ -43,56 +44,69 @@ class Wicked_Page_RecentChanges extends Wicked_Page
     {
         global $wicked;
 
-        $days = (int)Horde_Util::getGet('days', 3);
+        $days = (int) Horde_Util::getGet('days', 3);
         $summaries = $wicked->getRecentChanges($days);
 
         if (count($summaries) < 10) {
             $summaries = $wicked->mostRecent(10);
         }
 
-        $bydate = array();
-        $changes = array();
+        $bydate = [];
+        $changes = [];
         foreach ($summaries as $page) {
             $page = new Wicked_Page_StandardPage($page);
 
             $createDate = $page->versionCreated();
-            $tm = localtime((int)$createDate, true);
-            $createDate = mktime(0,0,0, $tm['tm_mon'], $tm['tm_mday'],
-                                 $tm['tm_year']);
+            $tm = localtime((int) $createDate, true);
+            $createDate = mktime(
+                0,
+                0,
+                0,
+                $tm['tm_mon'],
+                $tm['tm_mday'],
+                $tm['tm_year']
+            );
 
             $version_url = $page->pageUrl()->add('version', $page->version());
-            $diff_url = Horde::url('diff.php')->add(array(
+            $diff_url = Horde::url('diff.php')->add([
                 'page' => $page->pageName(),
                 'v1' => '?',
-                'v2' => $page->version()
-            ));
+                'v2' => $page->version(),
+            ]);
             $diff_alt = sprintf(_("Show changes for %s"), $page->version());
-            $diff_img = Horde::img('diff.png', $diff_alt);
-            $pageInfo = array('author' => $page->author(),
-                              'name' => $page->pageName(),
-                              'url' => $page->pageUrl(),
-                              'version' => $page->version(),
-                              'version_url' => $version_url,
-                              'version_alt' => sprintf(_("Show version %s"),
-                                                       $page->version()),
-                              'diff_url' => $diff_url,
-                              'diff_alt' => $diff_alt,
-                              'diff_img' => $diff_img,
-                              'created' => $page->formatVersionCreated(),
-                              'change_log' => $page->changeLog());
+            /**
+             * ARCHITECTURE VIOLATION: Using deprecated Horde::img()
+             * @deprecated Use Horde_Themes_Image::tag() instead
+             * @see Horde_Deprecated::img()
+             */
+$diff_img = Horde::img('diff.png', $diff_alt);
+            $pageInfo = ['author' => $page->author(),
+                'name' => $page->pageName(),
+                'url' => $page->pageUrl(),
+                'version' => $page->version(),
+                'version_url' => $version_url,
+                'version_alt' => sprintf(
+                    _("Show version %s"),
+                    $page->version()
+                ),
+                'diff_url' => $diff_url,
+                'diff_alt' => $diff_alt,
+                'diff_img' => $diff_img,
+                'created' => $page->formatVersionCreated(),
+                'change_log' => $page->changeLog()];
             $bydate[$createDate][$page->versionCreated()][$page->version()] = $pageInfo;
         }
         krsort($bydate);
 
         foreach ($bydate as $bysecond) {
-            $day = array();
+            $day = [];
             krsort($bysecond);
             foreach ($bysecond as $pageList) {
                 krsort($pageList);
                 $day = array_merge($day, array_values($pageList));
             }
-            $changes[] = array('date' => $day[0]['created'],
-                               'pages' => $day);
+            $changes[] = ['date' => $day[0]['created'],
+                'pages' => $day];
         }
 
         return $changes;

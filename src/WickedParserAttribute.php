@@ -1,5 +1,7 @@
 <?php
+
 namespace Horde\Wicked;
+
 use Horde\Text\Wiki\WikiParserBase;
 use Wicked;
 
@@ -23,8 +25,8 @@ class WickedParserAttribute extends WikiParserBase
     {
         parent::__construct($obj);
 
-        $this->regex = '/((?:\[\[' . Wicked::REGEXP_WIKIWORD .
-                       ':\s+.*?\]\]\s*)+)/';
+        $this->regex = '/((?:\[\[' . Wicked::REGEXP_WIKIWORD
+                       . ':\s+.*?\]\]\s*)+)/';
     }
 
     /**
@@ -40,14 +42,17 @@ class WickedParserAttribute extends WikiParserBase
      */
     public function process($matches)
     {
-        $options = array('attributes' => array());
+        $options = ['attributes' => []];
 
         $text = $matches[1];
-        while (preg_match('/^\[\[(' . Wicked::REGEXP_WIKIWORD . '):\s+(.*?)\]\]\s*(.*)$/s',
-                          $text, $sub)) {
+        while (preg_match(
+            '/^\[\[(' . Wicked::REGEXP_WIKIWORD . '):\s+(.*?)\]\]\s*(.*)$/s',
+            $text,
+            $sub
+        )) {
 
-            $options['attributes'][] = array('name' => $sub[1],
-                                             'value' => $sub[2]);
+            $options['attributes'][] = ['name' => $sub[1],
+                'value' => $sub[2]];
             $text = $sub[3];
         }
 

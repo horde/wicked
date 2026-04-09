@@ -1,6 +1,9 @@
 <?php
+
 namespace Horde\Wicked;
+
 use Horde\Text\Wiki\WikiParserBase;
+
 /**
  * This parser parses Wicked blocks, which add Horde_Blocks to the
  * page.  Basic syntax is [[block block-app/block-name block-args]].
@@ -8,7 +11,7 @@ use Horde\Text\Wiki\WikiParserBase;
  * Original
  * @author Jan Schneider <jan@horde.org>
  * Refactored to Horde\Text\Wiki v2 by Ralf Lang <ralf.lang@ralf-lang.de>
- * 
+ *
  * @package Wicked
  */
 class WickedParserWickedblock extends WikiParserBase
@@ -41,15 +44,16 @@ class WickedParserWickedblock extends WikiParserBase
      */
     public function process($matches)
     {
-        $args = array();
+        $args = [];
         foreach (explode(' ', $matches[3], 2) as $pair) {
-            @list($arg, $value) = explode('=', $pair);
+            @[$arg, $value] = explode('=', $pair);
             $args[$arg] = $value;
         }
         return $this->wiki->addToken(
             $this->rule,
-            array('app' => $matches[1],
-                  'block' => $matches[2],
-                  'args' => $args));
+            ['app' => $matches[1],
+                'block' => $matches[2],
+                'args' => $args]
+        );
     }
 }

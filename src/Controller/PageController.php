@@ -48,8 +48,7 @@ class PageController implements RequestHandlerInterface
         private Horde_PageOutput $pageOutput,
         private Horde_Session $session,
         private Wicked_Driver $driver,
-    ) {
-    }
+    ) {}
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

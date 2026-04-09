@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2014-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2014-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -40,11 +41,11 @@ class Wicked_View_Helper_Navigation extends Horde_View_Helper_Base
     {
         global $wicked;
 
-        $parts = $dirs = array();
+        $parts = $dirs = [];
         foreach (explode('/', $name) as $part) {
             $dirs[] = $part;
             $dir = implode('/', $dirs);
-            $attributes = array();
+            $attributes = [];
             if (!$wicked->pageExists($dir)) {
                 $attributes['class'] = 'newpage';
             }
@@ -76,7 +77,7 @@ class Wicked_View_Helper_Navigation extends Horde_View_Helper_Base
         );
         usort(
             $siblings,
-            function($a, $b) {
+            function ($a, $b) {
                 if ($a['page_name'] == $b['page_name']) {
                     return 0;
                 }
@@ -104,7 +105,12 @@ class Wicked_View_Helper_Navigation extends Horde_View_Helper_Base
 
         $navigation = '';
         if ($left) {
-            $navigation .= Wicked::url($left['page_name'])->link()
+            /**
+             * ARCHITECTURE VIOLATION: Using deprecated Horde::img()
+             * @deprecated Use Horde_Themes_Image::tag() instead
+             * @see Horde_Deprecated::img()
+             */
+$navigation .= Wicked::url($left['page_name'])->link()
                 . Horde::img('nav/left.png') . ' '
                 . $this->h($left['page_name']) . '</a>';
             if ($right) {
@@ -112,7 +118,12 @@ class Wicked_View_Helper_Navigation extends Horde_View_Helper_Base
             }
         }
         if ($right) {
-            $navigation .= Wicked::url($right['page_name'])->link()
+            /**
+             * ARCHITECTURE VIOLATION: Using deprecated Horde::img()
+             * @deprecated Use Horde_Themes_Image::tag() instead
+             * @see Horde_Deprecated::img()
+             */
+$navigation .= Wicked::url($right['page_name'])->link()
                 . $this->h($right['page_name']) . ' '
                 . Horde::img('nav/right.png') . '</a>';
         }
@@ -129,7 +140,7 @@ class Wicked_View_Helper_Navigation extends Horde_View_Helper_Base
      */
     public function hasSubPages($name)
     {
-        return (boolean)count($this->_getSubPages($name));
+        return (bool) count($this->_getSubPages($name));
     }
 
     /**
@@ -141,7 +152,7 @@ class Wicked_View_Helper_Navigation extends Horde_View_Helper_Base
      */
     public function subPages($name)
     {
-        $children = array();
+        $children = [];
         foreach ($this->_getSubPages($name) as $page) {
             $name = $page['page_name'];
             $children[$name] = '<li>' . Wicked::url($name)->link()
@@ -167,7 +178,7 @@ class Wicked_View_Helper_Navigation extends Horde_View_Helper_Base
 
         if (!isset($this->_subPages)) {
             $slashes = substr_count($name, '/') + 1;
-            $this->_subPages = array();
+            $this->_subPages = [];
             foreach ($wicked->searchTitles($name . '/', true) as $page) {
                 if (substr_count($page['page_name'], '/') == $slashes) {
                     $this->_subPages[] = $page;

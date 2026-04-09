@@ -40,8 +40,7 @@ class AdminAttachmentsController implements RequestHandlerInterface
         private Horde_PageOutput $pageOutput,
         private Wicked_Driver $driver,
         private Horde_Registry $registry,
-    ) {
-    }
+    ) {}
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

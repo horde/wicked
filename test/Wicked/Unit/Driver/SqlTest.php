@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Test the SQL driver.
  *
- * Copyright 2004-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2004-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPLv2). If
  * you did not receive this file, see
@@ -27,6 +28,7 @@
  * @author     Gunnar Wrobel <wrobel@pardus.de>
  * @link       http://www.horde.org/apps/wicked
  * @license    http://www.horde.org/licenses/gpl GNU General Public License, version 2
+ * @coversNothing
  */
 class Wicked_Unit_Driver_SqlTest extends Wicked_TestCase
 {
@@ -62,21 +64,30 @@ class Wicked_Unit_Driver_SqlTest extends Wicked_TestCase
 
     public function test_updateText_should_also_update_history()
     {
-        $this->wicked->updateText(TEST_PAGE_1, 'Here\'s the new page text.',
-                                  'Test change.');
+        $this->wicked->updateText(
+            TEST_PAGE_1,
+            'Here\'s the new page text.',
+            'Test change.'
+        );
         $page = $this->wicked->retrieveByName(TEST_PAGE_1);
         $this->assertEqual('Here\'s the new page text.', $page['page_text']);
 
         $last_version = $page['page_version'];
-        $this->wicked->updateText(TEST_PAGE_1, 'Here\'s the second change.',
-                                  'Test change 2.');
+        $this->wicked->updateText(
+            TEST_PAGE_1,
+            'Here\'s the second change.',
+            'Test change 2.'
+        );
 
         $page = $this->wicked->retrieveByName(TEST_PAGE_1);
         $this->assertEqual('Here\'s the second change.', $page['page_text']);
 
         $res = $this->wicked->retrieveHistory(TEST_PAGE_1, $last_version);
-        $this->assertNotEqual(0, count($res),
-                              "no results from retrieveHistory()");
+        $this->assertNotEqual(
+            0,
+            count($res),
+            "no results from retrieveHistory()"
+        );
         $page = $res[0];
         $this->assertEqual('Here\'s the new page text.', $page['page_text']);
     }
@@ -96,8 +107,11 @@ class Wicked_Unit_Driver_SqlTest extends Wicked_TestCase
 
         foreach ($history as $page) {
             $testver = $page['page_version'];
-            $this->assertNotEqual($testver, $item_1_ver,
-                                  "removeVersion() version still there.");
+            $this->assertNotEqual(
+                $testver,
+                $item_1_ver,
+                "removeVersion() version still there."
+            );
         }
     }
 
@@ -141,7 +155,7 @@ class Wicked_Unit_Driver_SqlTest extends Wicked_TestCase
         $allPages = $this->wicked->getAllPages();
         $this->assertEqual(count($allPages), count($pages));
 
-        $allPageNames = array();
+        $allPageNames = [];
         foreach ($allPages as $allPage) {
             $allPageNames[] = $allPage['page_name'];
         }

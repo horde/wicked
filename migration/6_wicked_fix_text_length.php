@@ -1,4 +1,5 @@
 <?php
+
 class WickedFixTextLength extends Horde_Db_Migration_Base
 {
     public function up()
@@ -7,7 +8,5 @@ class WickedFixTextLength extends Horde_Db_Migration_Base
         $this->changeColumn('wicked_history', 'page_text', 'longtext');
     }
 
-    public function down()
-    {
-    }
+    public function down() {}
 }
