@@ -93,7 +93,7 @@ class Wicked_Application extends Horde_Registry_Application
     {
         global $conf, $page;
 
-        if (@count($conf['menu']['pages'])) {
+        if (!empty($conf['menu']['pages'])) {
             $pages = array(
                 'Wiki/Home' => _("_Home"),
                 'Wiki/Usage' => _("_Usage"),
