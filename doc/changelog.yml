@@ -1,4 +1,53 @@
 ---
+3.1.0:
+  api: 3.1.0
+  state:
+    release: stable
+    api: stable
+  date: 2026-04-09
+  license:
+    identifier: GPL-2.0-only
+    uri: https://spdx.org/licenses/GPL-2.0-only.html
+  notes: |-
+    style: php-cs-fixer
+    chore: We now depend on psr/simple-cache, text_wiki ^3 and horde/cache
+    feat: Upgrade wicked's special markup from regex-based to a character level scanner
+    feat: Wiki/TextFormat is now a special page always containing the format documentation for the format the wiki currently uses.
+    feat: Allow caching pages which don't contain dynamic content.
+    feat: Attachment Admin screen only for horde global admins or users with whups:admin permission
+    feat: Refactor most endpoints into thin wrappers around PSR-7/15 controllers
+    refactor: The display.php can delegate to the PSR-15 controller which does essentially the same work
+    fix(wicked): return after newPage to avoid undefined $content in Api::edit()
+    fix(wicked): guard null searchtext in Sql::getMatchingPages()
+    fix(wicked): guard null referrer in AddPage::preDisplay()
+    fix(wicked): cast timestamp to int in Page::formatVersionCreated()
+    fix(wicked): cast versionCreated to int for localtime() in RecentChanges
+    fix(wicked): guard null array keys and lock properties in StandardPage
+    fix(wicked): replace @count(null) with !empty() in Application::menu()
+    fix(wicked): guard null captcha and referrer in NewPage
+    fix(wicked): guard null form data in EditPage::handleAction()
+    fix(wicked): guard null version in RevertPage htmlspecialchars call
+    fix(wicked): guard null version in DeletePage htmlspecialchars call
+    fix(wicked): guard null referrer and fix dynamic property in Page::display()
+    fix(wicked): initialize $params before switch in Driver factory
+    fix(wicked): use correct exception variable in AttachedFiles catch block
+    refactor: Replace direct globals access with constructor injection
+    feat: Wiki markup conversion script
+    feat: Add routes and bindings for modern engine
+    feat: Leverage new horde/text_wiki engine
+    fix: More defensive code when trying to drop tables
+    fix: Accept both types of horde_variables
+    chore: Add a default routes file
+    Update PHP required version, depend on horde/text_wiki v2
+    feat: Re-Add horde-specific Xhtml renderers which don't belong into the horde/text_wiki library but integrate wiki content with core functionality
+    Clone an object when assigning to a mapped type name
+    Explicitly instanciate backend parser as rule Heading2
+    Add horde/wicked specific rules to WickedEngine
+    Use the namespaced WickedEngine as the entrypoint to Text\Wiki
+    Remove horde's internal autoloader setup from wicked's bootstrap method. Rely on external autoloader, composer or other.
+    chore: Remove inlined Text_Wiki version
+    fix: Use compatibility layer for strftime until we replace it wholesale.
+    fix: Too many arguments to mktime
 3.0.2:
   api: 3.0.0
   state:
