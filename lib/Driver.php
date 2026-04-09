@@ -216,6 +216,13 @@ abstract class Wicked_Driver
     abstract function getAttachedFiles($pageId, $allversions = false);
 
     /**
+     * Returns all attachments across all pages.
+     *
+     * @return array  An array of key/value arrays describing the attached files.
+     */
+    abstract public function getAllAttachments(): array;
+
+    /**
      * Attaches a file to a page or update an attachment.
      *
      * @param array $file   This is a key/value array describing the

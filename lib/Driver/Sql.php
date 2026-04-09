@@ -413,6 +413,16 @@ class Wicked_Driver_Sql extends Wicked_Driver
         return $data;
     }
 
+    public function getAllAttachments(): array
+    {
+        $data = $this->_retrieve($this->_params['attachmenttable'], '');
+        foreach (array_keys($data) as $key) {
+            $data[$key]['attachment_name'] = $this->_convertFromDriver($data[$key]['attachment_name']);
+        }
+
+        return $data;
+    }
+
     /**
      * Removes a single version or all versions of an attachment from
      * $pageId.

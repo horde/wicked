@@ -123,6 +123,28 @@ class Wicked_Application extends Horde_Registry_Application
         }
     }
 
+    public function sidebar($sidebar)
+    {
+        global $registry;
+
+        if ($registry->isAdmin()
+            || $registry->isAdmin(['permission' => 'wicked:admin'])
+            || $registry->isAdmin(['permission' => 'wicked:admin:attachments'])
+        ) {
+            $sidebar->containers['admin'] = [
+                'header' => [
+                    'id' => 'wicked-toggle-admin',
+                    'label' => _("Administration"),
+                ],
+            ];
+            $sidebar->addRow([
+                'label' => _("Attachments"),
+                'url' => new \Horde_Url($registry->get('webroot', 'wicked') . '/admin/attachments'),
+                'cssClass' => 'horde-admin',
+            ], 'admin');
+        }
+    }
+
     /**
      * Returns values for <configspecial> configuration settings.
      *
@@ -149,11 +171,17 @@ class Wicked_Application extends Horde_Registry_Application
      */
     public function perms()
     {
-        $perms = array(
-            'pages' => array(
-                'title' => _("Pages")
-            )
-        );
+        $perms = [
+            'admin' => [
+                'title' => _("Administration"),
+            ],
+            'admin:attachments' => [
+                'title' => _("Attachment Management"),
+            ],
+            'pages' => [
+                'title' => _("Pages"),
+            ],
+        ];
 
         foreach (array('AllPages', 'LeastPopular', 'MostPopular', 'RecentChanges') as $val) {
             $perms['pages:' . $val] = array(
