@@ -228,6 +228,11 @@ class Wicked_Page
             return new $classname($referrer);
         }
 
+        // Wiki/TextFormat is a special page that shows format-specific help
+        if ($pagename === 'Wiki/TextFormat') {
+            return new Wicked_Page_TextFormat($referrer);
+        }
+
         /* If we have a version, but it is actually the most recent version,
          * ignore it. */
         if (!empty($pagever)) {
