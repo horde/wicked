@@ -41,6 +41,7 @@ dependencies:
       horde/horde: ^6
       horde/auth: ^3
       horde/autoloader: ^3
+      horde/cache: ^3
       horde/core: ^3
       horde/db: ^3
       horde/exception: ^3
@@ -55,11 +56,12 @@ dependencies:
       horde/prefs: ^3
       horde/rpc: ^3
       horde/text_diff: ^3
-      horde/text_wiki: ^2
+      horde/text_wiki: ^3
       horde/url: ^3
       horde/util: ^3
       horde/vfs: ^3
       php81_bc/strftime: ^0.7
+      psr/simple-cache: ^3
     ext:
       gettext: '*'
   optional:
