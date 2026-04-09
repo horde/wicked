@@ -73,7 +73,7 @@ class Wicked_Page_NewPage extends Wicked_Page
      */
     public function preDisplay($mode, $params)
     {
-        if (!strlen($this->referrer())) {
+        if (!strlen($this->referrer() ?? '')) {
             $GLOBALS['notification']->push(_("Page name must not be empty"));
             Wicked::url('', true)->redirect();
         }
@@ -135,7 +135,7 @@ class Wicked_Page_NewPage extends Wicked_Page
         } else {
             if (!empty($GLOBALS['conf']['wicked']['captcha']) &&
                 !$GLOBALS['registry']->getAuth() &&
-                (Horde_String::lower(Horde_Util::getFormData('wicked_captcha')) != Horde_String::lower(Wicked::getCAPTCHA()))) {
+                (Horde_String::lower(Horde_Util::getFormData('wicked_captcha') ?? '') != Horde_String::lower(Wicked::getCAPTCHA()))) {
                 $notification->push(_("Random string did not match."), 'horde.error');
                 return;
             }
