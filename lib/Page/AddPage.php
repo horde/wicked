@@ -60,7 +60,7 @@ class Wicked_Page_AddPage extends Wicked_Page
      */
     public function preDisplay($mode, $params)
     {
-        if (!strlen($this->referrer())) {
+        if (!strlen($this->referrer() ?? '')) {
             $GLOBALS['notification']->push(_("Page name must not be empty"));
             Wicked::url('', true)->redirect();
         }
