@@ -25,6 +25,8 @@ if (!defined('HORDE_BASE')) {
     }
 }
 
+use Horde\Cache\Cache as HordeCache;
+use Horde\Cache\FileStorage;
 use Horde\Util\Variables;
 use Horde\Wicked\HordeWikilinkUrlResolver;
 use Horde\Wicked\WickedEngine;
@@ -67,12 +69,23 @@ class Wicked_Application extends Horde_Registry_Application
                     ? $injector->get('Horde_Core_Factory_BlockCollection')
                     : null;
 
+                $cacheDir = $GLOBALS['conf']['cache']['params']['dir'] ?? '';
+                $cacheLifetime = (int) ($GLOBALS['conf']['wicked']['cache']['lifetime'] ?? 86400);
+                $cache = new HordeCache(
+                    new FileStorage(dir: $cacheDir),
+                    [
+                        'namespace' => 'wicked_render',
+                        'lifetime' => $cacheLifetime,
+                    ],
+                );
+
                 return new WickedEngine(
                     storageDriver: $injector->get('Wicked_Driver'),
                     registry: $injector->get('Horde_Registry'),
                     urlResolver: $injector->get(WikilinkUrlResolver::class),
                     format: $format,
                     blockFactory: $blockFactory,
+                    cache: $cache,
                 );
             },
         );

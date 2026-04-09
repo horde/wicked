@@ -24,6 +24,7 @@ use Horde_Mime_Part;
 use Horde_Mime_Viewer;
 use Horde_Registry;
 use Horde_Url;
+use Psr\SimpleCache\CacheInterface;
 use Throwable;
 use Wicked_Driver;
 
@@ -44,6 +45,8 @@ class WickedEngine implements WikiEngine
 {
     private FormatCatalog $catalog;
     private Parser $parser;
+    private ?int $currentPageId = null;
+    private ?int $currentPageVersion = null;
 
     /** @var array<string, string> Legacy format name aliases */
     private const FORMAT_ALIASES = [
@@ -57,6 +60,7 @@ class WickedEngine implements WikiEngine
         ?FormatCatalog $catalog = null,
         string $format = 'yawiki',
         private readonly ?Horde_Core_Factory_BlockCollection $blockFactory = null,
+        private readonly ?CacheInterface $cache = null,
     ) {
         $this->catalog = $catalog ?? SimpleFormatCatalog::withDefaults();
         $format = $this->normalizeFormat($format);
@@ -67,6 +71,21 @@ class WickedEngine implements WikiEngine
     {
         $format = $this->normalizeFormat($format);
 
+        // Try cache for xhtml display of static pages
+        $cacheKey = null;
+        if ($this->cache !== null
+            && $format === 'xhtml'
+            && $this->currentPageId !== null
+            && !$this->hasDynamicContent($text)
+        ) {
+            $cacheKey = 'wicked.render.' . $this->currentPageId
+                . '.' . $this->currentPageVersion;
+            $cached = $this->cache->get($cacheKey);
+            if ($cached !== null) {
+                return $cached;
+            }
+        }
+
         // Pre-process Wicked-specific syntax before AST parsing
         $text = $this->preprocessWickedBlocks($text, $format);
         $text = $this->preprocessRegistryLinks($text, $format);
@@ -75,7 +94,13 @@ class WickedEngine implements WikiEngine
         $renderer = $this->catalog->getRenderer($format);
         $this->applyWickedHandlers($renderer);
 
-        return $renderer->render($this->parser->parse($text));
+        $html = $renderer->render($this->parser->parse($text));
+
+        if ($cacheKey !== null) {
+            $this->cache->set($cacheKey, $html);
+        }
+
+        return $html;
     }
 
     /**
@@ -104,6 +129,18 @@ class WickedEngine implements WikiEngine
         }
 
         return $attributes;
+    }
+
+    /**
+     * Set page identity for cache key generation.
+     *
+     * Call before transform() to enable caching for this page.
+     * Callers that don't set context (preview, export) get no caching.
+     */
+    public function setPageContext(int $pageId, int $pageVersion): void
+    {
+        $this->currentPageId = $pageId;
+        $this->currentPageVersion = $pageVersion;
     }
 
     /**
@@ -246,6 +283,18 @@ class WickedEngine implements WikiEngine
     // ------------------------------------------------------------------
     // Pre-processors for Wicked-specific syntax
     // ------------------------------------------------------------------
+
+    /**
+     * Check whether raw wiki text contains dynamic constructs.
+     *
+     * Pages with [[block ...]] or [[link ...]] produce output that depends
+     * on runtime state and must not be cached.
+     */
+    private function hasDynamicContent(string $text): bool
+    {
+        return preg_match('/\[\[block /s', $text) === 1
+            || preg_match('/\[\[link /s', $text) === 1;
+    }
 
     /**
      * Pre-process [[block app/name args]] into rendered HTML

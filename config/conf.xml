@@ -38,6 +38,13 @@
    <configinteger name="time" desc="How many minutes should pages be locked
    for editing?">10</configinteger>
   </configsection>
+  <configsection name="cache">
+   <configinteger name="lifetime" desc="How many seconds should rendered page
+   HTML be cached? Cache keys include the page version, so edits
+   automatically invalidate. This controls how long stale entries remain
+   before garbage collection. Set to a high value for maximum
+   performance.">86400</configinteger>
+  </configsection>
  </configsection>
 
  <configsection name="menu">
