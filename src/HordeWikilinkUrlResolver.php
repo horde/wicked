@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace Horde\Wicked;
 
-use Wicked;
+use Horde_Registry;
 
 /**
- * URL resolver using Horde's Wicked::url() helper
+ * URL resolver that builds wiki page URLs from the registry webroot.
  *
  * @category Horde
  * @license  http://www.horde.org/licenses/gpl GPL
@@ -22,8 +22,15 @@ use Wicked;
  */
 class HordeWikilinkUrlResolver implements WikilinkUrlResolver
 {
+    private string $webroot;
+
+    public function __construct(Horde_Registry $registry)
+    {
+        $this->webroot = rtrim((string) $registry->get('webroot', 'wicked'), '/');
+    }
+
     public function resolve(string $page): string
     {
-        return (string) Wicked::url($page);
+        return $this->webroot . '/' . str_replace('%2F', '/', urlencode($page));
     }
 }

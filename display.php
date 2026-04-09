@@ -30,7 +30,8 @@ $requestBuilder = new RequestBuilder(
 $request = $requestBuilder->withGlobalVariables()->build();
 
 // Map the legacy ?page= query param to the route attribute the controller expects
-$pageName = Horde_Util::getFormData('page') ?? 'Wiki/Home';
+$queryParams = $request->getQueryParams();
+$pageName = $queryParams['page'] ?? 'Wiki/Home';
 $request = $request->withAttribute('route', ['page' => $pageName]);
 
 // Construct the controller with its dependencies

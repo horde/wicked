@@ -39,6 +39,8 @@ use Wicked_Page_StandardPage;
  */
 class PageController implements RequestHandlerInterface
 {
+    use ResponseTrait;
+
     public function __construct(
         private ResponseFactoryInterface $responseFactory,
         private StreamFactoryInterface $streamFactory,
@@ -81,7 +83,7 @@ class PageController implements RequestHandlerInterface
 
             case 'history':
                 if ($page->allows(Wicked::MODE_HISTORY)) {
-                    return $this->redirectResponse(
+                    return $this->redirect(
                         (string) Horde::url('history.php')
                             ->add('page', $page->pageName())
                     );
@@ -120,6 +122,17 @@ class PageController implements RequestHandlerInterface
 
         $page->preDisplay(Wicked::MODE_DISPLAY, $params);
 
+        // Non-existent page: redirect to home with a warning
+        if ($page instanceof Wicked_Page_StandardPage && !$page->isValid()) {
+            $this->notification->push(
+                sprintf(_("Page \"%s\" does not exist."), $pageName),
+                'horde.warning'
+            );
+            return $this->redirect(
+                (string) Wicked::url('Wiki/Home', true)
+            );
+        }
+
         if ($page->isLocked()) {
             $this->notification->push(
                 sprintf(
@@ -133,18 +146,13 @@ class PageController implements RequestHandlerInterface
 
         // Capture rendered output
         Wicked::addFeedLink();
-        Wicked::setTopbar();
-
-        ob_start();
-        $this->pageOutput->header(['title' => $page->pageTitle()]);
-        $this->notification->notify(['listeners' => 'status']);
-        try {
-            echo $page->render(Wicked::MODE_DISPLAY, $params);
-        } catch (Wicked_Exception $e) {
-            $this->notification->push($e);
-        }
-        $this->pageOutput->footer();
-        $html = ob_get_clean();
+        $html = $this->renderChrome($page->pageTitle(), function () use ($page, $params) {
+            try {
+                echo $page->render(Wicked::MODE_DISPLAY, $params);
+            } catch (Wicked_Exception $e) {
+                $this->notification->push($e);
+            }
+        });
 
         // Session history tracking
         $history = $this->session->get('wicked', 'history', Horde_Session::TYPE_ARRAY);
@@ -181,7 +189,7 @@ class PageController implements RequestHandlerInterface
             }
         }
 
-        return $this->redirectResponse(
+        return $this->redirect(
             (string) Wicked::url($page->pageName())
         );
     }
@@ -208,7 +216,7 @@ class PageController implements RequestHandlerInterface
             }
         }
 
-        return $this->redirectResponse(
+        return $this->redirect(
             (string) Wicked::url($page->pageName())
         );
     }
@@ -225,7 +233,7 @@ class PageController implements RequestHandlerInterface
                     _("You don't have permission to view this page.")
                 );
             }
-            return $this->redirectResponse(
+            return $this->redirect(
                 (string) Wicked::url('Wiki/Home', true)
             );
         }
@@ -259,7 +267,7 @@ class PageController implements RequestHandlerInterface
             $text = $wiki->transform($page->getText(), $format);
         } catch (Wicked_Exception $e) {
             $this->notification->push($e);
-            return $this->redirectResponse(
+            return $this->redirect(
                 (string) Wicked::url($page->pageName())
             );
         }
@@ -275,20 +283,5 @@ class PageController implements RequestHandlerInterface
             )
             ->withHeader('Content-Length', (string) strlen($text))
             ->withBody($body);
-    }
-
-    private function htmlResponse(string $html, int $status = 200): ResponseInterface
-    {
-        $body = $this->streamFactory->createStream($html);
-
-        return $this->responseFactory->createResponse($status)
-            ->withHeader('Content-Type', 'text/html; charset=UTF-8')
-            ->withBody($body);
-    }
-
-    private function redirectResponse(string $url): ResponseInterface
-    {
-        return $this->responseFactory->createResponse(302)
-            ->withHeader('Location', $url);
     }
 }
