@@ -188,6 +188,7 @@ class Wicked_Api extends Horde_Registry_Api
                 throw $e;
             }
             $GLOBALS['wicked']->newPage($pagename, $text);
+            return;
         }
 
         if (trim($text) == trim($content)) {
