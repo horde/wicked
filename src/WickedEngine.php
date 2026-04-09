@@ -86,10 +86,14 @@ class WickedEngine implements WikiEngine
             }
         }
 
-        // Pre-process Wicked-specific syntax before AST parsing
-        $text = $this->preprocessWickedBlocks($text, $format);
-        $text = $this->preprocessRegistryLinks($text, $format);
+        // Strip [[WikiWord: value]] attributes before parsing — these
+        // are metadata, not content.
         $text = $this->stripAttributes($text);
+
+        // Expand [[block ...]] and [[link ...]] constructs in prose.
+        // Uses a character-level scanner that is code-fence-aware, so
+        // examples inside ``` or {{{ blocks are never touched.
+        $text = $this->expandWickedConstructs($text, $format);
 
         $renderer = $this->catalog->getRenderer($format);
         $this->applyWickedHandlers($renderer);
@@ -266,7 +270,7 @@ class WickedEngine implements WikiEngine
                 ? ' class="language-' . htmlspecialchars($language) . '"'
                 : '';
 
-            return "<pre><code{$langAttr}>" . htmlspecialchars($text) . "</code></pre>\n";
+            return "<pre><code{$langAttr}>" . $text . "</code></pre>\n";
         };
     }
 
@@ -281,107 +285,242 @@ class WickedEngine implements WikiEngine
     }
 
     // ------------------------------------------------------------------
-    // Pre-processors for Wicked-specific syntax
+    // Wicked construct expansion (code-fence-aware scanner)
     // ------------------------------------------------------------------
 
     /**
      * Check whether raw wiki text contains dynamic constructs.
      *
-     * Pages with [[block ...]] or [[link ...]] produce output that depends
-     * on runtime state and must not be cached.
+     * Pages with [[block ...]] or [[link ...]] in prose (outside code
+     * fences) produce output that depends on runtime state and must not
+     * be cached.
      */
     private function hasDynamicContent(string $text): bool
     {
-        return preg_match('/\[\[block /s', $text) === 1
-            || preg_match('/\[\[link /s', $text) === 1;
+        foreach ($this->scanConstructs($text) as $construct) {
+            if ($construct['type'] === 'block' || $construct['type'] === 'link') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
-     * Pre-process [[block app/name args]] into rendered HTML
+     * Expand [[block ...]] and [[link ...]] constructs in prose text.
      *
-     * Uses the same regex as WickedParserWickedblock. For Xhtml output,
-    /**
-     * Pre-process {{wicked:block:NAME}} constructs.
-     *
-     * renders the block content directly. For other formats, strips the
-     * construct.
+     * Walks the text line-by-line, tracking fenced code block state
+     * (Markdown ``` / ~~~ and legacy {{{ }}}). Constructs found inside
+     * code fences are left untouched. Constructs in prose are replaced
+     * with their rendered output.
      */
-    private function preprocessWickedBlocks(string $text, string $format): string
+    private function expandWickedConstructs(string $text, string $format): string
     {
-        if ($this->blockFactory === null) {
+        $constructs = $this->scanConstructs($text);
+        if ($constructs === []) {
             return $text;
         }
 
-        $blockFactory = $this->blockFactory;
         $isXhtml = $format === 'xhtml';
 
-        return (string) preg_replace_callback(
-            '/\[\[block (.*)?\/(.*)? (.*)?\]\]/sU',
-            function (array $matches) use ($blockFactory, $isXhtml): string {
-                if (!$isXhtml) {
-                    return '';
-                }
+        // Replace from end to start so offsets stay valid
+        for ($i = count($constructs) - 1; $i >= 0; $i--) {
+            $c = $constructs[$i];
+            $replacement = match ($c['type']) {
+                'block' => $this->renderBlock($c['body'], $isXhtml),
+                'link' => $this->renderRegistryLink($c['body'], $isXhtml),
+                default => null,
+            };
+            if ($replacement !== null) {
+                $text = substr_replace($text, $replacement, $c['offset'], $c['length']);
+            }
+        }
 
-                try {
-                    $app = $matches[1];
-                    $block = $matches[2];
-                    $args = [];
-                    foreach (explode(' ', $matches[3], 2) as $pair) {
-                        [$arg, $value] = array_pad(explode('=', $pair, 2), 2, '');
-                        $args[$arg] = $value;
-                    }
-
-                    $blockCollection = $blockFactory->create();
-                    $blockObj = $blockCollection->getBlock(
-                        $app,
-                        $app . '_Block_' . $block,
-                        $args,
-                    );
-
-                    return $blockObj->getContent();
-                } catch (Throwable $e) {
-                    return htmlspecialchars($e->getMessage());
-                }
-            },
-            $text,
-        );
+        return $text;
     }
 
     /**
-     * Pre-process [[link title | app/method args]] into rendered HTML
+     * Scan text for [[block ...]] and [[link ...]] outside code fences.
      *
-     * Uses the same regex as WickedParserRegistrylink.
+     * Returns an array of found constructs with their type, body,
+     * offset and length — enough to do in-place replacement.
+     *
+     * @return array<int, array{type: string, body: string, offset: int, length: int}>
      */
-    private function preprocessRegistryLinks(string $text, string $format): string
+    private function scanConstructs(string $text): array
     {
-        $registry = $this->registry;
-        $isXhtml = $format === 'xhtml';
+        $constructs = [];
+        $len = strlen($text);
+        $pos = 0;
+        $inFence = false;
+        $fenceChar = '';
+        $fenceLen = 0;
 
-        return (string) preg_replace_callback(
-            '/\[\[link (.*)\]\]/sU',
-            function (array $matches) use ($registry, $isXhtml): string {
-                if (!$isXhtml) {
-                    // For non-Xhtml, just return the title text
-                    [$title] = explode('|', $matches[1], 2);
+        while ($pos < $len) {
+            // Track line beginnings for fenced code detection
+            $lineStart = ($pos === 0 || $text[$pos - 1] === "\n");
 
-                    return htmlspecialchars(trim($title));
+            // Check for fenced code block boundaries at line start
+            if ($lineStart) {
+                $ch = $text[$pos];
+
+                // Markdown fences: ``` or ~~~
+                if ($ch === '`' || $ch === '~') {
+                    $run = 0;
+                    $p = $pos;
+                    while ($p < $len && $text[$p] === $ch) {
+                        $run++;
+                        $p++;
+                    }
+                    if ($run >= 3) {
+                        if (!$inFence) {
+                            $inFence = true;
+                            $fenceChar = $ch;
+                            $fenceLen = $run;
+                            // Skip to end of line
+                            $nl = strpos($text, "\n", $pos);
+                            $pos = $nl === false ? $len : $nl + 1;
+                            continue;
+                        } elseif ($ch === $fenceChar && $run >= $fenceLen) {
+                            $inFence = false;
+                            $nl = strpos($text, "\n", $pos);
+                            $pos = $nl === false ? $len : $nl + 1;
+                            continue;
+                        }
+                    }
                 }
 
-                try {
-                    [$title, $call] = array_pad(explode('|', $matches[1], 2), 2, '');
-                    $opts = explode(' ', trim($call));
-                    $method = trim(array_shift($opts));
-                    parse_str(implode('&', $opts), $args);
-
-                    $link = new Horde_Url($registry->link($method, $args));
-
-                    return $link->link() . htmlspecialchars(trim($title)) . '</a>';
-                } catch (Throwable $e) {
-                    return htmlspecialchars($e->getMessage());
+                // Legacy wiki fence: {{{ (opening only — closing }}} can be mid-line)
+                if (!$inFence && $pos + 2 < $len
+                    && $text[$pos] === '{' && $text[$pos + 1] === '{' && $text[$pos + 2] === '{'
+                ) {
+                    $inFence = true;
+                    $fenceChar = '{';
+                    $fenceLen = 3;
+                    $pos += 3;
+                    continue;
                 }
-            },
-            $text,
-        );
+            }
+
+            // Legacy wiki fence close: }}}
+            if ($inFence && $fenceChar === '{'
+                && $pos + 2 < $len
+                && $text[$pos] === '}' && $text[$pos + 1] === '}' && $text[$pos + 2] === '}'
+            ) {
+                $inFence = false;
+                $pos += 3;
+                continue;
+            }
+
+            // Inside a code fence — skip everything
+            if ($inFence) {
+                $nl = strpos($text, "\n", $pos);
+                $pos = $nl === false ? $len : $nl + 1;
+                continue;
+            }
+
+            // Look for [[ at current position
+            if ($text[$pos] === '[' && $pos + 1 < $len && $text[$pos + 1] === '[') {
+                // Find the matching ]]
+                $close = strpos($text, ']]', $pos + 2);
+                if ($close !== false) {
+                    $inner = substr($text, $pos + 2, $close - $pos - 2);
+                    $fullLen = $close + 2 - $pos;
+
+                    if (str_starts_with($inner, 'block ')) {
+                        $constructs[] = [
+                            'type' => 'block',
+                            'body' => substr($inner, 6),
+                            'offset' => $pos,
+                            'length' => $fullLen,
+                        ];
+                        $pos = $close + 2;
+                        continue;
+                    } elseif (str_starts_with($inner, 'link ')) {
+                        $constructs[] = [
+                            'type' => 'link',
+                            'body' => substr($inner, 5),
+                            'offset' => $pos,
+                            'length' => $fullLen,
+                        ];
+                        $pos = $close + 2;
+                        continue;
+                    }
+                }
+            }
+
+            $pos++;
+        }
+
+        return $constructs;
+    }
+
+    /**
+     * Render a [[block app/name args]] construct.
+     */
+    private function renderBlock(string $body, bool $isXhtml): string
+    {
+        if (!$isXhtml || $this->blockFactory === null) {
+            return '';
+        }
+
+        try {
+            // Parse "app/block arg1=val1 arg2=val2"
+            $parts = explode(' ', $body, 2);
+            $appBlock = $parts[0] ?? '';
+            $argStr = $parts[1] ?? '';
+
+            $slash = strpos($appBlock, '/');
+            if ($slash === false) {
+                return '';
+            }
+            $app = substr($appBlock, 0, $slash);
+            $block = substr($appBlock, $slash + 1);
+
+            $args = [];
+            if ($argStr !== '') {
+                foreach (preg_split('/\s+/', $argStr) as $pair) {
+                    [$key, $value] = array_pad(explode('=', $pair, 2), 2, '');
+                    $args[$key] = $value;
+                }
+            }
+
+            $blockCollection = $this->blockFactory->create();
+            $blockObj = $blockCollection->getBlock(
+                $app,
+                $app . '_Block_' . $block,
+                $args,
+            );
+
+            return $blockObj->getContent();
+        } catch (Throwable $e) {
+            return htmlspecialchars($e->getMessage());
+        }
+    }
+
+    /**
+     * Render a [[link title | app/method args]] construct.
+     */
+    private function renderRegistryLink(string $body, bool $isXhtml): string
+    {
+        if (!$isXhtml) {
+            [$title] = explode('|', $body, 2);
+
+            return htmlspecialchars(trim($title));
+        }
+
+        try {
+            [$title, $call] = array_pad(explode('|', $body, 2), 2, '');
+            $opts = explode(' ', trim($call));
+            $method = trim(array_shift($opts));
+            parse_str(implode('&', $opts), $args);
+
+            $link = new Horde_Url($this->registry->link($method, $args));
+
+            return $link->link() . htmlspecialchars(trim($title)) . '</a>';
+        } catch (Throwable $e) {
+            return htmlspecialchars($e->getMessage());
+        }
     }
 
     /**
