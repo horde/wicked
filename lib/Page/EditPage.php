@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2003-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -28,9 +29,9 @@ class Wicked_Page_EditPage extends Wicked_Page
      *
      * @var array
      */
-    public $supportedModes = array(
+    public $supportedModes = [
         Wicked::MODE_DISPLAY => true,
-        Wicked::MODE_EDIT => true);
+        Wicked::MODE_EDIT => true];
 
     /**
      * The page that we're editing.
@@ -113,8 +114,8 @@ class Wicked_Page_EditPage extends Wicked_Page
     public function display()
     {
         $GLOBALS['page_output']->addScriptFile('edit.js');
-        $GLOBALS['injector']->getInstance('Horde_View_Topbar')->subinfo =
-            sprintf(
+        $GLOBALS['injector']->getInstance('Horde_View_Topbar')->subinfo
+            = sprintf(
                 _("Last Modified %s by %s"),
                 $this->formatVersionCreated(),
                 $this->author()
@@ -129,20 +130,30 @@ class Wicked_Page_EditPage extends Wicked_Page
         $view->header = $page->pageUrl()->link()
             . htmlspecialchars($page->pageName()) . '</a> ';
         if ($page->isLocked()) {
-            $view->header .= ' ' . Horde::img('locked.png', _("Locked"));
+            /**
+             * ARCHITECTURE VIOLATION: Using deprecated Horde::img()
+             * @deprecated Use Horde_Themes_Image::tag() instead
+             * @see Horde_Deprecated::img()
+             */
+$view->header .= ' ' . Horde::img('locked.png', _("Locked"));
         }
         $view->cancel = $page->pageUrl()
             ->add('actionID', 'unlock')
-            ->link(array('class' => 'horde-cancel'))
+            ->link(['class' => 'horde-cancel'])
             . _("Cancel") . '</a>';
         if (!empty($GLOBALS['conf']['wicked']['require_change_log'])) {
-            $view->changelogRequired = Horde::img(
+            /**
+             * ARCHITECTURE VIOLATION: Using deprecated Horde::img()
+             * @deprecated Use Horde_Themes_Image::tag() instead
+             * @see Horde_Deprecated::img()
+             */
+$view->changelogRequired = Horde::img(
                 'required.png',
                 _("Changelog is required")
             );
         }
-        if (!empty($GLOBALS['conf']['wicked']['captcha']) &&
-            !$GLOBALS['registry']->getAuth()) {
+        if (!empty($GLOBALS['conf']['wicked']['captcha'])
+            && !$GLOBALS['registry']->getAuth()) {
             $figlet = new Text_Figlet();
             Horde_Exception_Pear::catchError($figlet->loadFont(
                 $GLOBALS['conf']['wicked']['figlet_font']
@@ -198,9 +209,9 @@ class Wicked_Page_EditPage extends Wicked_Page
         if (!$this->allows(Wicked::MODE_EDIT)) {
             $notification->push(sprintf(_("You don't have permission to edit \"%s\"."), $page->pageName()));
         } else {
-            if (!empty($GLOBALS['conf']['wicked']['captcha']) &&
-                !$GLOBALS['registry']->getAuth() &&
-                (Horde_String::lower(Horde_Util::getFormData('wicked_captcha') ?? '') != Horde_String::lower(Wicked::getCAPTCHA()))) {
+            if (!empty($GLOBALS['conf']['wicked']['captcha'])
+                && !$GLOBALS['registry']->getAuth()
+                && (Horde_String::lower(Horde_Util::getFormData('wicked_captcha') ?? '') != Horde_String::lower(Wicked::getCAPTCHA()))) {
                 $notification->push(_("Random string did not match."), 'horde.error');
                 return;
             }
@@ -208,9 +219,9 @@ class Wicked_Page_EditPage extends Wicked_Page
             $changelog = Horde_Util::getFormData('changelog') ?? '';
             if ($conf['wicked']['require_change_log'] && empty($changelog)) {
                 $notification->push(_("You must provide a change log."), 'horde.error');
-                $GLOBALS['page_output']->addInlineScript(array(
-                    'if (document.editform && document.editform.changelog) document.editform.changelog.focus()'
-                ), true);
+                $GLOBALS['page_output']->addInlineScript([
+                    'if (document.editform && document.editform.changelog) document.editform.changelog.focus()',
+                ], true);
                 return;
             }
             if (trim($text) == trim($page->getText())) {

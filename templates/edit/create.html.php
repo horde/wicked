@@ -21,7 +21,7 @@
   </tr>
  </thead>
  <tbody>
-<?php echo $this->renderPartial('pagelist/page', array('collection' => $this->pages))  ?>
+<?php echo $this->renderPartial('pagelist/page', ['collection' => $this->pages])  ?>
  </tbody>
 </table>
 <br />

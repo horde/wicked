@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2003-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -28,9 +29,9 @@ class Wicked_Page_AddPage extends Wicked_Page
      *
      * @var array
      */
-    public $supportedModes = array(
-        Wicked::MODE_DISPLAY => true
-    );
+    public $supportedModes = [
+        Wicked::MODE_DISPLAY => true,
+    ];
 
     /**
      * The page to confirm creation of.
@@ -82,7 +83,7 @@ class Wicked_Page_AddPage extends Wicked_Page
         $view->name = $this->pageName();
         if ($this->_results) {
             $page_output->addScriptFile('tables.js', 'horde');
-            $view->pages = array();
+            $view->pages = [];
             foreach ($this->_results as $page) {
                 if (!empty($page['page_history'])) {
                     $page = new Wicked_Page_StandardHistoryPage($page);

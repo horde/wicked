@@ -1,5 +1,7 @@
 <?php
+
 namespace Horde\Wicked;
+
 use Horde\Text\Wiki\WikiRendererBase;
 use Horde_Mime_Part;
 use Horde_Mime_Viewer;
@@ -25,7 +27,8 @@ class XhtmlRendererCode2 extends WikiRendererBase
         $viewer = Horde_Mime_Viewer::factory(
             'Horde_Core_Mime_Viewer_Syntaxhighlighter',
             $part,
-            array('registry' => $GLOBALS['registry']));
+            ['registry' => $GLOBALS['registry']]
+        );
         $data = $viewer->render('inline');
         $data = reset($data);
         return $data['data'];

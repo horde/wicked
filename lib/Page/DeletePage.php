@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2003-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -28,7 +28,7 @@ class Wicked_Page_DeletePage extends Wicked_Page
      *
      * @var array
      */
-    public $supportedModes = array(Wicked::MODE_DISPLAY => true);
+    public $supportedModes = [Wicked::MODE_DISPLAY => true];
 
     /**
      * The page that we're confirming deletion for.
@@ -85,10 +85,12 @@ class Wicked_Page_DeletePage extends Wicked_Page
         if (empty($version)) {
             $msg = _("Are you sure you want to delete this page? All versions will be permanently removed.");
         } else {
-            $msg = sprintf(_("Are you sure you want to delete version %s of this page?"),
-                           $page->version());
+            $msg = sprintf(
+                _("Are you sure you want to delete version %s of this page?"),
+                $page->version()
+            );
         }
-?>
+        ?>
 <form method="post" name="deleteform" action="<?php echo Wicked::url('DeletePage') ?>">
 <?php Horde_Util::pformInput() ?>
 <input type="hidden" name="page" value="DeletePage" />
@@ -97,7 +99,14 @@ class Wicked_Page_DeletePage extends Wicked_Page
 <input type="hidden" name="referrer" value="<?php echo htmlspecialchars($page->pageName()) ?>" />
 
 <h1 class="header">
- <?php echo _("Delete Page") . ': ' . Horde::link($page->pageUrl()) . htmlspecialchars($page->pageName()) . '</a> '; if ($page->isLocked()) echo Horde::img('locked.png', _("Locked")) ?>
+ <?php echo _("Delete Page") . ': ' . Horde::link($page->pageUrl()) . htmlspecialchars($page->pageName()) . '</a> '; /**
+  * ARCHITECTURE VIOLATION: Using deprecated Horde::img()
+  * @deprecated Use Horde_Themes_Image::tag() instead
+  * @see Horde_Deprecated::img()
+  */
+if ($page->isLocked()) {
+     echo Horde::img('locked.png', _("Locked"));
+ } ?>
 </h1>
 
 <div class="headerbox" style="padding:4px">
@@ -136,14 +145,18 @@ class Wicked_Page_DeletePage extends Wicked_Page
             if (empty($version)) {
                 $GLOBALS['wicked']->removeAllVersions($pagename);
                 $GLOBALS['notification']->push(sprintf(_("Successfully deleted \"%s\"."), $pagename), 'horde.success');
-                Wicked::mail("Deleted page: $pagename\n",
-                             array('Subject' => '[' . $GLOBALS['registry']->get('name') . '] deleted: ' . $pagename));
+                Wicked::mail(
+                    "Deleted page: $pagename\n",
+                    ['Subject' => '[' . $GLOBALS['registry']->get('name') . '] deleted: ' . $pagename]
+                );
                 Wicked::url('Wiki/Home', true)->redirect();
             }
             $GLOBALS['wicked']->removeVersion($pagename, $version);
             $GLOBALS['notification']->push(sprintf(_("Deleted version %s of \"%s\"."), $version, $pagename), 'horde.success');
-            Wicked::mail("Deleted version: $version of $pagename\n",
-                         array('Subject' => '[' . $GLOBALS['registry']->get('name') . '] deleted: ' . $pagename . ' [' . $version . ']'));
+            Wicked::mail(
+                "Deleted version: $version of $pagename\n",
+                ['Subject' => '[' . $GLOBALS['registry']->get('name') . '] deleted: ' . $pagename . ' [' . $version . ']']
+            );
             Wicked::url($pagename, true)->redirect();
         }
 

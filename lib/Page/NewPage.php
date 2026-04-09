@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2003-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -28,9 +29,9 @@ class Wicked_Page_NewPage extends Wicked_Page
      *
      * @var array
      */
-    public $supportedModes = array(
+    public $supportedModes = [
         Wicked::MODE_DISPLAY => true,
-        Wicked::MODE_EDIT => true);
+        Wicked::MODE_EDIT => true];
 
     /**
      * The page that we're creating.
@@ -96,8 +97,8 @@ class Wicked_Page_NewPage extends Wicked_Page
         $view->action = Wicked::url('NewPage');
         $view->formInput = Horde_Util::formInput();
         $view->referrer = $this->referrer();
-        if (!empty($GLOBALS['conf']['wicked']['captcha']) &&
-            !$GLOBALS['registry']->getAuth()) {
+        if (!empty($GLOBALS['conf']['wicked']['captcha'])
+            && !$GLOBALS['registry']->getAuth()) {
             $figlet = new Text_Figlet();
             Horde_Exception_Pear::catchError($figlet->loadFont(
                 $GLOBALS['conf']['wicked']['figlet_font']
@@ -133,9 +134,9 @@ class Wicked_Page_NewPage extends Wicked_Page
         if (!$this->allows(Wicked::MODE_EDIT)) {
             $notification->push(sprintf(_("You don't have permission to create \"%s\"."), $this->referrer()));
         } else {
-            if (!empty($GLOBALS['conf']['wicked']['captcha']) &&
-                !$GLOBALS['registry']->getAuth() &&
-                (Horde_String::lower(Horde_Util::getFormData('wicked_captcha') ?? '') != Horde_String::lower(Wicked::getCAPTCHA()))) {
+            if (!empty($GLOBALS['conf']['wicked']['captcha'])
+                && !$GLOBALS['registry']->getAuth()
+                && (Horde_String::lower(Horde_Util::getFormData('wicked_captcha') ?? '') != Horde_String::lower(Wicked::getCAPTCHA()))) {
                 $notification->push(_("Random string did not match."), 'horde.error');
                 return;
             }
@@ -150,8 +151,10 @@ class Wicked_Page_NewPage extends Wicked_Page
                 $result = $wicked->newPage($this->referrer(), $text);
                 $notification->push(_("Page Created"), 'horde.success');
             } catch (Wicked_Exception $e) {
-                $notification->push(sprintf(_("Create Failed: %s"),
-                                            $e->getMessage()), 'horde.error');
+                $notification->push(sprintf(
+                    _("Create Failed: %s"),
+                    $e->getMessage()
+                ), 'horde.error');
             }
         }
 

@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2003-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -26,9 +27,9 @@ class Wicked_Page_AllPages extends Wicked_Page
     /**
      * Display modes supported by this page.
      */
-    public $supportedModes = array(
+    public $supportedModes = [
         Wicked::MODE_CONTENT => true,
-        Wicked::MODE_DISPLAY => true);
+        Wicked::MODE_DISPLAY => true];
 
     /**
      * Renders this page in content mode.
@@ -50,7 +51,7 @@ class Wicked_Page_AllPages extends Wicked_Page
     {
         global $injector, $page_output;
 
-        $pages = array();
+        $pages = [];
         foreach ($this->content() as $page) {
             $page = new Wicked_Page_StandardPage($page);
             $pages[] = $page->toView();
@@ -62,7 +63,7 @@ class Wicked_Page_AllPages extends Wicked_Page
 
         // Show search form and page header.
         return $view->render('pagelist/header')
-            . $view->renderPartial('pagelist/page', array('collection' => $pages))
+            . $view->renderPartial('pagelist/page', ['collection' => $pages])
             . $view->render('pagelist/footer');
     }
 

@@ -1,8 +1,9 @@
 <?php
+
 /**
  * Change page_id column to autoincrement.
  *
- * Copyright 2010-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2010-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -30,6 +31,6 @@ class WickedAutoIncrementPageId extends Horde_Db_Migration_Base
      */
     public function down()
     {
-        $this->changeColumn('wicked_pages', 'page_id', 'integer', array('autoincrement' => false));
+        $this->changeColumn('wicked_pages', 'page_id', 'integer', ['autoincrement' => false]);
     }
 }

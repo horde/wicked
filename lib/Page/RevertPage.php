@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2003-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -28,7 +28,7 @@ class Wicked_Page_RevertPage extends Wicked_Page
      *
      * @var array
      */
-    public $supportedModes = array(Wicked::MODE_DISPLAY => true);
+    public $supportedModes = [Wicked::MODE_DISPLAY => true];
 
     /**
      * The page that we're confirming reversion for.
@@ -79,7 +79,7 @@ class Wicked_Page_RevertPage extends Wicked_Page
         $version = Horde_Util::getFormData('version');
         $page = Wicked_Page::getPage($this->referrer(), $version);
         $msg = sprintf(_("Are you sure you want to revert to version %s of this page?"), $version);
-?>
+        ?>
 <form method="post" name="revertform" action="<?php echo Wicked::url('RevertPage') ?>">
 <?php Horde_Util::pformInput() ?>
 <input type="hidden" name="page" value="RevertPage" />
@@ -88,7 +88,14 @@ class Wicked_Page_RevertPage extends Wicked_Page
 <input type="hidden" name="referrer" value="<?php echo htmlspecialchars($page->pageName()) ?>" />
 
 <h1 class="header">
- <?php echo _("Revert Page") . ': ' . Horde::link($page->pageUrl(), $page->pageName()) . $page->pageName() . '</a>'; if ($page->isLocked()) echo Horde::img('locked.png', _("Locked")) ?>
+ <?php echo _("Revert Page") . ': ' . Horde::link($page->pageUrl(), $page->pageName()) . $page->pageName() . '</a>'; /**
+  * ARCHITECTURE VIOLATION: Using deprecated Horde::img()
+  * @deprecated Use Horde_Themes_Image::tag() instead
+  * @see Horde_Deprecated::img()
+  */
+if ($page->isLocked()) {
+     echo Horde::img('locked.png', _("Locked"));
+ } ?>
 </h1>
 
 <div class="headerbox" style="padding:4px">

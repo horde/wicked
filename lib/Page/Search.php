@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2003-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -27,17 +28,17 @@ class Wicked_Page_Search extends Wicked_Page
      * Display modes supported by this page.
      * @var array
      */
-    public $supportedModes = array(
+    public $supportedModes = [
         Wicked::MODE_CONTENT => true,
-        Wicked::MODE_DISPLAY => true
-    );
+        Wicked::MODE_DISPLAY => true,
+    ];
 
     /**
      * Cached search results.
      *
      * @var array
      */
-    protected $_results = array();
+    protected $_results = [];
 
     /**
      * Renders this page in content mode.
@@ -49,12 +50,12 @@ class Wicked_Page_Search extends Wicked_Page
     public function content($searchtext = '')
     {
         if (empty($searchtext)) {
-            return array();
+            return [];
         }
-        return array(
+        return [
             'titles' => $GLOBALS['wicked']->searchTitles($searchtext),
-            'pages' => $GLOBALS['wicked']->searchText($searchtext, false)
-        );
+            'pages' => $GLOBALS['wicked']->searchText($searchtext, false),
+        ];
     }
 
     /**
@@ -92,29 +93,29 @@ class Wicked_Page_Search extends Wicked_Page
         }
 
         /* Prepare exact match section */
-        $exact = array();
+        $exact = [];
         $page = new Wicked_Page_StandardPage($searchtext);
         if ($wicked->pageExists($searchtext)) {
             $exact[] = $page->toView();
         } else {
-            $exact[] = (object)array(
+            $exact[] = (object) [
                 'author' => '',
                 'context' => Wicked::url($searchtext, false)
-                    ->link(array(
-                        'title' => sprintf(_("Create %s"), $searchtext)
-                    ))
+                    ->link([
+                        'title' => sprintf(_("Create %s"), $searchtext),
+                    ])
                     . sprintf(_("%s does not exist. You can create it now."), '<strong>' . htmlspecialchars($searchtext) . '</strong>')
                     . '</a>',
                 'date' => '',
                 'name' => htmlspecialchars($searchtext),
                 'timestamp' => 0,
                 'version' => '',
-                'url' => Wicked::url($searchtext, false)
-            );
+                'url' => Wicked::url($searchtext, false),
+            ];
         }
 
         /* Prepare page title matches */
-        $titles = array();
+        $titles = [];
         foreach ($this->_results['titles'] as $page) {
             if (!empty($page['page_history'])) {
                 $page = new Wicked_Page_StandardHistoryPage($page);
@@ -126,7 +127,7 @@ class Wicked_Page_Search extends Wicked_Page
         }
 
         /* Prepare page text matches */
-        $pages = array();
+        $pages = [];
         foreach ($this->_results['pages'] as $page) {
             if (!empty($page['page_history'])) {
                 $page = new Wicked_Page_StandardHistoryPage($page);
@@ -156,7 +157,7 @@ class Wicked_Page_Search extends Wicked_Page
         $content .= $header->render('pagelist/results_header')
             . $view->renderPartial(
                 'pagelist/page',
-                array('collection' => $exact)
+                ['collection' => $exact]
             )
             . $view->render('pagelist/results_footer');
 
@@ -165,7 +166,7 @@ class Wicked_Page_Search extends Wicked_Page
         $content .= $header->render('pagelist/results_header')
             . $view->renderPartial(
                 'pagelist/page',
-                array('collection' => $titles)
+                ['collection' => $titles]
             )
             . $view->render('pagelist/results_footer');
 
@@ -174,7 +175,7 @@ class Wicked_Page_Search extends Wicked_Page
         $content .= $header->render('pagelist/results_header')
             . $view->renderPartial(
                 'pagelist/page',
-                array('collection' => $pages)
+                ['collection' => $pages]
             )
             . $view->render('pagelist/results_footer');
 

@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2003-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -28,10 +29,10 @@ class Wicked_Page_MergeOrRename extends Wicked_Page
      *
      * @var array
      */
-    public $supportedModes = array(
+    public $supportedModes = [
         Wicked::MODE_EDIT => true,
         Wicked::MODE_REMOVE => true,
-        Wicked::MODE_DISPLAY => true);
+        Wicked::MODE_DISPLAY => true];
 
     /**
      * The page that we're displaying similar pages to.
@@ -45,7 +46,7 @@ class Wicked_Page_MergeOrRename extends Wicked_Page
      *
      * @var string
      */
-    protected $_errors = array();
+    protected $_errors = [];
 
     public function __construct($referrer)
     {
@@ -99,7 +100,7 @@ class Wicked_Page_MergeOrRename extends Wicked_Page
 
         $referrer = $this->referrer();
 
-        $callback = function($string) {
+        $callback = function ($string) {
             return '=' . str_pad(dechex(ord($string[1])), 2, '0', STR_PAD_LEFT);
         };
 
@@ -119,7 +120,7 @@ class Wicked_Page_MergeOrRename extends Wicked_Page
         }
 
         // Propogate any validation errors.
-        foreach (array('new_name', 'collision') as $elt) {
+        foreach (['new_name', 'collision'] as $elt) {
             if (!isset($this->_errors[$elt])) {
                 $this->_errors[$elt] = '';
             }
@@ -130,7 +131,12 @@ class Wicked_Page_MergeOrRename extends Wicked_Page
         $view->formAction = Wicked::url('MergeOrRename');
         $view->referrer = $referrer;
         $view->referrerLink = Wicked::url($referrer);
-        $view->requiredMarker = Horde::img('required.png', '*');
+        /**
+         * ARCHITECTURE VIOLATION: Using deprecated Horde::img()
+         * @deprecated Use Horde_Themes_Image::tag() instead
+         * @see Horde_Deprecated::img()
+         */
+$view->requiredMarker = Horde::img('required.png', '*');
         $view->references = $references;
         $view->referenceCount = sprintf(_("This page is referenced from %d other page(s)."), count($references));
         $view->formInput = Horde_Util::formInput();
@@ -185,8 +191,10 @@ class Wicked_Page_MergeOrRename extends Wicked_Page
 
         $sourcePage = Wicked_Page::getPage($referrer);
         if (!$this->allows(Wicked::MODE_EDIT)) {
-            throw new Wicked_Exception(sprintf(_("You do not have permission to edit \"%s\""),
-                                               $referrer));
+            throw new Wicked_Exception(sprintf(
+                _("You do not have permission to edit \"%s\""),
+                $referrer
+            ));
         }
 
         $destPage = Wicked_Page::getPage($new_name);
@@ -194,12 +202,16 @@ class Wicked_Page_MergeOrRename extends Wicked_Page
             // Destination page exists.
             if ($collision != 'merge') {
                 // We don't want to overwrite.
-                throw new Wicked_Exception(sprintf(_("Page \"%s\" already exists."),
-                                                   $new_name));
+                throw new Wicked_Exception(sprintf(
+                    _("Page \"%s\" already exists."),
+                    $new_name
+                ));
             }
             if (!$destPage->allows(Wicked::MODE_EDIT)) {
-                throw new Wicked_Exception(sprintf(_("You do not have permission to edit \"%s\""),
-                                            $new_name));
+                throw new Wicked_Exception(sprintf(
+                    _("You do not have permission to edit \"%s\""),
+                    $new_name
+                ));
             }
 
             // Merge the two pages.
@@ -212,8 +224,8 @@ class Wicked_Page_MergeOrRename extends Wicked_Page
 
             $url = Wicked::url($new_name, true, -1);
             $message = sprintf(_("Merged \"%s\" into \"%s\". New page: %s\n"), $referrer, $new_name, $url);
-            Wicked::mail($message, array(
-                'Subject' => '[' . $registry->get('name') . '] merged: ' . $referrer . ', ' . $new_name));
+            Wicked::mail($message, [
+                'Subject' => '[' . $registry->get('name') . '] merged: ' . $referrer . ', ' . $new_name]);
         } else {
             // Rename the page.
             $wicked->renamePage($referrer, $new_name);
@@ -221,25 +233,28 @@ class Wicked_Page_MergeOrRename extends Wicked_Page
 
             $url = Wicked::url($new_name, true, -1);
             $message = sprintf(_("Renamed \"%s\" to \"%s\". New page: %s\n"), $referrer, $new_name, $url);
-            Wicked::mail($message, array(
-                'Subject' => '[' . $registry->get('name') . '] renamed: ' . $referrer . ', ' . $new_name));
+            Wicked::mail($message, [
+                'Subject' => '[' . $registry->get('name') . '] renamed: ' . $referrer . ', ' . $new_name]);
         }
 
         // We don't check permissions on these pages since we want references
         // to be fixed even if the user doing the editing couldn't fix that
         // page, and fixing references is likely to never be a destructive
         // action, and the user can't supply their own data for it.
-        $references = Horde_Util::getFormData('ref', array());
+        $references = Horde_Util::getFormData('ref', []);
 
         if ($references) {
             $wikiWord = '/^' . Wicked::REGEXP_WIKIWORD . '$/';
 
-            $changelog = sprintf(_("Changed references from %s to %s"),
-                                 $referrer, $new_name);
+            $changelog = sprintf(
+                _("Changed references from %s to %s"),
+                $referrer,
+                $new_name
+            );
 
             // Links like ((Foobar|Description Text))
-            $from = array('/\(\(' . preg_quote($referrer, '/') . '(\|[^)]*?)\)\)/');
-            $to = array('((' . $new_name . '$1))');
+            $from = ['/\(\(' . preg_quote($referrer, '/') . '(\|[^)]*?)\)\)/'];
+            $to = ['((' . $new_name . '$1))'];
 
             // Links like ((Foobar))
             if (preg_match($wikiWord, $new_name)) {
@@ -267,9 +282,14 @@ class Wicked_Page_MergeOrRename extends Wicked_Page
                 try {
                     $refPage = $wicked->retrieveByName($page_name);
                 } catch (Wicked_Exception $e) {
-                    $notification->push(sprintf(_("Error retrieving %s: %s"),
-                                                $page_name, $e->getMessage()),
-                                        'horde.error');
+                    $notification->push(
+                        sprintf(
+                            _("Error retrieving %s: %s"),
+                            $page_name,
+                            $e->getMessage()
+                        ),
+                        'horde.error'
+                    );
                     continue;
                 }
 

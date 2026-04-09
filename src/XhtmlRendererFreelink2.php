@@ -1,5 +1,7 @@
 <?php
+
 namespace Horde\Wicked;
+
 use Horde\Text\Wiki\WikiRendererBase;
 use Horde\Text\Wiki\XhtmlRendererWikilink;
 

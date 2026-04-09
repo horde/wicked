@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2011-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2011-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -24,7 +25,7 @@ class Wicked_Factory_Driver extends Horde_Core_Factory_Injector
     /**
      * @var array
      */
-    private $_instances = array();
+    private $_instances = [];
 
     /**
      * Return an Wicked_Driver instance.
@@ -40,13 +41,13 @@ class Wicked_Factory_Driver extends Horde_Core_Factory_Injector
         if (empty($driver)) {
             throw new Wicked_Exception('Wicked is not configured');
         }
-        $signature = serialize(array($driver, $GLOBALS['conf']['storage']['params']['driverconfig']));
+        $signature = serialize([$driver, $GLOBALS['conf']['storage']['params']['driverconfig']]);
         if (empty($this->_instances[$signature])) {
             $params = [];
             switch ($driver) {
-            case 'Sql':
-                $params = array('db' => $this->getDb($injector));
-                break;
+                case 'Sql':
+                    $params = ['db' => $this->getDb($injector)];
+                    break;
             }
             $class = 'Wicked_Driver_' . $driver;
             $this->_instances[$signature] = new $class($params);

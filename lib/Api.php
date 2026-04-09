@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2010-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2010-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -27,9 +28,9 @@ class Wicked_Api extends Horde_Registry_Api
      *
      * @var array
      */
-    protected $_links = array(
-        'show' => '%application%/display.php?page=|page|&version=|version|#|toc|'
-    );
+    protected $_links = [
+        'show' => '%application%/display.php?page=|page|&version=|version|#|toc|',
+    ];
 
     /**
      * Returns a list of available pages.
@@ -55,13 +56,13 @@ class Wicked_Api extends Horde_Registry_Api
     public function getPageInfo($pagename)
     {
         $page = Wicked_Page::getPage($pagename);
-        return array(
+        return [
             'page_version' => $page->version(),
             'page_checksum' => md5($page->getText()),
             'version_created' => $page->versionCreated(),
             'change_author' => $page->author(),
             'change_log' => $page->changeLog(),
-        );
+        ];
     }
 
     /**
@@ -72,23 +73,23 @@ class Wicked_Api extends Horde_Registry_Api
      * @return array  An array of arrays of page parameters.
      * @throws Wicked_Exception
      */
-    public function getMultiplePageInfo($pagenames = array())
+    public function getMultiplePageInfo($pagenames = [])
     {
         if (empty($pagenames)) {
             $pagenames = $GLOBALS['wicked']->getPages(false);
         }
 
-        $info = array();
+        $info = [];
 
         foreach ($pagenames as $pagename) {
             $page = Wicked_Page::getPage($pagename);
-            $info[$pagename] = array(
+            $info[$pagename] = [
                 'page_version' => $page->version(),
                 'page_checksum' => md5($page->getText()),
                 'version_created' => $page->versionCreated(),
                 'change_author' => $page->author(),
-                'change_log' => $page->changeLog()
-            );
+                'change_log' => $page->changeLog(),
+            ];
         }
 
         return $info;
@@ -175,8 +176,8 @@ class Wicked_Api extends Horde_Registry_Api
         if (!$page->allows(Wicked::MODE_EDIT)) {
             throw new Wicked_Exception(sprintf(_("You don't have permission to edit \"%s\"."), $pagename));
         }
-        if ($GLOBALS['conf']['wicked']['require_change_log'] &&
-            empty($changelog)) {
+        if ($GLOBALS['conf']['wicked']['require_change_log']
+            && empty($changelog)) {
             throw new Wicked_Exception(_("You must provide a change log."));
         }
 
@@ -209,11 +210,11 @@ class Wicked_Api extends Horde_Registry_Api
     {
         global $wicked;
         $templates = $wicked->getMatchingPages('Template', Wicked_Page::MATCH_ENDS);
-        $list = array(array('category' => _("Wiki Templates"),
-            'templates' => array()));
+        $list = [['category' => _("Wiki Templates"),
+            'templates' => []]];
         foreach ($templates as $page) {
-            $list[0]['templates'][] = array('id' => $page['page_name'],
-                'name' => $page['page_name']);
+            $list[0]['templates'][] = ['id' => $page['page_name'],
+                'name' => $page['page_name']];
         }
         return $list;
     }
@@ -284,15 +285,15 @@ class Wicked_Api extends Horde_Registry_Api
      */
     public function getRecentChanges($days = 3)
     {
-        $info = array();
+        $info = [];
         foreach ($GLOBALS['wicked']->getRecentChanges($days) as $page) {
-            $info[$page['page_name']] = array(
+            $info[$page['page_name']] = [
                 'page_version' => $page['page_version'],
                 'page_checksum' => md5($page['page_text']),
                 'version_created' => $page['version_created'],
                 'change_author' => $page['change_author'],
                 'change_log' => $page['change_log'],
-            );
+            ];
         }
 
         return $info;

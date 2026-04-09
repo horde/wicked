@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2003-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -10,8 +11,10 @@
  * @author   Tyler Colbert <tyler@colberts.us>
  * @package  Wicked
  */
-use function PHP81_BC\strftime;
 use Horde\Wicked\WickedEngine;
+
+use function PHP81_BC\strftime;
+
 /**
  * Abstract page class.
  *
@@ -22,10 +25,10 @@ use Horde\Wicked\WickedEngine;
  */
 class Wicked_Page
 {
-    const MATCH_LEFT = 1;
-    const MATCH_RIGHT = 2;
-    const MATCH_ENDS = 3;
-    const MATCH_ANY = 4;
+    public const MATCH_LEFT = 1;
+    public const MATCH_RIGHT = 2;
+    public const MATCH_ENDS = 3;
+    public const MATCH_ANY = 4;
 
     /**
      * Display modes supported by this page. Possible modes:
@@ -42,7 +45,7 @@ class Wicked_Page
      *
      * @var array
      */
-    public $supportedModes = array();
+    public $supportedModes = [];
 
     /**
      * Instance of a Text_Wiki processor.
@@ -119,65 +122,65 @@ class Wicked_Page
         $pagePerms = $this->getPermissions();
 
         switch ($mode) {
-        case Wicked::MODE_CREATE:
-            // Special mode for pages that don't exist yet - generic
-            // to all pages.
-            if ($browser->isRobot()) {
-                return false;
-            }
+            case Wicked::MODE_CREATE:
+                // Special mode for pages that don't exist yet - generic
+                // to all pages.
+                if ($browser->isRobot()) {
+                    return false;
+                }
 
-            if ($GLOBALS['registry']->isAdmin()) {
-                return true;
-            }
+                if ($GLOBALS['registry']->isAdmin()) {
+                    return true;
+                }
 
-            $permName = 'wicked:pages';
-            $perms = $GLOBALS['injector']->getInstance('Horde_Perms');
+                $permName = 'wicked:pages';
+                $perms = $GLOBALS['injector']->getInstance('Horde_Perms');
 
-            if ($perms->exists($permName)) {
-                return $perms->hasPermission($permName, $GLOBALS['registry']->getAuth(), Horde_Perms::EDIT);
-            } else {
-                return $GLOBALS['registry']->getAuth();
-            }
-            break;
+                if ($perms->exists($permName)) {
+                    return $perms->hasPermission($permName, $GLOBALS['registry']->getAuth(), Horde_Perms::EDIT);
+                } else {
+                    return $GLOBALS['registry']->getAuth();
+                }
+                break;
 
-        case Wicked::MODE_EDIT:
-            if ($browser->isRobot()) {
-                return false;
-            }
+            case Wicked::MODE_EDIT:
+                if ($browser->isRobot()) {
+                    return false;
+                }
 
-            if ($GLOBALS['registry']->isAdmin()) {
-                return true;
-            }
+                if ($GLOBALS['registry']->isAdmin()) {
+                    return true;
+                }
 
-            if (($pagePerms & Horde_Perms::EDIT) == 0) {
-                return false;
-            }
-            break;
+                if (($pagePerms & Horde_Perms::EDIT) == 0) {
+                    return false;
+                }
+                break;
 
-        case Wicked::MODE_REMOVE:
-            if ($browser->isRobot()) {
-                return false;
-            }
+            case Wicked::MODE_REMOVE:
+                if ($browser->isRobot()) {
+                    return false;
+                }
 
-            if ($GLOBALS['registry']->isAdmin()) {
-                return true;
-            }
+                if ($GLOBALS['registry']->isAdmin()) {
+                    return true;
+                }
 
-            if (($pagePerms & Horde_Perms::DELETE) == 0) {
-                return false;
-            }
-            break;
+                if (($pagePerms & Horde_Perms::DELETE) == 0) {
+                    return false;
+                }
+                break;
 
-        // All other modes require READ permissions.
-        default:
-            if ($GLOBALS['registry']->isAdmin()) {
-                return true;
-            }
+                // All other modes require READ permissions.
+            default:
+                if ($GLOBALS['registry']->isAdmin()) {
+                    return true;
+                }
 
-            if (($pagePerms & Horde_Perms::READ) == 0) {
-                return false;
-            }
-            break;
+                if (($pagePerms & Horde_Perms::READ) == 0) {
+                    return false;
+                }
+                break;
         }
 
         return $this->supports($mode);
@@ -204,9 +207,11 @@ class Wicked_Page
      */
     public static function getCurrentPage()
     {
-        return Wicked_Page::getPage(rtrim(Horde_Util::getFormData('page') ?? '', '/'),
-                                    Horde_Util::getFormData('version'),
-                                    Horde_Util::getFormData('referrer'));
+        return Wicked_Page::getPage(
+            rtrim(Horde_Util::getFormData('page') ?? '', '/'),
+            Horde_Util::getFormData('version'),
+            Horde_Util::getFormData('referrer')
+        );
     }
 
     /**
@@ -261,9 +266,10 @@ class Wicked_Page
         try {
             $v = $this->versionCreated();
             if (!empty($v)) {
-                return strftime($GLOBALS['prefs']->getValue('date_format'), (int)$v);
+                return strftime($GLOBALS['prefs']->getValue('date_format'), (int) $v);
             }
-        } catch (Wicked_Exception $e) {}
+        } catch (Wicked_Exception $e) {
+        }
         return _("Never");
     }
 
@@ -358,17 +364,19 @@ class Wicked_Page
         try {
             $view->version = $this->version();
             $diff_url = Horde::url('diff.php')
-                ->add(array(
+                ->add([
                     'page' => $this->pageName(),
                     'v1' => '?',
-                    'v2' => $view->version
-                ));
+                    'v2' => $view->version,
+                ]);
 
             $diff_alt = sprintf(_("Show changes for %s"), $view->version);
-            $topbar->subinfo = $diff_url->link(array('title' => $diff_alt))
-                . sprintf(_("Last Modified %s by %s"),
-                          $this->formatVersionCreated(),
-                          $this->author())
+            $topbar->subinfo = $diff_url->link(['title' => $diff_alt])
+                . sprintf(
+                    _("Last Modified %s by %s"),
+                    $this->formatVersionCreated(),
+                    $this->author()
+                )
                 . '</a>';
         } catch (Wicked_Exception $e) {
         }
@@ -380,7 +388,12 @@ class Wicked_Page
         }
         $view->isOld = $this->isOld();
         if ($this->isLocked()) {
-            $view->locked = Horde::img('locked.png', _("Locked"));
+            /**
+             * ARCHITECTURE VIOLATION: Using deprecated Horde::img()
+             * @deprecated Use Horde_Themes_Image::tag() instead
+             * @see Horde_Deprecated::img()
+             */
+$view->locked = Horde::img('locked.png', _("Locked"));
         }
 
         return $view->render('display/title') . $inner;
@@ -396,9 +409,7 @@ class Wicked_Page
      * $param integer $mode    The page render mode.
      * $param array   $params  Any page parameters.
      */
-    public function preDisplay($mode, $params)
-    {
-    }
+    public function preDisplay($mode, $params) {}
 
     /**
      * Renders this page for displaying in a block.
@@ -458,26 +469,26 @@ class Wicked_Page
     public function render($mode, $params = null)
     {
         switch ($mode) {
-        case Wicked::MODE_CONTENT:
-            return $this->content($params);
+            case Wicked::MODE_CONTENT:
+                return $this->content($params);
 
-        case Wicked::MODE_DISPLAY:
-            return $this->display($params);
+            case Wicked::MODE_DISPLAY:
+                return $this->display($params);
 
-        case Wicked::MODE_BLOCK:
-            return $this->block($params);
+            case Wicked::MODE_BLOCK:
+                return $this->block($params);
 
-        case Wicked::MODE_REMOVE:
-            return $this->remove();
+            case Wicked::MODE_REMOVE:
+                return $this->remove();
 
-        case Wicked::MODE_HISTORY:
-            return $this->history();
+            case Wicked::MODE_HISTORY:
+                return $this->history();
 
-        case Wicked::MODE_DIFF:
-            return $this->diff($params);
+            case Wicked::MODE_DIFF:
+                return $this->diff($params);
 
-        default:
-            throw new Wicked_Exception(_("Unsupported"));
+            default:
+                throw new Wicked_Exception(_("Unsupported"));
         }
     }
 
@@ -492,21 +503,21 @@ class Wicked_Page
      */
     public function toView()
     {
-        return (object)array(
+        return (object) [
             'author' => $this->author(),
             'date' => $this->formatVersionCreated(),
             'name' => $this->pageUrl()
-                ->link(array(
-                    'title' => sprintf(_("Display %s"), $this->pageName())
-                ))
+                ->link([
+                    'title' => sprintf(_("Display %s"), $this->pageName()),
+                ])
                 . htmlspecialchars($this->pageName()) . '</a>',
             'timestamp' => $this->versionCreated(),
             'version' => $this->pageUrl()
-                ->link(array(
-                    'title' => sprintf(_("Display Version %s"), $this->version())
-                ))
+                ->link([
+                    'title' => sprintf(_("Display Version %s"), $this->version()),
+                ])
                 . $this->version() . '</a>',
-        );
+        ];
     }
 
     public function isLocked()
@@ -551,7 +562,7 @@ class Wicked_Page
 
     public function pageUrl($linkpage = null, $actionId = null)
     {
-        $params = array('page' => $this->pageName());
+        $params = ['page' => $this->pageName()];
         if ($this->referrer()) {
             $params['referrer'] = $this->referrer();
         }

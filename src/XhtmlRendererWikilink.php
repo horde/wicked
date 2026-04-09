@@ -1,5 +1,5 @@
 <?php
+
 namespace Horde\Wicked;
-class XhtmlRendererWikilink extends XhtmlRendererWikilink2
-{
-}
+
+class XhtmlRendererWikilink extends XhtmlRendererWikilink2 {}

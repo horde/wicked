@@ -37,8 +37,7 @@ class DiffController implements RequestHandlerInterface
     public function __construct(
         private Horde_Notification_Handler $notification,
         private Horde_PageOutput $pageOutput,
-    ) {
-    }
+    ) {}
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

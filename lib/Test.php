@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2010-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2010-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -18,6 +19,7 @@
  * @license  http://www.horde.org/licenses/gpl GPL
  * @author   Michael Slusarz <slusarz@horde.org>
  * @package  Wicked
+ * @coversNothing
  */
 class Wicked_Test extends Horde_Test
 {
@@ -26,41 +28,39 @@ class Wicked_Test extends Horde_Test
      *
      * @var array
      */
-    protected $_moduleList = array();
+    protected $_moduleList = [];
 
     /**
      * PHP settings list.
      *
      * @var array
      */
-    protected $_settingsList = array();
+    protected $_settingsList = [];
 
     /**
      * PEAR modules list.
      *
      * @var array
      */
-    protected $_pearList = array(
-        'Text_Figlet' => array(
+    protected $_pearList = [
+        'Text_Figlet' => [
             'error' => 'The Text_Figlet module can be used to require unauthenticated users to enter a CAPTCHA when updating pages.',
             'required' => false,
-        ),
-    );
+        ],
+    ];
 
     /**
      * Inter-Horde application dependencies.
      *
      * @var array
      */
-    protected $_appList = array();
+    protected $_appList = [];
 
     /**
      * Any application specific tests that need to be done.
      *
      * @return string  HTML output.
      */
-    public function appTests()
-    {
-    }
+    public function appTests() {}
 
 }

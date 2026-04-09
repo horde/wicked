@@ -1,16 +1,18 @@
 <?php
+
 namespace Horde\Wicked;
+
 use Horde\Text\Wiki\WikiRendererBase;
 use Horde\Text\Wiki\XhtmlRendererWikilink;
 use Wicked_Driver;
 use Horde_Registry;
 use Wicked;
+
 /**
  * @package Wicked
  */
 class XhtmlRendererWikilink2 extends XhtmlRendererWikilink
 {
-
     public function __construct(WickedEngine $engine, public readonly Wicked_Driver $storageDriver, Horde_Registry $registry)
     {
         parent::__construct($engine);
@@ -39,7 +41,7 @@ class XhtmlRendererWikilink2 extends XhtmlRendererWikilink
         // getConf() because we'll need a reference (for
         // object instance method callbacks).
         if (isset($this->conf['exists_callback'])) {
-            $callback =& $this->conf['exists_callback'];
+            $callback = & $this->conf['exists_callback'];
         } else {
             $callback = false;
         }
@@ -60,19 +62,19 @@ class XhtmlRendererWikilink2 extends XhtmlRendererWikilink
         }
 
         $anchor = $this->urlEncode(substr($anchor, 1));
-            if (strlen($anchor)) {
+        if (strlen($anchor)) {
             $anchor = '#' . $anchor;
         }
 
         // Does the page exist?
         if ($exists) {
-//            $href = sprintf(preg_replace('/%(?!s)/', '%%', $this->getConf('view_url')), $GLOBALS['conf']['urls']['pretty'] == 'rewrite' ? htmlspecialchars($page) : $this->urlEncode($page)) . $anchor;
+            //            $href = sprintf(preg_replace('/%(?!s)/', '%%', $this->getConf('view_url')), $GLOBALS['conf']['urls']['pretty'] == 'rewrite' ? htmlspecialchars($page) : $this->urlEncode($page)) . $anchor;
             $href = Wicked::url($page);
 
             // get the CSS class and generate output
-            $css = ' class="'.$this->textEncode($this->getConf('css')).'"';
+            $css = ' class="' . $this->textEncode($this->getConf('css')) . '"';
 
-            $start = '<a'.$css.' href="'.$this->textEncode($href).'">';
+            $start = '<a' . $css . ' href="' . $this->textEncode($href) . '">';
             $end = '</a>';
         } else {
             $new_url = $this->getConf('new_url');
@@ -80,11 +82,11 @@ class XhtmlRendererWikilink2 extends XhtmlRendererWikilink
                 return $this->textEncode($text);
             }
 
-//            $href = sprintf(preg_replace('/%(?!s)/', '%%', $new_url), $GLOBALS['conf']['urls']['pretty'] == 'rewrite' ? htmlspecialchars($page) : $this->urlEncode($page));
+            //            $href = sprintf(preg_replace('/%(?!s)/', '%%', $new_url), $GLOBALS['conf']['urls']['pretty'] == 'rewrite' ? htmlspecialchars($page) : $this->urlEncode($page));
             $href = Wicked::url($page);
 
             // get the appropriate CSS class and new-link text
-            $css = ' class="'.$this->textEncode($this->getConf('css_new')).'"';
+            $css = ' class="' . $this->textEncode($this->getConf('css_new')) . '"';
             $new = $this->getConf('new_text');
 
             // what kind of linking are we doing?
@@ -92,16 +94,16 @@ class XhtmlRendererWikilink2 extends XhtmlRendererWikilink
             if (! $pos || ! $new) {
                 // no position (or no new_text), use css only on the page name
 
-                $start = '<a'.$css.' href="'.$this->textEncode($href).'">';
+                $start = '<a' . $css . ' href="' . $this->textEncode($href) . '">';
                 $end = '</a>';
             } elseif ($pos == 'before') {
                 // use the new_text BEFORE the page name
-                $start = '<a'.$css.' href="'.$this->textEncode($href).'">'.$this->textEncode($new).'</a>';
+                $start = '<a' . $css . ' href="' . $this->textEncode($href) . '">' . $this->textEncode($new) . '</a>';
                 $end = '';
             } else {
                 // default, use the new_text link AFTER the page name
                 $start = '';
-                $end = '<a'.$css.' href="'.$this->textEncode($href).'">'.$this->textEncode($new).'</a>';
+                $end = '<a' . $css . ' href="' . $this->textEncode($href) . '">' . $this->textEncode($new) . '</a>';
             }
         }
         if (!strlen($text)) {
@@ -109,15 +111,15 @@ class XhtmlRendererWikilink2 extends XhtmlRendererWikilink
         }
         if (isset($type)) {
             switch ($type) {
-            case 'start':
-                $output = $start;
-                break;
-            case 'end':
-                $output = $end;
-                break;
+                case 'start':
+                    $output = $start;
+                    break;
+                case 'end':
+                    $output = $end;
+                    break;
             }
         } else {
-            $output = $start.$this->textEncode($text).$end;
+            $output = $start . $this->textEncode($text) . $end;
         }
         return $output;
     }

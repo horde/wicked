@@ -1,9 +1,10 @@
 <?php
+
 namespace Horde\Wicked;
+
 use Horde\Text\Wiki\WikiParserBase;
 use Horde\Text\Wiki\DefaultParserHeading;
 use Wicked;
-
 
 /**
  * Parsers class as a complement to the Header2 renderer.
@@ -27,7 +28,7 @@ class WickedParserHeading2 extends WikiParserBase
         $this->wrappedParserClass = $obj->parserPrefix . 'ParserHeading';
         $this->wrappedParser = new $this->wrappedParserClass($obj, 'Heading2');
         if ($this->wrappedParser instanceof DefaultParserHeading) {
-//            $this->wrappedParser->regex = '/^(\++ *(.*)/mu';
+            //            $this->wrappedParser->regex = '/^(\++ *(.*)/mu';
         }
     }
     public function process($matches)

@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Copyright 2003-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (GPL). If you
  * did not receive this file, see http://www.horde.org/licenses/gpl.
@@ -28,14 +29,14 @@ class Wicked_Page_StandardHistoryPage extends Wicked_Page_StandardPage
      *
      * @var array
      */
-    public $supportedModes = array(
+    public $supportedModes = [
         Wicked::MODE_DISPLAY => true,
         Wicked::MODE_EDIT => false,
         Wicked::MODE_REMOVE => true,
         Wicked::MODE_HISTORY => true,
         Wicked::MODE_DIFF => true,
         Wicked::MODE_LOCKING => false,
-        Wicked::MODE_UNLOCKING => false);
+        Wicked::MODE_UNLOCKING => false];
 
     /**
      * Construct a standard history page class to represent an old

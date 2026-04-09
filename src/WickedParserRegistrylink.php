@@ -1,5 +1,7 @@
 <?php
+
 namespace Horde\Wicked;
+
 use Horde\Text\Wiki\WikiParserBase;
 
 /**
@@ -40,13 +42,13 @@ class WickedParserRegistrylink extends WikiParserBase
      */
     public function process($matches)
     {
-        @list($title, $call) = explode('|', $matches[1], 2);
+        @[$title, $call] = explode('|', $matches[1], 2);
         $opts = explode(' ', trim($call));
         $method = trim(array_shift($opts));
         parse_str(implode('&', $opts), $args);
 
-        return $this->wiki->addToken($this->rule, array('title' => trim($title),
-                                                        'method' => $method,
-                                                        'args' => $args));
+        return $this->wiki->addToken($this->rule, ['title' => trim($title),
+            'method' => $method,
+            'args' => $args]);
     }
 }
