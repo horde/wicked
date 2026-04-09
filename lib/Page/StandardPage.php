@@ -184,7 +184,9 @@ class Wicked_Page_StandardPage extends Wicked_Page
         $view = $GLOBALS['injector']->createInstance('Horde_View');
         $view->addHelper('Wicked_View_Helper_Navigation');
         $view->name = $this->pageName();
-        $view->text = $this->getProcessor()->transform($this->getText());
+        $processor = $this->getProcessor();
+        $processor->setPageContext((int) $this->pageID(), (int) $this->version());
+        $view->text = $processor->transform($this->getText());
         if ($isBlock) {
             return $view->render('display/standard');
         }
