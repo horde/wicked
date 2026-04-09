@@ -56,7 +56,7 @@ class Wicked_Page_RecentChanges extends Wicked_Page
             $page = new Wicked_Page_StandardPage($page);
 
             $createDate = $page->versionCreated();
-            $tm = localtime($createDate, true);
+            $tm = localtime((int)$createDate, true);
             $createDate = mktime(0,0,0, $tm['tm_mon'], $tm['tm_mday'],
                                  $tm['tm_year']);
 
