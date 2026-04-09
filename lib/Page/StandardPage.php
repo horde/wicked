@@ -279,7 +279,7 @@ class Wicked_Page_StandardPage extends Wicked_Page
             ));
             $view->histories = array();
             foreach ($histories as $history) {
-                if (!strlen($history)) {
+                if (!strlen($history ?? '')) {
                     continue;
                 }
                 $view->histories[(string)Wicked::url($history)] = $history;
@@ -455,7 +455,7 @@ class Wicked_Page_StandardPage extends Wicked_Page
 
     public function getLockRequestor()
     {
-        $requestor = $this->_lock['lock_owner'];
+        $requestor = $this->_lock['lock_owner'] ?? null;
         if ($requestor) {
             $name = $GLOBALS['injector']
                 ->getInstance('Horde_Core_Factory_Identity')
@@ -471,7 +471,7 @@ class Wicked_Page_StandardPage extends Wicked_Page
 
     public function getLockTime()
     {
-        $time = ceil(($this->_lock['lock_expiry_timestamp'] - time()) / 60);
+        $time = ceil((($this->_lock['lock_expiry_timestamp'] ?? time()) - time()) / 60);
         return sprintf(ngettext("%d minute", "%d minutes", $time), $time);
     }
 
@@ -534,7 +534,7 @@ class Wicked_Page_StandardPage extends Wicked_Page
 
     public function changeLog()
     {
-        return $this->_page['change_log'];
+        return $this->_page['change_log'] ?? null;
     }
 
     public function version()
