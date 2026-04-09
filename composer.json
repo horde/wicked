@@ -43,7 +43,7 @@
         "horde/prefs": "^3 || dev-FRAMEWORK_6_0",
         "horde/rpc": "^3 || dev-FRAMEWORK_6_0",
         "horde/text_diff": "^3 || dev-FRAMEWORK_6_0",
-        "horde/text_wiki": "^2 || dev-FRAMEWORK_6_0",
+        "horde/text_wiki": "^3 || dev-FRAMEWORK_6_0",
         "horde/url": "^3 || dev-FRAMEWORK_6_0",
         "horde/util": "^3 || dev-FRAMEWORK_6_0",
         "horde/vfs": "^3 || dev-FRAMEWORK_6_0",
