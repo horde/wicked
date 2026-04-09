@@ -21,7 +21,17 @@
             "role": "lead"
         }
     ],
-    "time": "2025-06-05",
+    "keywords": [
+        "wiki",
+        "markdown",
+        "wicked",
+        "yawiki",
+        "cowiki",
+        "mediawiki",
+        "dokuwiki",
+        "creole"
+    ],
+    "time": "2026-04-09",
     "repositories": [],
     "require": {
         "horde/horde-installer-plugin": "dev-FRAMEWORK_6_0 || ^3 || ^2",
@@ -29,6 +39,7 @@
         "horde/horde": "^6 || dev-FRAMEWORK_6_0",
         "horde/auth": "^3 || dev-FRAMEWORK_6_0",
         "horde/autoloader": "^3 || dev-FRAMEWORK_6_0",
+        "horde/cache": "^3 || dev-FRAMEWORK_6_0",
         "horde/core": "^3 || dev-FRAMEWORK_6_0",
         "horde/db": "^3 || dev-FRAMEWORK_6_0",
         "horde/exception": "^3 || dev-FRAMEWORK_6_0",
@@ -48,6 +59,7 @@
         "horde/util": "^3 || dev-FRAMEWORK_6_0",
         "horde/vfs": "^3 || dev-FRAMEWORK_6_0",
         "php81_bc/strftime": "^0.7",
+        "psr/simple-cache": "^3",
         "ext-gettext": "*"
     },
     "require-dev": {},
@@ -70,12 +82,18 @@
     },
     "bin": [
         "bin/wicked",
+        "bin/wicked-convert-format",
         "bin/wicked-convert-to-utf8",
         "bin/wicked-mail-filter"
     ],
     "config": {
         "allow-plugins": {
             "horde/horde-installer-plugin": true
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-FRAMEWORK_6_0": "3.x-dev"
         }
     }
 }
