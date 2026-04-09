@@ -296,7 +296,7 @@ class Wicked_Driver_Sql extends Wicked_Driver
     public function getMatchingPages($searchtext,
                                      $matchType = Wicked_Page::MATCH_ANY)
     {
-        $searchtext = strtolower($searchtext);
+        $searchtext = strtolower($searchtext ?? '');
 
         try {
             /* Short circuit the simple case. */
