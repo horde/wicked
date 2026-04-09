@@ -255,8 +255,8 @@ class Wicked_Page
     {
         try {
             $v = $this->versionCreated();
-            if ($v) {
-                return strftime($GLOBALS['prefs']->getValue('date_format'), $v);
+            if (!empty($v)) {
+                return strftime($GLOBALS['prefs']->getValue('date_format'), (int)$v);
             }
         } catch (Wicked_Exception $e) {}
         return _("Never");
