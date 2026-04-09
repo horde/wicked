@@ -119,8 +119,12 @@ class WickedEngine implements WikiEngine
     private function applyWickedHandlers(Renderer $renderer): void
     {
         $renderer->setElementHandler('wikilink', $this->createWikilinkHandler());
+        $renderer->setElementHandler('url', $this->createUrlHandler());
         $renderer->setElementHandler('code', $this->createCodeHandler($renderer));
         $renderer->setElementHandler('table', $this->createTableHandler());
+        // Treat single newlines as hard breaks — existing wiki content
+        // was authored expecting visible line breaks from newlines.
+        $renderer->setElementHandler('softbreak', fn() => "<br />\n");
     }
 
     /**
@@ -136,8 +140,9 @@ class WickedEngine implements WikiEngine
         $urlResolver = $this->urlResolver;
 
         return function (ElementNode $node, NodeVisitor $visitor) use ($storageDriver, $urlResolver): string {
-            $page = $node->getAttribute('page') ?? strip_tags($visitor->renderChildren($node));
-            $anchor = $node->getAttribute('anchor') ?? '';
+            $attrs = $node->getAttributes();
+            $page = $attrs['page'] ?? strip_tags($visitor->renderChildren($node));
+            $anchor = $attrs['anchor'] ?? '';
             $text = $visitor->renderChildren($node);
 
             if ($anchor !== '' && $anchor[0] !== '#') {
@@ -154,6 +159,38 @@ class WickedEngine implements WikiEngine
     }
 
     /**
+     * URL handler: rewrite relative links to include the wicked webroot
+     *
+     * Markdown [text](Doc/Dev/GitTools) produces a url element with a bare
+     * relative href. We prepend the webroot so the browser resolves it
+     * correctly regardless of the current path. External and absolute
+     * URLs are left unchanged.
+     */
+    private function createUrlHandler(): Closure
+    {
+        $webroot = rtrim((string) $this->registry->get('webroot', 'wicked'), '/');
+
+        return function (ElementNode $node, NodeVisitor $visitor) use ($webroot): string {
+            $attrs = $node->getAttributes();
+            $href = $attrs['href'] ?? '';
+            $text = $visitor->renderChildren($node);
+
+            if ($href !== '' && !str_contains($href, '://') && $href[0] !== '/' && $href[0] !== '#') {
+                $href = $webroot . '/' . $href;
+            }
+
+            $href = htmlspecialchars($href, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $html = '<a href="' . $href . '"';
+            if (isset($attrs['title']) && $attrs['title'] !== '') {
+                $html .= ' title="' . htmlspecialchars($attrs['title'], ENT_QUOTES | ENT_HTML5, 'UTF-8') . '"';
+            }
+            $html .= '>' . $text . '</a>';
+
+            return $html;
+        };
+    }
+
+    /**
      * Code handler: syntax highlighting via Horde_Mime_Viewer
      *
      * Replaces XhtmlRendererCode2. Only applies syntax highlighting for
@@ -165,7 +202,8 @@ class WickedEngine implements WikiEngine
         $isXhtml = strtolower($renderer->getFormat()) === 'xhtml';
 
         return function (ElementNode $node, NodeVisitor $visitor) use ($registry, $isXhtml): string {
-            $language = $node->getAttribute('language') ?? '';
+            $attrs = $node->getAttributes();
+            $language = $attrs['language'] ?? '';
             $text = $visitor->renderChildren($node);
 
             if ($isXhtml && $language !== '') {
@@ -213,6 +251,9 @@ class WickedEngine implements WikiEngine
      * Pre-process [[block app/name args]] into rendered HTML
      *
      * Uses the same regex as WickedParserWickedblock. For Xhtml output,
+    /**
+     * Pre-process {{wicked:block:NAME}} constructs.
+     *
      * renders the block content directly. For other formats, strips the
      * construct.
      */
