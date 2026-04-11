@@ -1,7 +1,7 @@
 var WickedEdit = {
     loadPreview: function()
     {
-        var f = $('wicked-edit'), oldAction = f.action;
+        var f = document.getElementById('wicked-edit'), oldAction = f.action;
 
         f.action = 'preview.php';
         f.target = '_blank';
@@ -12,8 +12,11 @@ var WickedEdit = {
 
     onDomLoad: function()
     {
-        $('wicked-preview').observe('click', this.loadPreview);
+        var btn = document.getElementById('wicked-preview');
+        if (btn) {
+            btn.addEventListener('click', this.loadPreview);
+        }
     }
 };
 
-document.observe('dom:loaded', WickedEdit.onDomLoad.bind(WickedEdit));
+document.addEventListener('DOMContentLoaded', WickedEdit.onDomLoad.bind(WickedEdit));
