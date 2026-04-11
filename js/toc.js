@@ -5,12 +5,18 @@
  * did not receive this file, see http://www.horde.org/licenses/gpl.
  */
 
-document.observe('dom:loaded', function() {
-    var h2 = $('toc').down('h2'),
-        ol = $('toc').down('ol');
+document.addEventListener('DOMContentLoaded', function() {
+    var toc = document.getElementById('toc');
+    if (!toc) {
+        return;
+    }
+    var h2 = toc.querySelector('h2'),
+        ol = toc.querySelector('ol');
     if (!ol) {
         return;
     }
-    h2.setStyle({ cursor: 'pointer' });
-    h2.observe('click', ol.toggle.bind(ol));
+    h2.style.cursor = 'pointer';
+    h2.addEventListener('click', function() {
+        ol.hidden = !ol.hidden;
+    });
 });

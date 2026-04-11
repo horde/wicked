@@ -1,17 +1,21 @@
 var WickedHistory = {
     onClick: function(e)
     {
-        var elm = e.findElement();
-        if (elm.tagName == 'INPUT' && elm.type == 'submit') {
-            var value = $('wicked-diff')
-                .getInputs('radio', 'v1')
-                .find(function(radio) { return radio.checked; });
-            if ($F(elm) == $F(value)) {
-                e.stop();
+        var elm = e.target.closest('input[type="submit"]');
+        if (elm) {
+            var form = document.getElementById('wicked-diff');
+            var radios = form.querySelectorAll('input[type="radio"][name="v1"]');
+            var value = Array.from(radios).find(function(radio) { return radio.checked; });
+            if (elm.value == value.value) {
+                e.preventDefault();
+                e.stopPropagation();
             }
-            $('wicked-diff-v2').setValue($F(elm));
+            document.getElementById('wicked-diff-v2').value = elm.value;
         }
     }
 };
 
-$('wicked-diff').observe('click', WickedHistory.onClick);
+var wickedDiffForm = document.getElementById('wicked-diff');
+if (wickedDiffForm) {
+    wickedDiffForm.addEventListener('click', WickedHistory.onClick);
+}
