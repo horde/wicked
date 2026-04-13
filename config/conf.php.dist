@@ -14,51 +14,57 @@
  * Integers should be given literally (without quotes).
  * Boolean values may be true or false (never quotes).
  *
- * Generated from conf.xml on 2026-04-04
+ * Generated from conf.xml on 2026-04-13
  */
-
 // ----------------------------------------------------------------------
 // Application Settings
 // ----------------------------------------------------------------------
-
-// The email address   to which changes on pages should be mailed. Leave empty if you don't want   notification messages to be sent.
-$conf['wicked']['notify_address'] = '';
-
-// The email address   that should be used as the sender if guests are making changes.
-$conf['wicked']['guest_address'] = '';
-
-// Require users to enter a   change description?
+// The email address to which changes on pages should be mailed. Leave empty if you don't want notification messages to ... (optional)
+// $conf['wicked']['notify_address'] = '';
+// The email address that should be used as the sender if guests are making changes. (optional)
+// $conf['wicked']['guest_address'] = '';
+// The diff format that should be used when sending notifications. ('unified' = Unified context, 'context' = Copied context, 'sidebyside' = Side by side)
+$conf['wicked']['diff_format'] = 'unified';
+// Require users to enter a change description?
 $conf['wicked']['require_change_log'] = false;
-
-// Require users to enter a   verification string with each message to protect against spam? (Requires   Horde 3.1)
-// Options:
-//   'false' - No
-//   'true' - Yes
-$conf['wicked']['captcha'] = 'false';
-
-// How many minutes should pages be locked    for editing?
+// Require users to enter a verification string with each message to protect against spam? (Requires Horde 3.1) ('false' = No, 'true' = Yes)
+$conf['wicked']['captcha'] = false;
+// When captcha = 'true':
+// // The path to a Figlet (http://www.figlet.org/) font file
+// $conf['wicked']['figlet_font'] = '/usr/share/games/figlet/fonts/big.flf';
+// Which Wiki format should be used?
+$conf['wicked']['format'] = 'yawiki';
+// How many minutes should pages be locked for editing?
 $conf['wicked']['lock']['time'] = 10;
-
-
+// How many seconds should rendered page HTML be cached? Cache keys include the page version, so edits automatically inv...
+$conf['wicked']['cache']['lifetime'] = 86400;
 
 // ----------------------------------------------------------------------
 // Menu Settings
 // ----------------------------------------------------------------------
-
+// What standard pages would you like to show up as links in Wicked's menu?
+$conf['menu']['pages'] = array('Wiki/Home', 'Wiki/Usage', 'RecentChanges');
 
 // ----------------------------------------------------------------------
 // Storage System Settings
 // ----------------------------------------------------------------------
-
-// Database configuration
-// Configure your database connection parameters
-$conf['storage']['params']['phptype'] = 'mysqli';
-$conf['storage']['params']['hostspec'] = 'localhost';
-$conf['storage']['params']['username'] = '';
-$conf['storage']['params']['password'] = '';
-$conf['storage']['params']['database'] = '';
-$conf['storage']['params']['charset'] = 'utf8mb4';
-$conf['storage']['params']['ssl'] = false;
-
-
-
+// What storage driver should we use? ('sql' = SQL)
+$conf['storage']['driver'] = 'sql';
+// Database connection: 'horde' uses the global Horde DB, 'custom' uses settings below
+// $conf['storage']['params']['driverconfig'] = 'custom';
+// $conf['storage']['params']['phptype'] = 'mysqli';
+// $conf['storage']['params']['hostspec'] = 'localhost';
+// $conf['storage']['params']['username'] = '';
+// $conf['storage']['params']['password'] = '';
+// $conf['storage']['params']['database'] = '';
+// $conf['storage']['params']['charset'] = 'utf8mb4';
+// $conf['storage']['params']['ssl'] = false;
+$conf['storage']['params']['driverconfig'] = 'horde';
+// Database table
+$conf['storage']['params']['table'] = 'wicked_pages';
+// History database table
+$conf['storage']['params']['historytable'] = 'wicked_history';
+// Attachments table
+$conf['storage']['params']['attachmenttable'] = 'wicked_attachments';
+// Attachments history table
+$conf['storage']['params']['attachmenthistorytable'] = 'wicked_attachment_history';
