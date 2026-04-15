@@ -12,6 +12,8 @@
  * @package Wicked
  */
 
+use Horde\Injector\Attribute\Factory;
+
 /**
  * Wicked_Driver defines an API for implementing storage backends for Wicked.
  *
@@ -20,6 +22,7 @@
  * @author  Tyler Colbert <tyler@colberts.us>
  * @package Wicked
  */
+#[Factory(factory: Wicked_Factory_Driver::class, method: 'create')]
 abstract class Wicked_Driver
 {
     /**
