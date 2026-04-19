@@ -1,4 +1,6 @@
 <?php
+use Horde\Util\Util;
+
 /**
  * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
@@ -76,7 +78,7 @@ class Wicked_Page_DeletePage extends Wicked_Page
      */
     public function display()
     {
-        $version = Horde_Util::getFormData('version');
+        $version = Util::getFormData('version');
         $page = Wicked_Page::getPage($this->referrer(), $version);
         if (!$page->isValid()) {
             Wicked::url('Wiki/Home', true)->redirect();
@@ -92,7 +94,7 @@ class Wicked_Page_DeletePage extends Wicked_Page
         }
         ?>
 <form method="post" name="deleteform" action="<?php echo Wicked::url('DeletePage') ?>">
-<?php Horde_Util::pformInput() ?>
+<?php Util::pformInput() ?>
 <input type="hidden" name="page" value="DeletePage" />
 <input type="hidden" name="actionID" value="special" />
 <input type="hidden" name="version" value="<?php echo htmlspecialchars($version ?? '') ?>" />
@@ -104,9 +106,14 @@ class Wicked_Page_DeletePage extends Wicked_Page
   * @deprecated Use Horde_Themes_Image::tag() instead
   * @see Horde_Deprecated::img()
   */
-if ($page->isLocked()) {
-     echo Horde::img('locked.png', _("Locked"));
- } ?>
+        if ($page->isLocked()) {
+            /**
+             * ARCHITECTURE VIOLATION: Using deprecated Horde::img()
+             * @deprecated Use Horde_Themes_Image::tag() instead
+             * @see Horde_Deprecated::img()
+             */
+echo Horde::img('locked.png', _("Locked"));
+        } ?>
 </h1>
 
 <div class="headerbox" style="padding:4px">
@@ -136,12 +143,12 @@ if ($page->isLocked()) {
         return $this->_referrer;
     }
 
-    public function handleAction()
+    public function handleAction(): ?string
     {
         $pagename = $this->referrer();
         $page = Wicked_Page::getPage($pagename);
         if ($page->allows(Wicked::MODE_REMOVE)) {
-            $version = Horde_Util::getFormData('version');
+            $version = Util::getFormData('version');
             if (empty($version)) {
                 $GLOBALS['wicked']->removeAllVersions($pagename);
                 $GLOBALS['notification']->push(sprintf(_("Successfully deleted \"%s\"."), $pagename), 'horde.success');
@@ -149,7 +156,7 @@ if ($page->isLocked()) {
                     "Deleted page: $pagename\n",
                     ['Subject' => '[' . $GLOBALS['registry']->get('name') . '] deleted: ' . $pagename]
                 );
-                Wicked::url('Wiki/Home', true)->redirect();
+                return (string) Wicked::url('Wiki/Home', true);
             }
             $GLOBALS['wicked']->removeVersion($pagename, $version);
             $GLOBALS['notification']->push(sprintf(_("Deleted version %s of \"%s\"."), $version, $pagename), 'horde.success');
@@ -157,11 +164,11 @@ if ($page->isLocked()) {
                 "Deleted version: $version of $pagename\n",
                 ['Subject' => '[' . $GLOBALS['registry']->get('name') . '] deleted: ' . $pagename . ' [' . $version . ']']
             );
-            Wicked::url($pagename, true)->redirect();
+            return (string) Wicked::url($pagename, true);
         }
 
         $GLOBALS['notification']->push(sprintf(_("You don't have permission to delete \"%s\"."), $pagename), 'horde.warning');
-        Wicked::url($this->referrer(), true)->redirect();
+        return (string) Wicked::url($this->referrer(), true);
     }
 
 }

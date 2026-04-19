@@ -1,5 +1,7 @@
 <?php
 
+use Horde\Util\Util;
+
 /**
  * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
@@ -125,7 +127,7 @@ class Wicked_Page_EditPage extends Wicked_Page
 
         $view = $GLOBALS['injector']->createInstance('Horde_View');
         $view->action = Wicked::url('EditPage');
-        $view->formInput = Horde_Util::formInput();
+        $view->formInput = Util::formInput();
         $view->name = $page->pageName();
         $view->header = $page->pageUrl()->link()
             . htmlspecialchars($page->pageName()) . '</a> ';
@@ -135,7 +137,7 @@ class Wicked_Page_EditPage extends Wicked_Page
              * @deprecated Use Horde_Themes_Image::tag() instead
              * @see Horde_Deprecated::img()
              */
-$view->header .= ' ' . Horde::img('locked.png', _("Locked"));
+            $view->header .= ' ' . Horde::img('locked.png', _("Locked"));
         }
         $view->cancel = $page->pageUrl()
             ->add('actionID', 'unlock')
@@ -147,7 +149,7 @@ $view->header .= ' ' . Horde::img('locked.png', _("Locked"));
              * @deprecated Use Horde_Themes_Image::tag() instead
              * @see Horde_Deprecated::img()
              */
-$view->changelogRequired = Horde::img(
+            $view->changelogRequired = Horde::img(
                 'required.png',
                 _("Changelog is required")
             );
@@ -160,7 +162,7 @@ $view->changelogRequired = Horde::img(
             ));
             $view->captcha = $figlet->lineEcho(Wicked::getCAPTCHA(true));
         }
-        $view->text = Horde_Util::getFormData('page_text');
+        $view->text = Util::getFormData('page_text');
         if (is_null($view->text)) {
             $view->text = $page->getText();
         }
@@ -201,43 +203,43 @@ $view->changelogRequired = Horde::img(
         return $page->getLockTime();
     }
 
-    public function handleAction()
+    public function handleAction(): ?string
     {
         global $notification, $conf;
 
         $page = Wicked_Page::getPage($this->referrer());
         if (!$this->allows(Wicked::MODE_EDIT)) {
             $notification->push(sprintf(_("You don't have permission to edit \"%s\"."), $page->pageName()));
-        } else {
-            if (!empty($GLOBALS['conf']['wicked']['captcha'])
-                && !$GLOBALS['registry']->getAuth()
-                && (Horde_String::lower(Horde_Util::getFormData('wicked_captcha') ?? '') != Horde_String::lower(Wicked::getCAPTCHA()))) {
-                $notification->push(_("Random string did not match."), 'horde.error');
-                return;
-            }
-            $text = Horde_Util::getFormData('page_text') ?? '';
-            $changelog = Horde_Util::getFormData('changelog') ?? '';
-            if ($conf['wicked']['require_change_log'] && empty($changelog)) {
-                $notification->push(_("You must provide a change log."), 'horde.error');
-                $GLOBALS['page_output']->addInlineScript([
-                    'if (document.editform && document.editform.changelog) document.editform.changelog.focus()',
-                ], true);
-                return;
-            }
-            if (trim($text) == trim($page->getText())) {
-                $notification->push(_("No changes made"), 'horde.warning');
-            } else {
-                $page->updateText($text, $changelog);
-                $notification->push(_("Page Saved"), 'horde.success');
-            }
-
-            if ($page->allows(Wicked::MODE_UNLOCKING)) {
-                $page->unlock();
-            }
+            return (string) Wicked::url($this->referrer(), true);
         }
 
-        // Show the newly saved page.
-        Wicked::url($this->referrer(), true)->redirect();
+        if (!empty($GLOBALS['conf']['wicked']['captcha'])
+            && !$GLOBALS['registry']->getAuth()
+            && (Horde_String::lower(Util::getFormData('wicked_captcha') ?? '') != Horde_String::lower(Wicked::getCAPTCHA()))) {
+            $notification->push(_("Random string did not match."), 'horde.error');
+            return null;
+        }
+        $text = Util::getFormData('page_text') ?? '';
+        $changelog = Util::getFormData('changelog') ?? '';
+        if ($conf['wicked']['require_change_log'] && empty($changelog)) {
+            $notification->push(_("You must provide a change log."), 'horde.error');
+            $GLOBALS['page_output']->addInlineScript([
+                'if (document.editform && document.editform.changelog) document.editform.changelog.focus()',
+            ], true);
+            return null;
+        }
+        if (trim($text) == trim($page->getText())) {
+            $notification->push(_("No changes made"), 'horde.warning');
+        } else {
+            $page->updateText($text, $changelog);
+            $notification->push(_("Page Saved"), 'horde.success');
+        }
+
+        if ($page->allows(Wicked::MODE_UNLOCKING)) {
+            $page->unlock();
+        }
+
+        return (string) Wicked::url($this->referrer(), true);
     }
 
 }

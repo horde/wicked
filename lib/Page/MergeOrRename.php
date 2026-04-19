@@ -1,5 +1,7 @@
 <?php
 
+use Horde\Util\Util;
+
 /**
  * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
@@ -136,12 +138,12 @@ class Wicked_Page_MergeOrRename extends Wicked_Page
          * @deprecated Use Horde_Themes_Image::tag() instead
          * @see Horde_Deprecated::img()
          */
-$view->requiredMarker = Horde::img('required.png', '*');
+        $view->requiredMarker = Horde::img('required.png', '*');
         $view->references = $references;
         $view->referenceCount = sprintf(_("This page is referenced from %d other page(s)."), count($references));
-        $view->formInput = Horde_Util::formInput();
+        $view->formInput = Util::formInput();
         $view->errors = $this->_errors;
-        $view->new_name = Horde_Util::getFormData('new_name', $referrer);
+        $view->new_name = Util::getFormData('new_name', $referrer);
 
         echo $view->render('display/MergeOrRename');
     }
@@ -164,29 +166,29 @@ $view->requiredMarker = Horde::img('required.png', '*');
     /**
      * Retrieve the form fields and process the merge or rename.
      */
-    public function handleAction()
+    public function handleAction(): ?string
     {
         global $wicked, $notification, $registry;
 
-        if (Horde_Util::getFormData('submit') == _("Cancel")) {
-            Wicked::url($this->referrer(), true)->redirect();
+        if (Util::getFormData('submit') == _("Cancel")) {
+            return (string) Wicked::url($this->referrer(), true);
         }
 
         $referrer = $this->referrer();
 
-        $new_name = Horde_Util::getFormData('new_name');
+        $new_name = Util::getFormData('new_name');
         if (empty($new_name)) {
             $this->_errors['new_name'] = _("This is a required field.");
         } elseif ($new_name == $referrer) {
             $this->_errors['new_name'] = _("New name is the same as old name.");
         }
-        $collision = Horde_Util::getFormData('collision');
+        $collision = Util::getFormData('collision');
         if (empty($collision)) {
             $this->_errors['collision'] = _("This is a required field.");
         }
 
         if (count($this->_errors)) {
-            return;
+            return null;
         }
 
         $sourcePage = Wicked_Page::getPage($referrer);
@@ -241,7 +243,7 @@ $view->requiredMarker = Horde::img('required.png', '*');
         // to be fixed even if the user doing the editing couldn't fix that
         // page, and fixing references is likely to never be a destructive
         // action, and the user can't supply their own data for it.
-        $references = Horde_Util::getFormData('ref', []);
+        $references = Util::getFormData('ref', []);
 
         if ($references) {
             $wikiWord = '/^' . Wicked::REGEXP_WIKIWORD . '$/';
@@ -298,7 +300,7 @@ $view->requiredMarker = Horde::img('required.png', '*');
             }
         }
 
-        Wicked::url($new_name, true)->redirect();
+        return (string) Wicked::url($new_name, true);
     }
 
 }

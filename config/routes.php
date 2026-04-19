@@ -11,23 +11,29 @@ use Horde\Wicked\Controller\PreviewController;
 // Specific routes must come before the catch-all
 $mapper->buildRoute(uri: '/history', name: 'History')
     ->withController(HistoryController::class)
+    ->withSecondaryRoute('/history.php')
     ->add();
 
 $mapper->buildRoute(uri: '/diff', name: 'Diff')
     ->withController(DiffController::class)
+    ->withSecondaryRoute('/diff.php')
     ->add();
 
 $mapper->buildRoute(uri: '/preview', name: 'Preview')
     ->withController(PreviewController::class)
+    ->withSecondaryRoute('/preview.php')
     ->add();
 
 $mapper->buildRoute(uri: '/admin/attachments', name: 'AdminAttachments')
     ->withController(AdminAttachmentsController::class)
+    ->withSecondaryRoute('/admin/attachments.php')
     ->add();
 
 // Catch-all route for wiki pages — maps any path under the wicked webroot
 // to the page parameter, replacing the legacy .htaccess RewriteRule.
+// The secondary route handles legacy display.php?page=X URLs.
 $mapper->buildRoute(uri: '/*page', name: 'Pages')
     ->withController(PageController::class)
     ->withDefaults(['page' => 'Wiki/Home'])
+    ->withSecondaryRoute('/display.php')
     ->add();

@@ -13,14 +13,12 @@ namespace Horde\Wicked\Controller;
 
 use Horde\Horde\Traits\HtmlResponseTrait;
 use Horde\Horde\Traits\RedirectResponseTrait;
-use Wicked;
+use Horde\Http\Response;
+use Horde\Http\StreamFactory;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Shared response helpers for Wicked PSR-15 controllers.
- *
- * Composes Core's HtmlResponseTrait and RedirectResponseTrait for standard
- * response building, and adds renderChrome() for legacy Horde_PageOutput
- * chrome wrapping.
  *
  * Expects the using class to have properties:
  *   - Horde_Notification_Handler $notification
@@ -35,15 +33,8 @@ trait ResponseTrait
     use HtmlResponseTrait;
     use RedirectResponseTrait;
 
-    /**
-     * Render page content inside the Horde chrome (topbar, header, footer).
-     *
-     * The callable $renderBody is expected to echo its output.
-     */
     private function renderChrome(string $title, callable $renderBody): string
     {
-        Wicked::setTopbar();
-
         ob_start();
         $this->pageOutput->header(['title' => $title]);
         $this->notification->notify(['listeners' => 'status']);
@@ -51,5 +42,21 @@ trait ResponseTrait
         $this->pageOutput->footer();
 
         return ob_get_clean();
+    }
+
+    protected function downloadResponse(
+        string $content,
+        string $filename,
+        string $contentType = 'application/octet-stream',
+    ): ResponseInterface {
+        $streamFactory = new StreamFactory();
+        $response = new Response();
+
+        return $response
+            ->withBody($streamFactory->createStream($content))
+            ->withHeader('Content-Type', $contentType)
+            ->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->withHeader('Content-Length', (string) strlen($content))
+            ->withStatus(200);
     }
 }
