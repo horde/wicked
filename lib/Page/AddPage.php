@@ -1,5 +1,7 @@
 <?php
 
+use Horde\Util\Util;
+
 /**
  * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
@@ -78,7 +80,7 @@ class Wicked_Page_AddPage extends Wicked_Page
 
         $view = $injector->createInstance('Horde_View');
         $view->action = Wicked::url('NewPage');
-        $view->formInput = Horde_Util::formInput();
+        $view->formInput = Util::formInput();
         $view->referrer = $this->referrer();
         $view->name = $this->pageName();
         if ($this->_results) {

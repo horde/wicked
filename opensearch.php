@@ -29,10 +29,7 @@ echo <<<PAYLOAD
       <SearchForm>$url</SearchForm>
       <Url type="text/html"
            method="get"
-           template="{$url}display.php">
-        <Param name="page" value="Search"/>
-        <Param name="params" value="{searchTerms}"/>
-      </Url>
+           template="{$url}Search?params={searchTerms}"/>
       <Image height="16" width="16">data:image/png;base64,$icon</Image>
       <InputEncoding>UTF-8</InputEncoding>
 

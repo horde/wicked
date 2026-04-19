@@ -1,5 +1,7 @@
 <?php
 
+use Horde\Util\Util;
+
 /**
  * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
@@ -351,7 +353,7 @@ class Wicked_Page_StandardPage extends Wicked_Page
         $view = $injector->createInstance('Horde_View');
 
         // Header.
-        $view->formInput = Horde_Util::formInput();
+        $view->formInput = Util::formInput();
         $view->name = $this->pageName();
         $view->pageLink = $this->pageUrl()->link()
             . htmlspecialchars($this->pageName()) . '</a>';
@@ -360,15 +362,15 @@ class Wicked_Page_StandardPage extends Wicked_Page
          * @deprecated Use Horde_Themes_Image::tag() instead
          * @see Horde_Deprecated::img()
          */
-$view->refreshLink = $this->pageUrl('history.php')->link()
-            . Horde::img('reload.png', _("Reload History")) . '</a>';
+        $view->refreshLink = $this->pageUrl('history.php')->link()
+                    . Horde::img('reload.png', _("Reload History")) . '</a>';
         if ($this->allows(Wicked::MODE_REMOVE)) {
             /**
              * ARCHITECTURE VIOLATION: Using deprecated Horde::img()
              * @deprecated Use Horde_Themes_Image::tag() instead
              * @see Horde_Deprecated::img()
              */
-$view->remove = Horde::img('delete.png', _("Delete Version"));
+            $view->remove = Horde::img('delete.png', _("Delete Version"));
         }
         if ($this->allows(Wicked::MODE_EDIT)
             && !$this->isLocked(Wicked::lockUser())) {
@@ -377,13 +379,13 @@ $view->remove = Horde::img('delete.png', _("Delete Version"));
              * @deprecated Use Horde_Themes_Image::tag() instead
              * @see Horde_Deprecated::img()
              */
-$view->edit = Horde::img('edit.png', _("Edit Version"));
+            $view->edit = Horde::img('edit.png', _("Edit Version"));
             /**
              * ARCHITECTURE VIOLATION: Using deprecated Horde::img()
              * @deprecated Use Horde_Themes_Image::tag() instead
              * @see Horde_Deprecated::img()
              */
-$view->restore = Horde::img('restore.png', _("Restore Version"));
+            $view->restore = Horde::img('restore.png', _("Restore Version"));
         }
         $content = $view->render('history/header');
 
@@ -419,13 +421,13 @@ $view->restore = Horde::img('restore.png', _("Restore Version"));
          * @deprecated Use Horde_Themes_Image::tag() instead
          * @see Horde_Deprecated::img()
          */
-$view->deleteLink = Wicked::url('DeletePage')
-            ->add([
-                'referrer' => $page->pageName(),
-                'version' => $page->version(),
-            ])
-            ->link(['title' => $text])
-            . Horde::img('delete.png', $text) . '</a>';
+        $view->deleteLink = Wicked::url('DeletePage')
+                    ->add([
+                        'referrer' => $page->pageName(),
+                        'version' => $page->version(),
+                    ])
+                    ->link(['title' => $text])
+                    . Horde::img('delete.png', $text) . '</a>';
 
         $text = sprintf(_("Edit Version %s"), $page->version());
         /**
@@ -433,10 +435,10 @@ $view->deleteLink = Wicked::url('DeletePage')
          * @deprecated Use Horde_Themes_Image::tag() instead
          * @see Horde_Deprecated::img()
          */
-$view->editLink = Wicked::url('EditPage')
-            ->add(['referrer' => $page->pageName()])
-            ->link(['title' => $text])
-            . Horde::img('edit.png', $text) . '</a>';
+        $view->editLink = Wicked::url('EditPage')
+                    ->add(['referrer' => $page->pageName()])
+                    ->link(['title' => $text])
+                    . Horde::img('edit.png', $text) . '</a>';
 
         $text = sprintf(_("Revert to version %s"), $page->version());
         /**
@@ -444,13 +446,13 @@ $view->editLink = Wicked::url('EditPage')
          * @deprecated Use Horde_Themes_Image::tag() instead
          * @see Horde_Deprecated::img()
          */
-$view->restoreLink = Wicked::url('RevertPage')
-            ->add([
-                'referrer' => $page->pageName(),
-                'version' => $page->version(),
-            ])
-            ->link(['title' => $text])
-            . Horde::img('restore.png', $text) . '</a>';
+        $view->restoreLink = Wicked::url('RevertPage')
+                    ->add([
+                        'referrer' => $page->pageName(),
+                        'version' => $page->version(),
+                    ])
+                    ->link(['title' => $text])
+                    . Horde::img('restore.png', $text) . '</a>';
 
         $view->author = $page->author();
         $view->date = $page->formatVersionCreated();

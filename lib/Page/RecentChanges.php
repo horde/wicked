@@ -1,5 +1,7 @@
 <?php
 
+use Horde\Util\Util;
+
 /**
  * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
@@ -44,7 +46,7 @@ class Wicked_Page_RecentChanges extends Wicked_Page
     {
         global $wicked;
 
-        $days = (int) Horde_Util::getGet('days', 3);
+        $days = (int) Util::getGet('days', 3);
         $summaries = $wicked->getRecentChanges($days);
 
         if (count($summaries) < 10) {
@@ -79,7 +81,7 @@ class Wicked_Page_RecentChanges extends Wicked_Page
              * @deprecated Use Horde_Themes_Image::tag() instead
              * @see Horde_Deprecated::img()
              */
-$diff_img = Horde::img('diff.png', $diff_alt);
+            $diff_img = Horde::img('diff.png', $diff_alt);
             $pageInfo = ['author' => $page->author(),
                 'name' => $page->pageName(),
                 'url' => $page->pageUrl(),

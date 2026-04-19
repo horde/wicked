@@ -1,4 +1,6 @@
 <?php
+use Horde\Util\Util;
+
 /**
  * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
@@ -76,12 +78,12 @@ class Wicked_Page_RevertPage extends Wicked_Page
      */
     public function display()
     {
-        $version = Horde_Util::getFormData('version');
+        $version = Util::getFormData('version');
         $page = Wicked_Page::getPage($this->referrer(), $version);
         $msg = sprintf(_("Are you sure you want to revert to version %s of this page?"), $version);
         ?>
 <form method="post" name="revertform" action="<?php echo Wicked::url('RevertPage') ?>">
-<?php Horde_Util::pformInput() ?>
+<?php Util::pformInput() ?>
 <input type="hidden" name="page" value="RevertPage" />
 <input type="hidden" name="actionID" value="special" />
 <input type="hidden" name="version" value="<?php echo htmlspecialchars($version ?? '') ?>" />
@@ -93,9 +95,14 @@ class Wicked_Page_RevertPage extends Wicked_Page
   * @deprecated Use Horde_Themes_Image::tag() instead
   * @see Horde_Deprecated::img()
   */
-if ($page->isLocked()) {
-     echo Horde::img('locked.png', _("Locked"));
- } ?>
+        if ($page->isLocked()) {
+            /**
+             * ARCHITECTURE VIOLATION: Using deprecated Horde::img()
+             * @deprecated Use Horde_Themes_Image::tag() instead
+             * @see Horde_Deprecated::img()
+             */
+echo Horde::img('locked.png', _("Locked"));
+        } ?>
 </h1>
 
 <div class="headerbox" style="padding:4px">
@@ -125,25 +132,25 @@ if ($page->isLocked()) {
         return $this->_referrer;
     }
 
-    public function handleAction()
+    public function handleAction(): ?string
     {
         global $notification;
 
         $page = Wicked_Page::getPage($this->referrer());
         if ($page->allows(Wicked::MODE_EDIT)) {
-            $version = Horde_Util::getPost('version');
+            $version = Util::getPost('version');
             if (empty($version)) {
                 $notification->push(sprintf(_("Can't revert to an unknown version.")), 'horde.error');
-                Wicked::url($this->referrer(), true)->redirect();
+                return (string) Wicked::url($this->referrer(), true);
             }
             $oldpage = Wicked_Page::getPage($this->referrer(), $version);
             $page->updateText($oldpage->getText(), 'Revert');
             $notification->push(sprintf(_("Reverted to version %s of \"%s\"."), $version, $page->pageName()));
-            Wicked::url($page->pageName(), true)->redirect();
+            return (string) Wicked::url($page->pageName(), true);
         }
 
         $notification->push(sprintf(_("You don't have permission to edit \"%s\"."), $page->pageName()), 'horde.warning');
-        Wicked::url($this->referrer(), true)->redirect();
+        return (string) Wicked::url($this->referrer(), true);
     }
 
 }
