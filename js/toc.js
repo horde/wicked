@@ -10,13 +10,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!toc) {
         return;
     }
-    var h2 = toc.querySelector('h2'),
-        ol = toc.querySelector('ol');
-    if (!ol) {
+    var heading = toc.querySelector('h2');
+    var list = toc.querySelector('ol');
+    if (!heading || !list) {
         return;
     }
-    h2.style.cursor = 'pointer';
-    h2.addEventListener('click', function() {
-        ol.hidden = !ol.hidden;
+    heading.style.cursor = 'pointer';
+    heading.addEventListener('click', function() {
+        list.hidden = !list.hidden;
     });
 });

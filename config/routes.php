@@ -5,6 +5,7 @@
 use Horde\Wicked\Controller\AdminAttachmentsController;
 use Horde\Wicked\Controller\DiffController;
 use Horde\Wicked\Controller\HistoryController;
+use Horde\Wicked\Controller\OpenSearchController;
 use Horde\Wicked\Controller\PageController;
 use Horde\Wicked\Controller\PreviewController;
 
@@ -27,6 +28,11 @@ $mapper->buildRoute(uri: '/preview', name: 'Preview')
 $mapper->buildRoute(uri: '/admin/attachments', name: 'AdminAttachments')
     ->withController(AdminAttachmentsController::class)
     ->withSecondaryRoute('/admin/attachments.php')
+    ->add();
+
+$mapper->buildRoute(uri: '/opensearch', name: 'OpenSearch')
+    ->withController(OpenSearchController::class)
+    ->withSecondaryRoute('/opensearch.php')
     ->add();
 
 // Catch-all route for wiki pages — maps any path under the wicked webroot
