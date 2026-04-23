@@ -86,11 +86,7 @@ class Wicked
      */
     public static function url($page, $full = false, $append_session = 0)
     {
-        if ($GLOBALS['conf']['urls']['pretty'] == 'rewrite') {
-            $script = str_replace('%2F', '/', urlencode($page));
-        } else {
-            $script = Horde::url('display.php')->add('page', $page);
-        }
+        $script = str_replace('%2F', '/', urlencode($page));
 
         $url = Horde::url($script, $full, ['append_session' => $append_session]);
         if (!$full) {
@@ -202,7 +198,7 @@ class Wicked
     {
         $topbar = $GLOBALS['injector']->getInstance('Horde_View_Topbar');
         $topbar->search = true;
-        $topbar->searchAction = Horde::url('display.php');
+        $topbar->searchAction = Wicked::url('Search');
         $topbar->searchParameters = ['page' => 'Search'];
     }
 

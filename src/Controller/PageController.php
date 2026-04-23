@@ -11,14 +11,14 @@ declare(strict_types=1);
 
 namespace Horde\Wicked\Controller;
 
-use Horde;
+use Horde\Core\Session\HordeSession;
+use Horde\Wicked\Service\TopbarSearch;
+use Horde\Wicked\Service\UrlGenerator;
 use Horde_Notification_Handler;
 use Horde_PageOutput;
-use Horde_Session;
-use Psr\Http\Message\ResponseFactoryInterface;
+use Horde_Registry;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Wicked;
 use Wicked_Driver;
@@ -29,9 +29,7 @@ use Wicked_Page_StandardPage;
 /**
  * PSR-15 controller for wiki page display.
  *
- * Replaces the legacy display.php entry point. Resolves the wiki page
- * from the route match, dispatches actions (lock, unlock, export, etc.),
- * and renders the page content into a PSR-7 Response.
+ * Routes: Pages (primary: /*page), LegacyDisplay (secondary: /display.php)
  *
  * @category Horde
  * @license  http://www.horde.org/licenses/gpl GPL
@@ -42,25 +40,27 @@ class PageController implements RequestHandlerInterface
     use ResponseTrait;
 
     public function __construct(
-        private ResponseFactoryInterface $responseFactory,
-        private StreamFactoryInterface $streamFactory,
-        private Horde_Notification_Handler $notification,
-        private Horde_PageOutput $pageOutput,
-        private Horde_Session $session,
-        private Wicked_Driver $driver,
+        private readonly Horde_Notification_Handler $notification,
+        private readonly Horde_PageOutput $pageOutput,
+        private readonly HordeSession $session,
+        private readonly Wicked_Driver $driver,
+        private readonly Horde_Registry $registry,
+        private readonly UrlGenerator $urlGenerator,
+        private readonly TopbarSearch $topbarSearch,
     ) {}
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $route = $request->getAttribute('route', []);
-        $pageName = rtrim($route['page'] ?? 'Wiki/Home', '/');
         $queryParams = $request->getQueryParams();
-        $actionID = $queryParams['actionID'] ?? null;
-        $version = $queryParams['version'] ?? null;
-        $referrer = $queryParams['referrer'] ?? null;
-        $params = $queryParams['params'] ?? ($queryParams['searchfield'] ?? null);
+        $postParams = (array) $request->getParsedBody();
+        $merged = array_merge($queryParams, $postParams);
+        $pageName = rtrim($route['page'] ?? ($merged['page'] ?? 'Wiki/Home'), '/');
+        $actionID = $merged['actionID'] ?? null;
+        $version = $merged['version'] ?? null;
+        $referrer = $merged['referrer'] ?? null;
+        $params = $merged['params'] ?? ($merged['searchfield'] ?? null);
 
-        // Resolve the wiki page
         try {
             $page = Wicked_Page::getPage($pageName, $version, $referrer);
         } catch (Wicked_Exception $e) {
@@ -72,7 +72,6 @@ class PageController implements RequestHandlerInterface
             $actionID = null;
         }
 
-        // Dispatch action
         switch ($actionID) {
             case 'lock':
                 return $this->lock($page);
@@ -83,8 +82,7 @@ class PageController implements RequestHandlerInterface
             case 'history':
                 if ($page->allows(Wicked::MODE_HISTORY)) {
                     return $this->redirect(
-                        (string) Horde::url('history.php')
-                            ->add('page', $page->pageName())
+                        $this->urlGenerator->urlFor('History', ['page' => $page->pageName()])
                     );
                 }
                 $this->notification->push(
@@ -94,7 +92,10 @@ class PageController implements RequestHandlerInterface
                 break;
 
             case 'special':
-                $page->handleAction();
+                $redirectUrl = $page->handleAction();
+                if ($redirectUrl !== null) {
+                    return $this->redirect($redirectUrl);
+                }
                 break;
 
             case 'export':
@@ -105,7 +106,6 @@ class PageController implements RequestHandlerInterface
                 break;
         }
 
-        // Permission check
         if (!$page->allows(Wicked::MODE_DISPLAY)) {
             if ($page->pageName() === 'Wiki/Home') {
                 throw new Wicked_Exception(
@@ -121,14 +121,13 @@ class PageController implements RequestHandlerInterface
 
         $page->preDisplay(Wicked::MODE_DISPLAY, $params);
 
-        // Non-existent page: redirect to home with a warning
         if ($page instanceof Wicked_Page_StandardPage && !$page->isValid()) {
             $this->notification->push(
                 sprintf(_("Page \"%s\" does not exist."), $pageName),
                 'horde.warning'
             );
             return $this->redirect(
-                (string) Wicked::url('Wiki/Home', true)
+                $this->urlGenerator->urlFor('Pages', ['page' => 'Wiki/Home'])
             );
         }
 
@@ -143,9 +142,17 @@ class PageController implements RequestHandlerInterface
             );
         }
 
-        // Capture rendered output
-        Wicked::addFeedLink();
         $html = $this->renderChrome($page->pageTitle(), function () use ($page, $params) {
+            $this->topbarSearch->apply();
+
+            $this->pageOutput->addLinkTag([
+                'href' => $this->urlGenerator->absoluteUrlFor('Pages', ['page' => 'opensearch.php']),
+                'rel' => 'search',
+                'title' => $this->registry->get('name')
+                    . ' (' . $this->urlGenerator->absoluteUrlFor('Pages', ['page' => 'Wiki/Home']) . ')',
+                'type' => 'application/opensearchdescription+xml',
+            ]);
+
             try {
                 echo $page->render(Wicked::MODE_DISPLAY, $params);
             } catch (Wicked_Exception $e) {
@@ -153,18 +160,20 @@ class PageController implements RequestHandlerInterface
             }
         });
 
-        // Session history tracking
-        $history = $this->session->get('wicked', 'history', Horde_Session::TYPE_ARRAY);
+        $history = $this->session->getScoped('wicked', 'history') ?? [];
+        if (!is_array($history)) {
+            $history = [];
+        }
         if (
             $page instanceof Wicked_Page_StandardPage
             && (!isset($history[0]) || $history[0] !== $page->pageName())
         ) {
             array_unshift($history, $page->pageName());
-            $this->session->set('wicked', 'history', $history);
+            $this->session->setScoped('wicked', 'history', $history);
         }
         if (count($history) > 10) {
             array_pop($history);
-            $this->session->set('wicked', 'history', $history);
+            $this->session->setScoped('wicked', 'history', $history);
         }
 
         return $this->htmlResponse($html);
@@ -189,7 +198,7 @@ class PageController implements RequestHandlerInterface
         }
 
         return $this->redirect(
-            (string) Wicked::url($page->pageName())
+            $this->urlGenerator->urlFor('Pages', ['page' => $page->pageName()])
         );
     }
 
@@ -216,7 +225,7 @@ class PageController implements RequestHandlerInterface
         }
 
         return $this->redirect(
-            (string) Wicked::url($page->pageName())
+            $this->urlGenerator->urlFor('Pages', ['page' => $page->pageName()])
         );
     }
 
@@ -233,7 +242,7 @@ class PageController implements RequestHandlerInterface
                 );
             }
             return $this->redirect(
-                (string) Wicked::url('Wiki/Home', true)
+                $this->urlGenerator->urlFor('Pages', ['page' => 'Wiki/Home'])
             );
         }
 
@@ -267,20 +276,14 @@ class PageController implements RequestHandlerInterface
         } catch (Wicked_Exception $e) {
             $this->notification->push($e);
             return $this->redirect(
-                (string) Wicked::url($page->pageName())
+                $this->urlGenerator->urlFor('Pages', ['page' => $page->pageName()])
             );
         }
 
-        $filename = $page->pageTitle() . $ext;
-        $body = $this->streamFactory->createStream($text);
-
-        return $this->responseFactory->createResponse(200)
-            ->withHeader('Content-Type', $mime)
-            ->withHeader(
-                'Content-Disposition',
-                'attachment; filename="' . $filename . '"'
-            )
-            ->withHeader('Content-Length', (string) strlen($text))
-            ->withBody($body);
+        return $this->downloadResponse(
+            $text,
+            $page->pageTitle() . $ext,
+            $mime,
+        );
     }
 }

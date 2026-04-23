@@ -110,9 +110,9 @@ class Wicked_View_Helper_Navigation extends Horde_View_Helper_Base
              * @deprecated Use Horde_Themes_Image::tag() instead
              * @see Horde_Deprecated::img()
              */
-$navigation .= Wicked::url($left['page_name'])->link()
-                . Horde::img('nav/left.png') . ' '
-                . $this->h($left['page_name']) . '</a>';
+            $navigation .= Wicked::url($left['page_name'])->link()
+                            . Horde::img('nav/left.png') . ' '
+                            . $this->h($left['page_name']) . '</a>';
             if ($right) {
                 $navigation .= ' | ';
             }
@@ -123,9 +123,9 @@ $navigation .= Wicked::url($left['page_name'])->link()
              * @deprecated Use Horde_Themes_Image::tag() instead
              * @see Horde_Deprecated::img()
              */
-$navigation .= Wicked::url($right['page_name'])->link()
-                . $this->h($right['page_name']) . ' '
-                . Horde::img('nav/right.png') . '</a>';
+            $navigation .= Wicked::url($right['page_name'])->link()
+                            . $this->h($right['page_name']) . ' '
+                            . Horde::img('nav/right.png') . '</a>';
         }
 
         return $navigation;

@@ -11,7 +11,8 @@ declare(strict_types=1);
 
 namespace Horde\Wicked\Controller;
 
-use Horde;
+use Horde\Wicked\Service\TopbarSearch;
+use Horde\Wicked\Service\UrlGenerator;
 use Horde_Notification_Handler;
 use Horde_PageOutput;
 use Psr\Http\Message\ResponseInterface;
@@ -24,7 +25,7 @@ use Wicked_Page;
 /**
  * PSR-15 controller for page diff display.
  *
- * Replaces the legacy diff.php entry point.
+ * Routes: Diff (primary: /diff), LegacyDiff (secondary: /diff.php)
  *
  * @category Horde
  * @license  http://www.horde.org/licenses/gpl GPL
@@ -35,27 +36,26 @@ class DiffController implements RequestHandlerInterface
     use ResponseTrait;
 
     public function __construct(
-        private Horde_Notification_Handler $notification,
-        private Horde_PageOutput $pageOutput,
+        private readonly Horde_Notification_Handler $notification,
+        private readonly Horde_PageOutput $pageOutput,
+        private readonly UrlGenerator $urlGenerator,
+        private readonly TopbarSearch $topbarSearch,
     ) {}
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        $route = $request->getAttribute('route', []);
         $queryParams = $request->getQueryParams();
         $v1 = $queryParams['v1'] ?? '';
         $v2 = $queryParams['v2'] ?? '';
-        $pageName = $queryParams['page'] ?? 'Wiki/Home';
+        $pageName = $route['page'] ?? ($queryParams['page'] ?? 'Wiki/Home');
 
-        // At least one version must be specified
         if ($v1 === '' && $v2 === '') {
             return $this->redirect(
-                (string) Horde::url('history.php', true)
-                    ->add('page', $pageName)
+                $this->urlGenerator->urlFor('History', ['page' => $pageName])
             );
         }
 
-        // Normalize: v2 should be the higher version.
-        // Empty string = current (highest). '?' = previous (lowest).
         if ($v1 === '' || ($v2 !== '' && version_compare($v1, $v2) > 0) || $v2 === '?') {
             [$v1, $v2] = [$v2, $v1];
         }
@@ -71,7 +71,7 @@ class DiffController implements RequestHandlerInterface
                 'horde.error'
             );
             return $this->redirect(
-                (string) Wicked::url('Wiki/Home', true)
+                $this->urlGenerator->urlFor('Pages', ['page' => 'Wiki/Home'])
             );
         }
 
@@ -81,8 +81,8 @@ class DiffController implements RequestHandlerInterface
 
         if (!$page->allows(Wicked::MODE_DIFF)) {
             return $this->redirect(
-                (string) Wicked::url($page->pageName(), true)
-                    ->add('actionID', 'diff')
+                $this->urlGenerator->urlFor('Pages', ['page' => $page->pageName()])
+                . '?actionID=diff'
             );
         }
 
@@ -94,6 +94,7 @@ class DiffController implements RequestHandlerInterface
                 $page->version()
             ),
             function () use ($page, $v1) {
+                $this->topbarSearch->apply();
                 $page->render(Wicked::MODE_DIFF, $v1);
             }
         );

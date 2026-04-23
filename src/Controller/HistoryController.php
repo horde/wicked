@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Horde\Wicked\Controller;
 
+use Horde\Wicked\Service\TopbarSearch;
+use Horde\Wicked\Service\UrlGenerator;
 use Horde_Notification_Handler;
 use Horde_PageOutput;
 use Psr\Http\Message\ResponseInterface;
@@ -23,7 +25,7 @@ use Wicked_Page;
 /**
  * PSR-15 controller for page history display.
  *
- * Replaces the legacy history.php entry point.
+ * Routes: History (primary: /history), LegacyHistory (secondary: /history.php)
  *
  * @category Horde
  * @license  http://www.horde.org/licenses/gpl GPL
@@ -34,14 +36,17 @@ class HistoryController implements RequestHandlerInterface
     use ResponseTrait;
 
     public function __construct(
-        private Horde_Notification_Handler $notification,
-        private Horde_PageOutput $pageOutput,
+        private readonly Horde_Notification_Handler $notification,
+        private readonly Horde_PageOutput $pageOutput,
+        private readonly UrlGenerator $urlGenerator,
+        private readonly TopbarSearch $topbarSearch,
     ) {}
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        $route = $request->getAttribute('route', []);
         $queryParams = $request->getQueryParams();
-        $pageName = $queryParams['page'] ?? 'Wiki/Home';
+        $pageName = $route['page'] ?? ($queryParams['page'] ?? 'Wiki/Home');
         $version = $queryParams['version'] ?? null;
         $referrer = $queryParams['referrer'] ?? null;
 
@@ -53,20 +58,21 @@ class HistoryController implements RequestHandlerInterface
                 'horde.error'
             );
             return $this->redirect(
-                (string) Wicked::url('Wiki/Home', true)
+                $this->urlGenerator->urlFor('Pages', ['page' => 'Wiki/Home'])
             );
         }
 
         if (!$page->allows(Wicked::MODE_HISTORY)) {
             return $this->redirect(
-                (string) Wicked::url($page->pageName(), true)
-                    ->add('actionID', 'history')
+                $this->urlGenerator->urlFor('Pages', ['page' => $page->pageName()])
+                . '?actionID=history'
             );
         }
 
         $html = $this->renderChrome(
             sprintf(_("History: %s"), $page->pageName()),
             function () use ($page) {
+                $this->topbarSearch->apply();
                 echo $page->render(Wicked::MODE_HISTORY);
             }
         );

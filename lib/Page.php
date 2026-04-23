@@ -12,6 +12,7 @@
  * @package  Wicked
  */
 use Horde\Wicked\WickedEngine;
+use Horde\Util\Util;
 
 use function PHP81_BC\strftime;
 
@@ -208,9 +209,9 @@ class Wicked_Page
     public static function getCurrentPage()
     {
         return Wicked_Page::getPage(
-            rtrim(Horde_Util::getFormData('page') ?? '', '/'),
-            Horde_Util::getFormData('version'),
-            Horde_Util::getFormData('referrer')
+            rtrim(Util::getFormData('page') ?? '', '/'),
+            Util::getFormData('version'),
+            Util::getFormData('referrer')
         );
     }
 
@@ -393,7 +394,7 @@ class Wicked_Page
              * @deprecated Use Horde_Themes_Image::tag() instead
              * @see Horde_Deprecated::img()
              */
-$view->locked = Horde::img('locked.png', _("Locked"));
+            $view->locked = Horde::img('locked.png', _("Locked"));
         }
 
         return $view->render('display/title') . $inner;
@@ -585,7 +586,7 @@ $view->locked = Horde::img('locked.png', _("Locked"));
         return $this->pageName();
     }
 
-    public function handleAction()
+    public function handleAction(): ?string
     {
         throw new Wicked_Exception(_("Unsupported"));
     }

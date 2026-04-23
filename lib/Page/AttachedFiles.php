@@ -12,6 +12,8 @@
  * @author   Jason M. Felice <jason.m.felice@gmail.com>
  * @package  Wicked
  */
+use Horde\Util\Util;
+
 use function PHP81_BC\strftime;
 
 /**
@@ -140,12 +142,12 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
          * @deprecated Use Horde_Themes_Image::tag() instead
          * @see Horde_Deprecated::img()
          */
-$refreshIcon = Horde::link($this->pageUrl())
-            . Horde::img(
-                'reload.png',
-                sprintf(_("Reload \"%s\""), $this->pageTitle())
-            )
-            . '</a>';
+        $refreshIcon = Horde::link($this->pageUrl())
+                    . Horde::img(
+                        'reload.png',
+                        sprintf(_("Reload \"%s\""), $this->pageTitle())
+                    )
+                    . '</a>';
         $view->refreshIcon = $refreshIcon;
         $view->attachments = $attachments;
 
@@ -166,9 +168,9 @@ $refreshIcon = Horde::link($this->pageUrl())
          * @deprecated Use Horde_Themes_Image::tag() instead
          * @see Horde_Deprecated::img()
          */
-$view->requiredMarker = Horde::img('required.png', '*');
+        $view->requiredMarker = Horde::img('required.png', '*');
         $view->referrer = $this->referrer();
-        $view->formInput = Horde_Util::formInput();
+        $view->formInput = Util::formInput();
 
         echo $view->render('display/AttachedFiles');
     }
@@ -191,22 +193,22 @@ $view->requiredMarker = Horde::img('required.png', '*');
     /**
      * Retrieves the form fields and processes the attachment.
      */
-    public function handleAction()
+    public function handleAction(): ?string
     {
         global $notification, $wicked, $registry, $conf;
 
         // Only allow POST commands.
-        $cmd = Horde_Util::getPost('cmd');
-        $version = Horde_Util::getFormData('version');
-        $is_update = (bool) Horde_Util::getFormData('is_update');
-        $filename = Horde_Util::getFormData('filename');
-        $change_log = Horde_Util::getFormData('change_log');
+        $cmd = Util::getPost('cmd');
+        $version = Util::getFormData('version');
+        $is_update = (bool) Util::getFormData('is_update');
+        $filename = Util::getFormData('filename');
+        $change_log = Util::getFormData('change_log');
 
         // See if we're supposed to delete an attachment.
         if ($cmd == 'delete' && $filename && $version) {
             if (!$this->allows(Wicked::MODE_REMOVE)) {
                 $notification->push(_("You do not have permission to delete attachments from this page."), 'horde.error');
-                return;
+                return null;
             }
 
             try {
@@ -227,18 +229,22 @@ $view->requiredMarker = Horde::img('required.png', '*');
             } catch (Wicked_Exception $e) {
                 $notification->push($e->getMessage(), 'horde.error');
             }
-            return;
+            return null;
         }
 
         if (empty($filename)) {
-            $filename = Horde_Util::dispelMagicQuotes($_FILES['attachment_file']['name']);
+            /**
+             * WARNING: Horde_Util::dispelMagicQuotes() removed in PSR-4 version
+             * Magic quotes are obsolete in PHP 8+. Remove this call.
+             */
+$filename = Horde_Util::dispelMagicQuotes($_FILES['attachment_file']['name']);
         }
 
         try {
             $GLOBALS['browser']->wasFileUploaded('attachment_file', _("attachment"));
         } catch (Horde_Browser_Exception $e) {
             $notification->push($e, 'horde.error');
-            return;
+            return null;
         }
 
         if (strpos($filename, ' ') !== false) {
@@ -251,7 +257,7 @@ $view->requiredMarker = Horde::img('required.png', '*');
         $data = file_get_contents($_FILES['attachment_file']['tmp_name']);
         if ($data === false) {
             $notification->push(_("Can't read uploaded file."), 'horde.error');
-            return;
+            return null;
         }
 
         if (!$this->allows(Wicked::MODE_EDIT)) {
@@ -262,7 +268,7 @@ $view->requiredMarker = Horde::img('required.png', '*');
                 ),
                 'horde.error'
             );
-            return;
+            return null;
         }
 
         if ($conf['wicked']['require_change_log'] && empty($change_log)) {
@@ -270,7 +276,7 @@ $view->requiredMarker = Horde::img('required.png', '*');
                 _("You must enter a change description to attach this file."),
                 'horde.error'
             );
-            return;
+            return null;
         }
 
         $referrer_id = $wicked->getPageId($this->referrer());
@@ -284,7 +290,7 @@ $view->requiredMarker = Horde::img('required.png', '*');
                 ),
                 'horde.error'
             );
-            return;
+            return null;
         }
 
         $found = false;
@@ -304,7 +310,7 @@ $view->requiredMarker = Horde::img('required.png', '*');
                     ),
                     'horde.error'
                 );
-                return;
+                return null;
             }
         } else {
             if ($found) {
@@ -315,7 +321,7 @@ $view->requiredMarker = Horde::img('required.png', '*');
                     ),
                     'horde.error'
                 );
-                return;
+                return null;
             }
         }
 
@@ -353,6 +359,8 @@ $view->requiredMarker = Horde::img('required.png', '*');
                  . '] attachment: ' . $this->referrer() . ', '
                  . $filename]
         );
+
+        return null;
     }
 
 }

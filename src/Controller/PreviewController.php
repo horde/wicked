@@ -11,10 +11,11 @@ declare(strict_types=1);
 
 namespace Horde\Wicked\Controller;
 
-use Horde_Injector;
+use Horde\Wicked\Service\TopbarSearch;
+use Horde\Wicked\WickedEngine;
 use Horde_Notification_Handler;
 use Horde_PageOutput;
-use Horde\Wicked\WickedEngine;
+use Horde_View;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -22,8 +23,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 /**
  * PSR-15 controller for edit preview.
  *
- * Replaces the legacy preview.php entry point. Transforms raw wiki text
- * and renders a preview.
+ * Routes: Preview (primary: /preview), LegacyPreview (secondary: /preview.php)
  *
  * @category Horde
  * @license  http://www.horde.org/licenses/gpl GPL
@@ -34,18 +34,18 @@ class PreviewController implements RequestHandlerInterface
     use ResponseTrait;
 
     public function __construct(
-        private Horde_Notification_Handler $notification,
-        private Horde_PageOutput $pageOutput,
-        private WickedEngine $engine,
-        private Horde_Injector $injector,
+        private readonly Horde_Notification_Handler $notification,
+        private readonly Horde_PageOutput $pageOutput,
+        private readonly WickedEngine $engine,
+        private readonly Horde_View $view,
+        private readonly TopbarSearch $topbarSearch,
     ) {}
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $queryParams = $request->getQueryParams();
-        $parsedBody = $request->getParsedBody() ?? [];
+        $parsedBody = (array) ($request->getParsedBody() ?? []);
 
-        // page_text can come from POST or GET
         $text = $parsedBody['page_text'] ?? ($queryParams['page_text'] ?? '');
         if ($text === '') {
             return $this->htmlResponse('');
@@ -53,13 +53,13 @@ class PreviewController implements RequestHandlerInterface
 
         $pageName = $parsedBody['page'] ?? ($queryParams['page'] ?? '');
 
-        $view = $this->injector->createInstance('Horde_View');
-        $view->text = $this->engine->transform($text);
+        $this->view->text = $this->engine->transform($text);
 
         $html = $this->renderChrome(
             sprintf(_("Edit %s"), $pageName),
-            function () use ($view) {
-                echo $view->render('edit/preview');
+            function () {
+                $this->topbarSearch->apply();
+                echo $this->view->render('edit/preview');
             }
         );
 

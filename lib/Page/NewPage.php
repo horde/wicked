@@ -1,5 +1,7 @@
 <?php
 
+use Horde\Util\Util;
+
 /**
  * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
@@ -50,7 +52,7 @@ class Wicked_Page_NewPage extends Wicked_Page
     public function __construct($referrer)
     {
         $this->_referrer = $referrer;
-        $this->_template = Horde_Util::getFormData('template');
+        $this->_template = Util::getFormData('template');
     }
 
     /**
@@ -95,7 +97,7 @@ class Wicked_Page_NewPage extends Wicked_Page
 
         $view = $GLOBALS['injector']->createInstance('Horde_View');
         $view->action = Wicked::url('NewPage');
-        $view->formInput = Horde_Util::formInput();
+        $view->formInput = Util::formInput();
         $view->referrer = $this->referrer();
         if (!empty($GLOBALS['conf']['wicked']['captcha'])
             && !$GLOBALS['registry']->getAuth()) {
@@ -127,7 +129,7 @@ class Wicked_Page_NewPage extends Wicked_Page
         return $this->_referrer;
     }
 
-    public function handleAction()
+    public function handleAction(): ?string
     {
         global $notification, $wicked;
 
@@ -136,15 +138,15 @@ class Wicked_Page_NewPage extends Wicked_Page
         } else {
             if (!empty($GLOBALS['conf']['wicked']['captcha'])
                 && !$GLOBALS['registry']->getAuth()
-                && (Horde_String::lower(Horde_Util::getFormData('wicked_captcha') ?? '') != Horde_String::lower(Wicked::getCAPTCHA()))) {
+                && (Horde_String::lower(Util::getFormData('wicked_captcha') ?? '') != Horde_String::lower(Wicked::getCAPTCHA()))) {
                 $notification->push(_("Random string did not match."), 'horde.error');
-                return;
+                return null;
             }
 
-            $text = Horde_Util::getPost('page_text');
+            $text = Util::getPost('page_text');
             if (empty($text)) {
                 $notification->push(_("Pages cannot be empty."), 'horde.error');
-                return;
+                return null;
             }
 
             try {
@@ -158,8 +160,7 @@ class Wicked_Page_NewPage extends Wicked_Page
             }
         }
 
-        // Show the newly created page.
-        Wicked::url($this->referrer(), true)->redirect();
+        return (string) Wicked::url($this->referrer(), true);
     }
 
 }
