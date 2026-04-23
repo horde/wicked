@@ -1,12 +1,6 @@
 <?php
 
 /**
- * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
- *
- * See the enclosed file LICENSE for license information (GPL). If you
- * did not receive this file, see http://www.horde.org/licenses/gpl.
- *
- * @author Tyler Colbert <tyler@colberts.us>
+ * Legacy entry point — forwards to the Rampage front controller.
  */
-
-require __DIR__ . '/display.php';
+require_once __DIR__ . '/display.php';

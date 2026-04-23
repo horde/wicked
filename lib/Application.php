@@ -28,10 +28,13 @@ if (!defined('HORDE_BASE')) {
 
 use Horde\Cache\Cache as HordeCache;
 use Horde\Cache\FileStorage;
+use Horde\Routes\Mapper;
 use Horde\Util\Variables;
 use Horde\Wicked\HordeWikilinkUrlResolver;
+use Horde\Wicked\Service\UrlGenerator;
 use Horde\Wicked\WickedEngine;
 use Horde\Wicked\WikilinkUrlResolver;
+use Horde\Util\Util;
 
 /* Load the Horde Framework core (needed to autoload
  * Horde_Registry_Application::). */
@@ -90,6 +93,21 @@ class Wicked_Application extends Horde_Registry_Application
                 );
             },
         );
+
+        $GLOBALS['injector']->bindClosure(
+            UrlGenerator::class,
+            function ($injector) {
+                $mapper = new Mapper();
+                require WICKED_BASE . '/config/routes.php';
+                if (file_exists(WICKED_BASE . '/config/routes.local.php')) {
+                    include WICKED_BASE . '/config/routes.local.php';
+                }
+                $registry = $injector->getInstance('Horde_Registry');
+                $webroot = $registry->get('webroot', 'wicked');
+
+                return new UrlGenerator($mapper, $webroot);
+            },
+        );
     }
 
     /**
@@ -119,7 +137,7 @@ class Wicked_Application extends Horde_Registry_Application
             foreach ($conf['menu']['pages'] as $pagename) {
                 /* Determine who we should say referred us. */
                 $curpage = isset($page) ? $page->pageName() : null;
-                $referrer = Horde_Util::getFormData('referrer', $curpage);
+                $referrer = Util::getFormData('referrer', $curpage);
 
                 /* Determine if we should depress the button. We have to do
                  * this on our own because all the buttons go to the same .php
