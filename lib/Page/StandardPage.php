@@ -191,6 +191,9 @@ class Wicked_Page_StandardPage extends Wicked_Page
         $processor = $this->getProcessor();
         $processor->setPageContext((int) $this->pageID(), (int) $this->version());
         $view->text = $processor->transform($this->getText());
+        if (str_contains($view->text, '<nav id="toc"')) {
+            $GLOBALS['page_output']->addScriptFile('toc.js', 'wicked');
+        }
         if ($isBlock) {
             return $view->render('display/standard');
         }
