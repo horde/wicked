@@ -13,10 +13,13 @@ namespace Horde\Wicked;
 
 use Closure;
 use Horde\Text\Wiki\FormatCatalog;
+use Horde\Text\Wiki\Node\DocumentNode;
 use Horde\Text\Wiki\Node\ElementNode;
+use Horde\Text\Wiki\Node\TextNode;
 use Horde\Text\Wiki\NodeVisitor;
 use Horde\Text\Wiki\Parser;
 use Horde\Text\Wiki\Renderer;
+use Horde\Text\Wiki\Renderer\Xhtml;
 use Horde\Text\Wiki\SimpleFormatCatalog;
 use Horde\Text\Wiki\WikiEngine;
 use Horde_Core_Factory_BlockCollection;
@@ -98,7 +101,9 @@ class WickedEngine implements WikiEngine
         $renderer = $this->catalog->getRenderer($format);
         $this->applyWickedHandlers($renderer);
 
-        $html = $renderer->render($this->parser->parse($text));
+        $document = $this->parser->parse($text);
+        $this->rewriteWikiTocNodes($document);
+        $html = $renderer->render($document);
 
         if ($cacheKey !== null) {
             $this->cache->set($cacheKey, $html);
@@ -159,6 +164,9 @@ class WickedEngine implements WikiEngine
 
     private function applyWickedHandlers(Renderer $renderer): void
     {
+        if ($renderer instanceof Xhtml) {
+            $renderer->enableHeadingIds();
+        }
         $renderer->setElementHandler('wikilink', $this->createWikilinkHandler());
         $renderer->setElementHandler('url', $this->createUrlHandler());
         $renderer->setElementHandler('code', $this->createCodeHandler($renderer));
@@ -282,6 +290,58 @@ class WickedEngine implements WikiEngine
         return function (ElementNode $node, NodeVisitor $visitor): string {
             return '<table class="horde-table">' . $visitor->renderChildren($node) . "</table>\n";
         };
+    }
+
+    // ------------------------------------------------------------------
+    // AST post-processing
+    // ------------------------------------------------------------------
+
+    private function rewriteWikiTocNodes(DocumentNode $document): void
+    {
+        $replacements = [];
+        foreach ($document->getChildren() as $child) {
+            if (!$child instanceof ElementNode
+                || $child->getName() !== 'htmlblock'
+            ) {
+                continue;
+            }
+            $text = '';
+            foreach ($child->getChildren() as $grandchild) {
+                if ($grandchild instanceof TextNode) {
+                    $text .= $grandchild->getText();
+                }
+            }
+            if (preg_match('/^\s*<wiki-toc(?:\s+depth="(\d+)")?(?:\s*\/>|>\s*(?:<\/wiki-toc>)?)\s*$/i', $text, $m)) {
+                $toc = new ElementNode('toc');
+                if (isset($m[1]) && $m[1] !== '') {
+                    $toc->setAttribute('depth', (int) $m[1]);
+                }
+                $replacements[] = ['old' => $child, 'new' => $toc];
+            }
+        }
+
+        if ($replacements === []) {
+            return;
+        }
+
+        $children = $document->getChildren();
+        $clearChildren = Closure::bind(function () {
+            $this->children = [];
+        }, $document, DocumentNode::class);
+        $clearChildren();
+
+        $replaceMap = new \SplObjectStorage();
+        foreach ($replacements as $r) {
+            $replaceMap[$r['old']] = $r['new'];
+        }
+
+        foreach ($children as $child) {
+            if ($replaceMap->contains($child)) {
+                $document->addChild($replaceMap[$child]);
+            } else {
+                $document->addChild($child);
+            }
+        }
     }
 
     // ------------------------------------------------------------------

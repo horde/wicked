@@ -146,7 +146,7 @@ class PageController implements RequestHandlerInterface
             $this->topbarSearch->apply();
 
             $this->pageOutput->addLinkTag([
-                'href' => $this->urlGenerator->absoluteUrlFor('Pages', ['page' => 'opensearch.php']),
+                'href' => $this->urlGenerator->absoluteUrlFor('OpenSearch'),
                 'rel' => 'search',
                 'title' => $this->registry->get('name')
                     . ' (' . $this->urlGenerator->absoluteUrlFor('Pages', ['page' => 'Wiki/Home']) . ')',

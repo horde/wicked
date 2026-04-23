@@ -15,6 +15,7 @@ use Horde\Wicked\Service\TopbarSearch;
 use Horde\Wicked\WickedEngine;
 use Horde_Notification_Handler;
 use Horde_PageOutput;
+use Horde_Registry;
 use Horde_View;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -36,6 +37,7 @@ class PreviewController implements RequestHandlerInterface
     public function __construct(
         private readonly Horde_Notification_Handler $notification,
         private readonly Horde_PageOutput $pageOutput,
+        private readonly Horde_Registry $registry,
         private readonly WickedEngine $engine,
         private readonly Horde_View $view,
         private readonly TopbarSearch $topbarSearch,
@@ -54,6 +56,7 @@ class PreviewController implements RequestHandlerInterface
         $pageName = $parsedBody['page'] ?? ($queryParams['page'] ?? '');
 
         $this->view->text = $this->engine->transform($text);
+        $this->view->addTemplatePath($this->registry->get('templates', 'wicked'));
 
         $html = $this->renderChrome(
             sprintf(_("Edit %s"), $pageName),
