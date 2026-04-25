@@ -149,4 +149,9 @@ final class DriverPageRepository implements PageRepositoryInterface
     {
         $this->driver->logPageView($pageName);
     }
+
+    public function updatePageFormat(string $pageName, ?string $format): void
+    {
+        $this->driver->updatePageFormat($pageName, $format);
+    }
 }

@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Horde\Wicked;
 
-use Horde_Registry;
+use Horde\Core\Uri\UriBuilderInterface;
 
 /**
  * URL resolver that builds wiki page URLs from the registry webroot.
@@ -22,15 +22,15 @@ use Horde_Registry;
  */
 class HordeWikilinkUrlResolver implements WikilinkUrlResolver
 {
-    private string $webroot;
-
-    public function __construct(Horde_Registry $registry)
-    {
-        $this->webroot = rtrim((string) $registry->get('webroot', 'wicked'), '/');
-    }
+    public function __construct(
+        private readonly UriBuilderInterface $uriBuilder,
+    ) {}
 
     public function resolve(string $page): string
     {
-        return $this->webroot . '/' . str_replace('%2F', '/', urlencode($page));
+        return $this->uriBuilder
+            ->withAppWebroot('wicked')
+            ->withPart(str_replace('%2F', '/', urlencode($page)))
+            ->getPath();
     }
 }

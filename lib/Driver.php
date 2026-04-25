@@ -374,6 +374,8 @@ abstract class Wicked_Driver
         $this->removeAllAttachments($this->getPageId($pagename));
     }
 
+    abstract public function updatePageFormat(string $pagename, ?string $format): void;
+
     abstract public function searchTitles($searchtext, $begin = false);
 
     /**

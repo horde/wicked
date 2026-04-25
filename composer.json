@@ -65,7 +65,9 @@
     "require-dev": {},
     "suggest": {
         "pear/text_figlet": "*",
-        "horde/test": "* || dev-FRAMEWORK_6_0"
+        "horde/test": "* || dev-FRAMEWORK_6_0",
+        "horde/satisfiend": "^1 || dev-FRAMEWORK_6_0",
+        "horde/githubapiclient": "^1 || dev-FRAMEWORK_6_0"
     },
     "autoload": {
         "classmap": [

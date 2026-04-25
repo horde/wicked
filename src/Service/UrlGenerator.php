@@ -11,14 +11,17 @@ declare(strict_types=1);
 
 namespace Horde\Wicked\Service;
 
+use Horde\Core\Uri\UriBuilderInterface;
 use Horde\Routes\Mapper;
 use Horde\Routes\Utils;
 
 /**
  * Injectable URL generator wrapping Horde\Routes\Utils.
  *
- * Provides named-route URL generation for Wicked controllers, replacing
- * static Wicked::url() calls.
+ * Provides named-route URL generation for Wicked controllers. New code
+ * should prefer injecting {@see UriBuilderInterface} directly and calling
+ * {@see UriBuilderInterface::withNamedRoute()} once a RouteMapperProvider
+ * implementation is available in Core.
  *
  * @category Horde
  * @license  http://www.horde.org/licenses/gpl GPL
@@ -30,9 +33,10 @@ class UrlGenerator
 
     public function __construct(
         private readonly Mapper $mapper,
-        private readonly string $webroot,
+        private readonly UriBuilderInterface $uriBuilder,
     ) {
-        $this->mapper->environ['SCRIPT_NAME'] = rtrim($webroot, '/');
+        $webroot = rtrim($this->uriBuilder->withAppWebroot('wicked')->getPath(), '/');
+        $this->mapper->environ['SCRIPT_NAME'] = $webroot;
         $this->utils = new Utils($this->mapper);
     }
 

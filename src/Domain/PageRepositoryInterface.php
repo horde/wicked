@@ -61,4 +61,6 @@ interface PageRepositoryInterface
     public function removeAllVersions(string $pageName): void;
 
     public function logPageView(string $pageName): void;
+
+    public function updatePageFormat(string $pageName, ?string $format): void;
 }

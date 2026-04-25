@@ -68,6 +68,8 @@ dependencies:
     composer:
       pear/text_figlet: '*'
       horde/test: '*'
+      horde/satisfiend: ^1
+      horde/githubapiclient: ^1
 autoload:
   classmap:
     - lib/

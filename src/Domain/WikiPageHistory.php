@@ -23,6 +23,7 @@ final readonly class WikiPageHistory
         public ?string $changeAuthor,
         public ?string $changeLog,
         public ?string $changeIdentityId = null,
+        public ?string $pageFormat = null,
     ) {}
 
     /**
@@ -30,7 +31,7 @@ final readonly class WikiPageHistory
      *
      * Expected keys: page_id, page_uid, page_name, page_text, page_version,
      *                version_created, change_author, change_log,
-     *                change_identity_id
+     *                change_identity_id, page_format
      */
     public static function fromDriverArray(array $data): self
     {
@@ -44,6 +45,7 @@ final readonly class WikiPageHistory
             changeAuthor: $data['change_author'] ?? null,
             changeLog: $data['change_log'] ?? null,
             changeIdentityId: $data['change_identity_id'] ?? null,
+            pageFormat: $data['page_format'] ?? null,
         );
     }
 

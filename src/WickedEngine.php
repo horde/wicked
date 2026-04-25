@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Horde\Wicked;
 
 use Closure;
+use Horde\Core\Uri\UriBuilderInterface;
 use Horde\Text\Wiki\FormatCatalog;
 use Horde\Text\Wiki\Node\DocumentNode;
 use Horde\Text\Wiki\Node\ElementNode;
@@ -65,15 +66,21 @@ class WickedEngine implements WikiEngine
         string $format = 'yawiki',
         private readonly ?Horde_Core_Factory_BlockCollection $blockFactory = null,
         private readonly ?CacheInterface $cache = null,
+        private readonly ?UriBuilderInterface $uriBuilder = null,
     ) {
         $this->catalog = $catalog ?? SimpleFormatCatalog::withDefaults();
         $format = $this->normalizeFormat($format);
         $this->parser = $this->catalog->getParser($format);
     }
 
-    public function transform(string $text, string $format = 'Xhtml'): string
+    public function transform(string $text, string $format = 'Xhtml', ?string $inputFormat = null): string
     {
         $format = $this->normalizeFormat($format);
+
+        $parser = $this->parser;
+        if ($inputFormat !== null) {
+            $parser = $this->catalog->getParser($this->normalizeFormat($inputFormat));
+        }
 
         // Try cache for xhtml display of static pages
         $cacheKey = null;
@@ -83,7 +90,8 @@ class WickedEngine implements WikiEngine
             && !$this->hasDynamicContent($text)
         ) {
             $cacheKey = 'wicked.render.' . $this->currentPageId
-                . '.' . $this->currentPageVersion;
+                . '.' . $this->currentPageVersion
+                . ($inputFormat !== null ? '.' . $inputFormat : '');
             $cached = $this->cache->get($cacheKey);
             if ($cached !== null) {
                 return $cached;
@@ -102,7 +110,7 @@ class WickedEngine implements WikiEngine
         $renderer = $this->catalog->getRenderer($format);
         $this->applyWickedHandlers($renderer);
 
-        $document = $this->parser->parse($text);
+        $document = $parser->parse($text);
         $this->rewriteWikiTocNodes($document);
         $html = $renderer->render($document);
 
@@ -218,7 +226,9 @@ class WickedEngine implements WikiEngine
      */
     private function createUrlHandler(): Closure
     {
-        $webroot = rtrim((string) $this->registry->get('webroot', 'wicked'), '/');
+        $webroot = $this->uriBuilder !== null
+            ? rtrim($this->uriBuilder->withAppWebroot('wicked')->getPath(), '/')
+            : rtrim((string) $this->registry->get('webroot', 'wicked'), '/');
 
         return function (ElementNode $node, NodeVisitor $visitor) use ($webroot): string {
             $attrs = $node->getAttributes();

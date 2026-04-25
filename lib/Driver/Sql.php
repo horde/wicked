@@ -956,6 +956,19 @@ class Wicked_Driver_Sql extends Wicked_Driver
         }
     }
 
+    public function updatePageFormat(string $pagename, ?string $format): void
+    {
+        try {
+            $this->_db->update(
+                'UPDATE ' . $this->_params['table']
+                . ' SET page_format = ? WHERE page_name = ?',
+                [$format, $this->_convertToDriver($pagename)]
+            );
+        } catch (Horde_Db_Exception $e) {
+            throw new Wicked_Exception($e);
+        }
+    }
+
     /**
      * Attempts to resolve the current user's identity ID.
      *

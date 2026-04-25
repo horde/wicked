@@ -86,11 +86,20 @@ class Wicked
      */
     public static function url($page, $full = false, $append_session = 0)
     {
-        $script = str_replace('%2F', '/', urlencode($page));
+        // TODO: Move to an injectable service
+        $uriBuilder = $GLOBALS['injector']->getInstance(
+            \Horde\Core\Uri\UriBuilderInterface::class
+        );
 
-        $url = Horde::url($script, $full, ['append_session' => $append_session]);
-        if (!$full) {
-            $url->url = preg_replace('|^([a-zA-Z][a-zA-Z0-9+.-]{0,19})://[^/]*|', '', $url->url);
+        $script = str_replace('%2F', '/', urlencode($page));
+        $uri = $uriBuilder->withAppWebroot('wicked')->withPart($script);
+
+        $url = new Horde_Url($full ? (string) $uri : $uri->getPath());
+
+        if (empty($GLOBALS['conf']['session']['use_only_cookies'])
+            && ($append_session === 1
+                || $append_session === 0 && !isset($_COOKIE[session_name()]))) {
+            $url->add(session_name(), session_id());
         }
 
         return $url;

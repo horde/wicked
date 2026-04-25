@@ -192,7 +192,11 @@ class Wicked_Page_StandardPage extends Wicked_Page
         $view->name = $this->pageName();
         $processor = $this->getProcessor();
         $processor->setPageContext((int) $this->pageID(), (int) $this->version());
-        $view->text = $processor->transform($this->getText());
+        $view->text = $processor->transform(
+            $this->getText(),
+            'Xhtml',
+            $this->resolveInputFormat(),
+        );
         if (str_contains($view->text, '<nav id="toc"')) {
             $GLOBALS['page_output']->addScriptFile('toc.js', 'wicked');
         }
@@ -648,6 +652,19 @@ class Wicked_Page_StandardPage extends Wicked_Page
         $class = 'Horde_Text_Diff_Renderer_' . Horde_String::ucfirst($renderer);
         $renderer = new $class();
         return $renderer->render($diff);
+    }
+
+    private function resolveInputFormat(): ?string
+    {
+        $format = $this->_page['page_format'] ?? null;
+        if ($format === null) {
+            return null;
+        }
+
+        return match ($format) {
+            'github_markdown' => 'markdown',
+            default => $format,
+        };
     }
 
 }

@@ -28,14 +28,19 @@ if (!defined('HORDE_BASE')) {
 
 use Horde\Cache\Cache as HordeCache;
 use Horde\Cache\FileStorage;
+use Horde\Core\Uri\UriBuilderInterface;
 use Horde\Routes\Mapper;
 use Horde\Util\Variables;
 use Horde\Wicked\Domain\AttachmentRepositoryInterface;
 use Horde\Wicked\Domain\PageRepositoryInterface;
+use Horde\Wicked\Domain\PageSourceRepositoryInterface;
+use Horde\Wicked\Domain\Repository\DriverPageSourceRepository;
 use Horde\Wicked\Domain\SearchRepositoryInterface;
 use Horde\Wicked\Factory\DriverRepositoryFactory;
 use Horde\Wicked\Factory\TagServiceFactory;
 use Horde\Wicked\HordeWikilinkUrlResolver;
+use Horde\Wicked\Listener\GitHubSyncListener;
+use Horde\Wicked\Service\GitHubFileFetcher;
 use Horde\Wicked\Service\TagService;
 use Horde\Wicked\Service\UrlGenerator;
 use Horde\Wicked\WickedEngine;
@@ -96,6 +101,7 @@ class Wicked_Application extends Horde_Registry_Application
                     format: $format,
                     blockFactory: $blockFactory,
                     cache: $cache,
+                    uriBuilder: $injector->getInstance(UriBuilderInterface::class),
                 );
             },
         );
@@ -108,10 +114,11 @@ class Wicked_Application extends Horde_Registry_Application
                 if (file_exists(WICKED_BASE . '/config/routes.local.php')) {
                     include WICKED_BASE . '/config/routes.local.php';
                 }
-                $registry = $injector->getInstance('Horde_Registry');
-                $webroot = $registry->get('webroot', 'wicked');
 
-                return new UrlGenerator($mapper, $webroot);
+                return new UrlGenerator(
+                    $mapper,
+                    $injector->getInstance(UriBuilderInterface::class),
+                );
             },
         );
 
@@ -140,6 +147,59 @@ class Wicked_Application extends Horde_Registry_Application
             DriverRepositoryFactory::class,
             'attachments',
         );
+
+        $GLOBALS['injector']->bindClosure(
+            PageSourceRepositoryInterface::class,
+            fn($i) => new DriverPageSourceRepository(
+                $i->getInstance('Horde_Db_Adapter'),
+            ),
+        );
+
+        $this->_bootstrapGitHubSync();
+    }
+
+    private function _bootstrapGitHubSync(): void
+    {
+        if (!class_exists(\Horde\Satisfiend\Event\WebhookReceivedEvent::class)) {
+            return;
+        }
+
+        if (!class_exists(\Horde\GithubApiClient\Auth\GitHubAppAuthenticationService::class)) {
+            return;
+        }
+
+        if (!$GLOBALS['injector']->has(\Horde\GithubApiClient\Auth\GitHubAppAuthenticationService::class)) {
+            return;
+        }
+
+        $GLOBALS['injector']->bindClosure(
+            GitHubFileFetcher::class,
+            fn($i) => new GitHubFileFetcher(
+                $i->getInstance(\Psr\Http\Client\ClientInterface::class),
+                $i->getInstance(\Psr\Http\Message\RequestFactoryInterface::class),
+                $i->getInstance(\Horde\GithubApiClient\Auth\GitHubAppAuthenticationService::class),
+            ),
+        );
+
+        $GLOBALS['injector']->bindClosure(
+            GitHubSyncListener::class,
+            fn($i) => new GitHubSyncListener(
+                $i->getInstance(PageSourceRepositoryInterface::class),
+                $i->getInstance(PageRepositoryInterface::class),
+                $i->getInstance(GitHubFileFetcher::class),
+            ),
+        );
+
+        if ($GLOBALS['injector']->has(\Psr\EventDispatcher\ListenerProviderInterface::class)) {
+            $provider = $GLOBALS['injector']->getInstance(
+                \Psr\EventDispatcher\ListenerProviderInterface::class,
+            );
+            if ($provider instanceof \Horde\EventDispatcher\SimpleListenerProvider) {
+                $provider->addListener(
+                    $GLOBALS['injector']->getInstance(GitHubSyncListener::class),
+                );
+            }
+        }
     }
 
     /**
@@ -203,7 +263,11 @@ class Wicked_Application extends Horde_Registry_Application
             ];
             $sidebar->addRow([
                 'label' => _("Attachments"),
-                'url' => new Horde_Url($registry->get('webroot', 'wicked') . '/admin/attachments'),
+                'url' => $GLOBALS['injector']->getInstance(UriBuilderInterface::class)
+                    ->withAppWebroot('wicked')
+                    ->withSlug('admin')
+                    ->withPart('attachments')
+                    ->toHordeUrl(),
                 'cssClass' => 'horde-admin',
             ], 'admin');
         }
