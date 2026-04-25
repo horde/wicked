@@ -1,6 +1,8 @@
 <?php
 
 use Horde\Util\Util;
+use Horde\Wicked\Domain\PageRepositoryInterface;
+use Horde\Wicked\Domain\SearchRepositoryInterface;
 
 /**
  * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
@@ -98,7 +100,7 @@ class Wicked_Page_MergeOrRename extends Wicked_Page
      */
     public function display()
     {
-        global $wicked, $registry, $notification;
+        global $registry, $notification;
 
         $referrer = $this->referrer();
 
@@ -106,7 +108,8 @@ class Wicked_Page_MergeOrRename extends Wicked_Page
             return '=' . str_pad(dechex(ord($string[1])), 2, '0', STR_PAD_LEFT);
         };
 
-        $references = $wicked->getBackLinks($referrer);
+        // TODO: Move to constructor injection
+        $references = $GLOBALS['injector']->getInstance(SearchRepositoryInterface::class)->getBackLinks($referrer);
         foreach ($references as $key => $page) {
             $references[$key]['page_url'] = Wicked::url($page['page_name']);
             $references[$key]['page_name'] = $page['page_name'];
@@ -168,11 +171,14 @@ class Wicked_Page_MergeOrRename extends Wicked_Page
      */
     public function handleAction(): ?string
     {
-        global $wicked, $notification, $registry;
+        global $notification, $registry;
 
         if (Util::getFormData('submit') == _("Cancel")) {
             return (string) Wicked::url($this->referrer(), true);
         }
+
+        // TODO: Move to constructor injection
+        $pageRepo = $GLOBALS['injector']->getInstance(PageRepositoryInterface::class);
 
         $referrer = $this->referrer();
 
@@ -219,8 +225,8 @@ class Wicked_Page_MergeOrRename extends Wicked_Page
             // Merge the two pages.
             $newText = $destPage->getText() . "\n----\n" . $sourcePage->getText();
             $changelog = sprintf(_("Merged from %s"), $referrer);
-            $wicked->updateText($new_name, $newText, $changelog);
-            $wicked->removeAllVersions($referrer);
+            $pageRepo->updateText($new_name, $newText, $changelog);
+            $pageRepo->removeAllVersions($referrer);
 
             $notification->push(sprintf(_("Merged \"%s\" into \"%s\"."), $referrer, $new_name), 'horde.success');
 
@@ -230,7 +236,7 @@ class Wicked_Page_MergeOrRename extends Wicked_Page
                 'Subject' => '[' . $registry->get('name') . '] merged: ' . $referrer . ', ' . $new_name]);
         } else {
             // Rename the page.
-            $wicked->renamePage($referrer, $new_name);
+            $pageRepo->renamePage($referrer, $new_name);
             $notification->push(sprintf(_("Renamed \"%s\" to \"%s\"."), $referrer, $new_name), 'horde.success');
 
             $url = Wicked::url($new_name, true, -1);
@@ -282,7 +288,7 @@ class Wicked_Page_MergeOrRename extends Wicked_Page
                 }
 
                 try {
-                    $refPage = $wicked->retrieveByName($page_name);
+                    $refPage = $pageRepo->getByName($page_name);
                 } catch (Wicked_Exception $e) {
                     $notification->push(
                         sprintf(
@@ -295,8 +301,8 @@ class Wicked_Page_MergeOrRename extends Wicked_Page
                     continue;
                 }
 
-                $newText = preg_replace($from, $to, $refPage['page_text']);
-                $wicked->updateText($page_name, $newText, $changelog);
+                $newText = preg_replace($from, $to, $refPage->text);
+                $pageRepo->updateText($page_name, $newText, $changelog);
             }
         }
 

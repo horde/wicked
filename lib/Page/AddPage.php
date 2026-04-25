@@ -1,6 +1,8 @@
 <?php
 
 use Horde\Util\Util;
+use Horde\Wicked\Domain\PageMatchType;
+use Horde\Wicked\Domain\SearchRepositoryInterface;
 
 /**
  * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
@@ -52,7 +54,8 @@ class Wicked_Page_AddPage extends Wicked_Page
     public function __construct($newpage)
     {
         $this->_newpage = $newpage;
-        $this->_results = $GLOBALS['wicked']->searchTitles($newpage);
+        // TODO: Move to constructor injection
+        $this->_results = $GLOBALS['injector']->getInstance(SearchRepositoryInterface::class)->searchTitles($newpage);
     }
 
     /**
@@ -76,7 +79,7 @@ class Wicked_Page_AddPage extends Wicked_Page
      */
     public function display()
     {
-        global $injector, $page_output, $wicked;
+        global $injector, $page_output;
 
         $view = $injector->createInstance('Horde_View');
         $view->action = Wicked::url('NewPage');
@@ -95,7 +98,9 @@ class Wicked_Page_AddPage extends Wicked_Page
                 $view->pages[] = $page->toView();
             }
         }
-        $view->templates = $wicked->getMatchingPages('Template', Wicked_Page::MATCH_ENDS);
+        // TODO: Move to constructor injection
+        $view->templates = $injector->getInstance(SearchRepositoryInterface::class)
+            ->getMatchingPages('Template', PageMatchType::Ends);
         $view->help = Horde_Help::link('wicked', 'Templates');
 
         return $view->render('edit/create');

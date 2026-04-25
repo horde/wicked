@@ -11,6 +11,8 @@
  * @author   Tyler Colbert <tyler@colberts.us>
  * @package  Wicked
  */
+use Horde\Wicked\Domain\PageRepositoryInterface;
+use Horde\Wicked\Domain\SearchRepositoryInterface;
 use Horde\Wicked\WickedEngine;
 use Horde\Util\Util;
 
@@ -83,13 +85,12 @@ class Wicked_Page
      */
     public function getPermissions($pageName = null)
     {
-        global $wicked;
-
         if (is_null($pageName)) {
             $pageName = $this->pageName();
         }
 
-        $pageId = $wicked->getPageId($pageName);
+        // TODO: Move to constructor injection
+        $pageId = $GLOBALS['injector']->getInstance(PageRepositoryInterface::class)->getPageId($pageName);
         $permName = 'wicked:pages:' . $pageId;
         $perms = $GLOBALS['injector']->getInstance('Horde_Perms');
 

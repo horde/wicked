@@ -17,6 +17,11 @@
  <strong><?php echo _("Change log") ?>: </strong><input type="text" name="changelog" size="50" />
 </p>
 
+<p class="horde-content">
+ <strong><?php echo _("Tags") ?>: </strong>
+ <input type="text" name="tags" size="50" value="<?php echo $this->h($this->tags ?? '') ?>" />
+</p>
+
 <?php if ($this->captcha): ?>
 <div class="horde-content">
  <?php echo _("Spam Protection - Enter the following letters below:") ?>

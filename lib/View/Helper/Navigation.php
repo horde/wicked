@@ -1,5 +1,8 @@
 <?php
 
+use Horde\Wicked\Domain\PageRepositoryInterface;
+use Horde\Wicked\Domain\SearchRepositoryInterface;
+
 /**
  * Copyright 2014-2026 Horde LLC (http://www.horde.org/)
  *
@@ -39,14 +42,15 @@ class Wicked_View_Helper_Navigation extends Horde_View_Helper_Base
      */
     public function breadcrumb($name)
     {
-        global $wicked;
+        // TODO: Move to constructor injection
+        $pageRepo = $GLOBALS['injector']->getInstance(PageRepositoryInterface::class);
 
         $parts = $dirs = [];
         foreach (explode('/', $name) as $part) {
             $dirs[] = $part;
             $dir = implode('/', $dirs);
             $attributes = [];
-            if (!$wicked->pageExists($dir)) {
+            if (!$pageRepo->pageExists($dir)) {
                 $attributes['class'] = 'newpage';
             }
             $parts[] = Wicked::url($dir)->link($attributes)
@@ -65,13 +69,14 @@ class Wicked_View_Helper_Navigation extends Horde_View_Helper_Base
      */
     public function navigation($name)
     {
-        global $wicked;
+        // TODO: Move to constructor injection
+        $searchRepo = $GLOBALS['injector']->getInstance(SearchRepositoryInterface::class);
 
         if (strpos($name, '/') === false) {
             return '';
         }
 
-        $siblings = $wicked->searchTitles(
+        $siblings = $searchRepo->searchTitles(
             substr($name, 0, strrpos($name, '/') + 1),
             true
         );
@@ -174,12 +179,13 @@ class Wicked_View_Helper_Navigation extends Horde_View_Helper_Base
      */
     protected function _getSubPages($name)
     {
-        global $wicked;
+        // TODO: Move to constructor injection
+        $searchRepo = $GLOBALS['injector']->getInstance(SearchRepositoryInterface::class);
 
         if (!isset($this->_subPages)) {
             $slashes = substr_count($name, '/') + 1;
             $this->_subPages = [];
-            foreach ($wicked->searchTitles($name . '/', true) as $page) {
+            foreach ($searchRepo->searchTitles($name . '/', true) as $page) {
                 if (substr_count($page['page_name'], '/') == $slashes) {
                     $this->_subPages[] = $page;
                 }

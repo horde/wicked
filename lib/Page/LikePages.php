@@ -1,5 +1,7 @@
 <?php
 
+use Horde\Wicked\Domain\SearchRepositoryInterface;
+
 /**
  * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
@@ -52,14 +54,15 @@ class Wicked_Page_LikePages extends Wicked_Page
      */
     public function displayContents($isBlock)
     {
-        global $injector, $page_output, $wicked;
+        global $injector, $page_output;
 
         $page_output->addScriptFile('tables.js', 'horde');
 
         $view = $injector->createInstance('Horde_View');
         $content = $view->render('pagelist/header');
 
-        $summaries = $wicked->getLikePages($this->referrer());
+        // TODO: Move to constructor injection
+        $summaries = $injector->getInstance(SearchRepositoryInterface::class)->getLikePages($this->referrer());
         foreach ($summaries as $page) {
             if (!empty($page['page_history'])) {
                 $page = new Wicked_Page_StandardHistoryPage($page);

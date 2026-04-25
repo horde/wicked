@@ -1,5 +1,10 @@
 <?php
 
+use Horde\Wicked\Domain\PageMatchType;
+use Horde\Wicked\Domain\PageRepositoryInterface;
+use Horde\Wicked\Domain\SearchRepositoryInterface;
+use Horde\Wicked\Service\TagService;
+
 /**
  * Copyright 2010-2026 Horde LLC (http://www.horde.org/)
  *
@@ -56,13 +61,29 @@ class Wicked_Api extends Horde_Registry_Api
     public function getPageInfo($pagename)
     {
         $page = Wicked_Page::getPage($pagename);
-        return [
+        $info = [
             'page_version' => $page->version(),
             'page_checksum' => md5($page->getText()),
             'version_created' => $page->versionCreated(),
             'change_author' => $page->author(),
             'change_log' => $page->changeLog(),
         ];
+
+        try {
+            $pageData = $GLOBALS['wicked']->retrieveByName($pagename);
+            $pageUid = $pageData['page_uid'] ?? '';
+            if ($pageUid !== '') {
+                $info['page_uid'] = $pageUid;
+                $tagService = $GLOBALS['injector']->getInstance(TagService::class);
+                $tags = $tagService->getTags($pageUid);
+                if (!empty($tags)) {
+                    $info['tags'] = array_values($tags);
+                }
+            }
+        } catch (Throwable) {
+        }
+
+        return $info;
     }
 
     /**
@@ -80,6 +101,7 @@ class Wicked_Api extends Horde_Registry_Api
         }
 
         $info = [];
+        $uidMap = [];
 
         foreach ($pagenames as $pagename) {
             $page = Wicked_Page::getPage($pagename);
@@ -90,6 +112,29 @@ class Wicked_Api extends Horde_Registry_Api
                 'change_author' => $page->author(),
                 'change_log' => $page->changeLog(),
             ];
+            try {
+                $pageData = $GLOBALS['wicked']->retrieveByName($pagename);
+                $uid = $pageData['page_uid'] ?? '';
+                if ($uid !== '') {
+                    $info[$pagename]['page_uid'] = $uid;
+                    $uidMap[$uid] = $pagename;
+                }
+            } catch (Throwable) {
+            }
+        }
+
+        if (!empty($uidMap)) {
+            try {
+                $tagService = $GLOBALS['injector']->getInstance(TagService::class);
+                $allTags = $tagService->getTagsByPages(array_keys($uidMap));
+                foreach ($allTags as $uid => $tags) {
+                    $pagename = $uidMap[$uid] ?? null;
+                    if ($pagename !== null && !empty($tags)) {
+                        $info[$pagename]['tags'] = array_values($tags);
+                    }
+                }
+            } catch (Throwable) {
+            }
         }
 
         return $info;
@@ -125,7 +170,10 @@ class Wicked_Api extends Horde_Registry_Api
      */
     public function pageExists($pagename)
     {
-        return $GLOBALS['wicked']->pageExists($pagename);
+        // TODO: Move to constructor injection
+        $pageRepo = $GLOBALS['injector']->getInstance(PageRepositoryInterface::class);
+
+        return $pageRepo->pageExists($pagename);
     }
 
     /**
@@ -138,8 +186,11 @@ class Wicked_Api extends Horde_Registry_Api
      */
     public function display($pagename)
     {
+        // TODO: Move to constructor injection
+        $pageRepo = $GLOBALS['injector']->getInstance(PageRepositoryInterface::class);
+
         $page = Wicked_Page::getPage($pagename);
-        $GLOBALS['wicked']->logPageView($page->pageName());
+        $pageRepo->logPageView($page->pageName());
         return $page->displayContents(false);
     }
 
@@ -154,9 +205,12 @@ class Wicked_Api extends Horde_Registry_Api
      */
     public function renderPage($pagename, $format = 'Plain')
     {
+        // TODO: Move to constructor injection
+        $pageRepo = $GLOBALS['injector']->getInstance(PageRepositoryInterface::class);
+
         $page = Wicked_Page::getPage($pagename);
         $content = $page->getProcessor()->transform($page->getText(), $format);
-        $GLOBALS['wicked']->logPageView($page->pageName());
+        $pageRepo->logPageView($page->pageName());
         return $content;
     }
 
@@ -172,6 +226,9 @@ class Wicked_Api extends Horde_Registry_Api
      */
     public function edit($pagename, $text, $changelog = '')
     {
+        // TODO: Move to constructor injection
+        $pageRepo = $GLOBALS['injector']->getInstance(PageRepositoryInterface::class);
+
         $page = Wicked_Page::getPage($pagename);
         if (!$page->allows(Wicked::MODE_EDIT)) {
             throw new Wicked_Exception(sprintf(_("You don't have permission to edit \"%s\"."), $pagename));
@@ -185,10 +242,10 @@ class Wicked_Api extends Horde_Registry_Api
             $content = $page->getText();
         } catch (Wicked_Exception $e) {
             // Maybe the page does not exists, if not create it
-            if ($GLOBALS['wicked']->pageExists($pagename)) {
+            if ($pageRepo->pageExists($pagename)) {
                 throw $e;
             }
-            $GLOBALS['wicked']->newPage($pagename, $text);
+            $pageRepo->createPage($pagename, $text);
             return;
         }
 
@@ -208,8 +265,10 @@ class Wicked_Api extends Horde_Registry_Api
      */
     public function listTemplates()
     {
-        global $wicked;
-        $templates = $wicked->getMatchingPages('Template', Wicked_Page::MATCH_ENDS);
+        // TODO: Move to constructor injection
+        $searchRepo = $GLOBALS['injector']->getInstance(SearchRepositoryInterface::class);
+
+        $templates = $searchRepo->getMatchingPages('Template', PageMatchType::Ends);
         $list = [['category' => _("Wiki Templates"),
             'templates' => []]];
         foreach ($templates as $page) {
@@ -246,8 +305,6 @@ class Wicked_Api extends Horde_Registry_Api
      */
     public function getPageSource($pagename, $version = null)
     {
-        global $wicked;
-
         $page = Wicked_Page::getPage($pagename, $version);
 
         if (!$page->allows(Wicked::MODE_CONTENT)) {
@@ -297,5 +354,98 @@ class Wicked_Api extends Horde_Registry_Api
         }
 
         return $info;
+    }
+
+    /**
+     * Returns tags for a page.
+     *
+     * @param string $pagename  Page name.
+     *
+     * @return array  Tag names.
+     */
+    public function listTags($pagename)
+    {
+        try {
+            $pageData = $GLOBALS['wicked']->retrieveByName($pagename);
+            $pageUid = $pageData['page_uid'] ?? '';
+            if ($pageUid === '') {
+                return [];
+            }
+            $tagService = $GLOBALS['injector']->getInstance(TagService::class);
+
+            return array_values($tagService->getTags($pageUid));
+        } catch (Throwable) {
+            return [];
+        }
+    }
+
+    /**
+     * Sets tags on a page, replacing any existing tags.
+     *
+     * @param string $pagename  Page name.
+     * @param array  $tags      Tag names.
+     *
+     * @throws Wicked_Exception
+     */
+    public function tagPage($pagename, $tags)
+    {
+        $page = Wicked_Page::getPage($pagename);
+        if (!$page->allows(Wicked::MODE_EDIT)) {
+            throw new Wicked_Exception(sprintf(
+                _("You don't have permission to edit \"%s\"."),
+                $pagename,
+            ));
+        }
+
+        $pageData = $GLOBALS['wicked']->retrieveByName($pagename);
+        $pageUid = $pageData['page_uid'] ?? '';
+        if ($pageUid === '') {
+            throw new Wicked_Exception(_("Page has no UID assigned."));
+        }
+        $tagService = $GLOBALS['injector']->getInstance(TagService::class);
+        if (!$tagService->isAvailable()) {
+            throw new Wicked_Exception(_("Tagging is not available."));
+        }
+        $tagService->replaceTags(
+            $pageUid,
+            $tags,
+            $GLOBALS['registry']->getAuth() ?: '',
+        );
+    }
+
+    /**
+     * Searches for pages matching the given tags.
+     *
+     * @param array $tags  Tag names to search for.
+     *
+     * @return array  Page names matching all given tags.
+     */
+    public function searchByTag($tags)
+    {
+        try {
+            $tagService = $GLOBALS['injector']->getInstance(TagService::class);
+            $uids = $tagService->search($tags);
+            if (empty($uids)) {
+                return [];
+            }
+
+            $pages = [];
+            $allPages = $GLOBALS['wicked']->getAllPages();
+            $uidToName = [];
+            foreach ($allPages as $page) {
+                if (isset($page['page_uid'])) {
+                    $uidToName[$page['page_uid']] = $page['page_name'];
+                }
+            }
+            foreach ($uids as $uid) {
+                if (isset($uidToName[$uid])) {
+                    $pages[] = $uidToName[$uid];
+                }
+            }
+
+            return $pages;
+        } catch (Throwable) {
+            return [];
+        }
     }
 }

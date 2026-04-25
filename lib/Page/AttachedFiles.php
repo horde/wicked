@@ -13,6 +13,8 @@
  * @package  Wicked
  */
 use Horde\Util\Util;
+use Horde\Wicked\Domain\AttachmentRepositoryInterface;
+use Horde\Wicked\Domain\PageRepositoryInterface;
 
 use function PHP81_BC\strftime;
 
@@ -74,14 +76,17 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
     {
         global $wicked, $notification, $registry;
 
-        if (!$wicked->pageExists($this->referrer())) {
+        // TODO: Move to constructor injection
+        $pageRepo = $GLOBALS['injector']->getInstance(PageRepositoryInterface::class);
+
+        if (!$pageRepo->pageExists($this->referrer())) {
             throw new Wicked_Exception(sprintf(
                 _("Referrer \"%s\" does not exist."),
                 $this->referrer()
             ));
         }
 
-        $referrer_id = $wicked->getPageId($this->referrer());
+        $referrer_id = $pageRepo->getPageId($this->referrer());
         $attachments = $wicked->getAttachedFiles($referrer_id, true);
 
         foreach ($attachments as $idx => $attach) {
@@ -197,6 +202,10 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
     {
         global $notification, $wicked, $registry, $conf;
 
+        // TODO: Move to constructor injection
+        $pageRepo = $GLOBALS['injector']->getInstance(PageRepositoryInterface::class);
+        $attachmentRepo = $GLOBALS['injector']->getInstance(AttachmentRepositoryInterface::class);
+
         // Only allow POST commands.
         $cmd = Util::getPost('cmd');
         $version = Util::getFormData('version');
@@ -212,10 +221,10 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
             }
 
             try {
-                $wicked->removeAttachment(
-                    $wicked->getPageId($this->referrer()),
+                $attachmentRepo->removeAttachment(
+                    $pageRepo->getPageId($this->referrer()),
                     $filename,
-                    $version
+                    (int) $version
                 );
                 $notification->push(
                     sprintf(
@@ -237,7 +246,7 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
              * WARNING: Horde_Util::dispelMagicQuotes() removed in PSR-4 version
              * Magic quotes are obsolete in PHP 8+. Remove this call.
              */
-$filename = Horde_Util::dispelMagicQuotes($_FILES['attachment_file']['name']);
+            $filename = Horde_Util::dispelMagicQuotes($_FILES['attachment_file']['name']);
         }
 
         try {
@@ -279,7 +288,7 @@ $filename = Horde_Util::dispelMagicQuotes($_FILES['attachment_file']['name']);
             return null;
         }
 
-        $referrer_id = $wicked->getPageId($this->referrer());
+        $referrer_id = $pageRepo->getPageId($this->referrer());
         try {
             $attachments = $wicked->getAttachedFiles($referrer_id);
         } catch (Wicked_Exception $e) {
@@ -330,7 +339,7 @@ $filename = Horde_Util::dispelMagicQuotes($_FILES['attachment_file']['name']);
             'change_log'      => $change_log];
 
         try {
-            $wicked->attachFile($file, $data);
+            $attachmentRepo->attachFile($file, $data);
         } catch (Wicked_Exception $e) {
             $notification->push($e);
             Horde::log($e);

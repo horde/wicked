@@ -112,7 +112,7 @@ class Wicked_Page_DeletePage extends Wicked_Page
              * @deprecated Use Horde_Themes_Image::tag() instead
              * @see Horde_Deprecated::img()
              */
-echo Horde::img('locked.png', _("Locked"));
+            echo Horde::img('locked.png', _("Locked"));
         } ?>
 </h1>
 

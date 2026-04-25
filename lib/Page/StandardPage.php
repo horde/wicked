@@ -1,6 +1,8 @@
 <?php
 
 use Horde\Util\Util;
+use Horde\Wicked\Domain\PageRepositoryInterface;
+use Horde\Wicked\Service\TagService;
 
 /**
  * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
@@ -294,7 +296,8 @@ class Wicked_Page_StandardPage extends Wicked_Page
                 $view->histories[(string) Wicked::url($history)] = $history;
             }
         }
-        $pageId = $GLOBALS['wicked']->getPageId($this->pageName());
+        // TODO: Move to constructor injection
+        $pageId = $GLOBALS['injector']->getInstance(PageRepositoryInterface::class)->getPageId($this->pageName());
         $attachments = $GLOBALS['wicked']->getAttachedFiles($pageId);
         if (count($attachments)) {
             $view->attachments = [];
@@ -321,6 +324,19 @@ class Wicked_Page_StandardPage extends Wicked_Page
                     . '</a>';
             }
         }
+
+        $pageUid = $this->_page['page_uid'] ?? '';
+        if ($pageUid !== '') {
+            try {
+                $tagService = $GLOBALS['injector']->getInstance(TagService::class);
+                $tags = $tagService->getTags($pageUid);
+                if (!empty($tags)) {
+                    $view->tags = array_values($tags);
+                }
+            } catch (Throwable) {
+            }
+        }
+
         $view->downloadPlain = Wicked::url($this->pageName())
             ->add(['actionID' => 'export', 'format' => 'plain'])
             ->link()

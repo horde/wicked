@@ -43,6 +43,16 @@
 </form>
 <?php endif ?>
 
+<?php if (!empty($this->tags)): ?>
+<div class="wicked-tags">
+  <ul class="horde-tags">
+<?php foreach ($this->tags as $tag): ?>
+    <li><?php echo $this->h($tag) ?></li>
+<?php endforeach ?>
+  </ul>
+</div>
+<?php endif ?>
+
 <div class="pagebody">
 <?php if ($this->attachments): ?>
  <div class="filelist">

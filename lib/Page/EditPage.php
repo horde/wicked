@@ -1,6 +1,7 @@
 <?php
 
 use Horde\Util\Util;
+use Horde\Wicked\Service\TagService;
 
 /**
  * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
@@ -167,6 +168,17 @@ class Wicked_Page_EditPage extends Wicked_Page
             $view->text = $page->getText();
         }
 
+        $pageData = $GLOBALS['wicked']->retrieveByName($this->referrer());
+        $pageUid = $pageData['page_uid'] ?? '';
+        if ($pageUid !== '') {
+            try {
+                $tagService = $GLOBALS['injector']->getInstance(TagService::class);
+                $tags = $tagService->getTags($pageUid);
+                $view->tags = implode(', ', array_values($tags));
+            } catch (Throwable) {
+            }
+        }
+
         return $view->render('edit/standard');
     }
 
@@ -233,6 +245,25 @@ class Wicked_Page_EditPage extends Wicked_Page
         } else {
             $page->updateText($text, $changelog);
             $notification->push(_("Page Saved"), 'horde.success');
+        }
+
+        $tagsInput = Util::getFormData('tags');
+        if ($tagsInput !== null) {
+            try {
+                $pageData = $GLOBALS['wicked']->retrieveByName($this->referrer());
+                $pageUid = $pageData['page_uid'] ?? '';
+                if ($pageUid !== '') {
+                    $tagService = $GLOBALS['injector']->getInstance(TagService::class);
+                    $tags = array_map('trim', explode(',', $tagsInput));
+                    $tags = array_filter($tags, 'strlen');
+                    $tagService->replaceTags(
+                        $pageUid,
+                        $tags,
+                        $GLOBALS['registry']->getAuth() ?: '',
+                    );
+                }
+            } catch (Throwable) {
+            }
         }
 
         if ($page->allows(Wicked::MODE_UNLOCKING)) {

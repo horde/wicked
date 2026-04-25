@@ -12,6 +12,11 @@
  <textarea class="fixed" style="width:100%" name="page_text" rows="29" cols="100"><?php echo $this->h($this->text) ?></textarea>
 </div>
 
+<p class="horde-content">
+ <strong><?php echo _("Tags") ?>: </strong>
+ <input type="text" name="tags" size="50" value="" />
+</p>
+
 <?php if ($this->captcha): ?>
 <div class="horde-content">
  <?php echo _("Spam Protection - Enter the following letters below:") ?>

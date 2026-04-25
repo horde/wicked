@@ -1,5 +1,8 @@
 <?php
 
+use Horde\Wicked\Domain\PageRepositoryInterface;
+use Horde\Wicked\Domain\SearchRepositoryInterface;
+
 /**
  * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
  *
@@ -52,9 +55,11 @@ class Wicked_Page_Search extends Wicked_Page
         if (empty($searchtext)) {
             return [];
         }
+        // TODO: Move to constructor injection
+        $searchRepo = $GLOBALS['injector']->getInstance(SearchRepositoryInterface::class);
         return [
-            'titles' => $GLOBALS['wicked']->searchTitles($searchtext),
-            'pages' => $GLOBALS['wicked']->searchText($searchtext, false),
+            'titles' => $searchRepo->searchTitles($searchtext),
+            'pages' => $searchRepo->searchText($searchtext),
         ];
     }
 
@@ -83,7 +88,7 @@ class Wicked_Page_Search extends Wicked_Page
      */
     public function display($searchtext = null)
     {
-        global $injector, $notification, $page_output, $wicked;
+        global $injector, $notification, $page_output;
 
         $view = $injector->createInstance('Horde_View');
 
@@ -95,7 +100,8 @@ class Wicked_Page_Search extends Wicked_Page
         /* Prepare exact match section */
         $exact = [];
         $page = new Wicked_Page_StandardPage($searchtext);
-        if ($wicked->pageExists($searchtext)) {
+        // TODO: Move to constructor injection
+        if ($injector->getInstance(PageRepositoryInterface::class)->pageExists($searchtext)) {
             $exact[] = $page->toView();
         } else {
             $exact[] = (object) [

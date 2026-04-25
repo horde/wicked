@@ -30,7 +30,13 @@ use Horde\Cache\Cache as HordeCache;
 use Horde\Cache\FileStorage;
 use Horde\Routes\Mapper;
 use Horde\Util\Variables;
+use Horde\Wicked\Domain\AttachmentRepositoryInterface;
+use Horde\Wicked\Domain\PageRepositoryInterface;
+use Horde\Wicked\Domain\SearchRepositoryInterface;
+use Horde\Wicked\Factory\DriverRepositoryFactory;
+use Horde\Wicked\Factory\TagServiceFactory;
 use Horde\Wicked\HordeWikilinkUrlResolver;
+use Horde\Wicked\Service\TagService;
 use Horde\Wicked\Service\UrlGenerator;
 use Horde\Wicked\WickedEngine;
 use Horde\Wicked\WikilinkUrlResolver;
@@ -107,6 +113,32 @@ class Wicked_Application extends Horde_Registry_Application
 
                 return new UrlGenerator($mapper, $webroot);
             },
+        );
+
+        $GLOBALS['injector']->bindFactory(
+            TagService::class,
+            TagServiceFactory::class,
+            'create',
+        );
+
+        $GLOBALS['injector']->bindClosure(
+            DriverRepositoryFactory::class,
+            fn($i) => new DriverRepositoryFactory($i->getInstance('Wicked_Driver')),
+        );
+        $GLOBALS['injector']->bindFactory(
+            PageRepositoryInterface::class,
+            DriverRepositoryFactory::class,
+            'pages',
+        );
+        $GLOBALS['injector']->bindFactory(
+            SearchRepositoryInterface::class,
+            DriverRepositoryFactory::class,
+            'search',
+        );
+        $GLOBALS['injector']->bindFactory(
+            AttachmentRepositoryInterface::class,
+            DriverRepositoryFactory::class,
+            'attachments',
         );
     }
 

@@ -1,6 +1,8 @@
 <?php
 
 use Horde\Util\Util;
+use Horde\Wicked\Domain\PageRepositoryInterface;
+use Horde\Wicked\Service\TagService;
 
 /**
  * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
@@ -133,6 +135,9 @@ class Wicked_Page_NewPage extends Wicked_Page
     {
         global $notification, $wicked;
 
+        // TODO: Move to constructor injection
+        $pageRepo = $GLOBALS['injector']->getInstance(PageRepositoryInterface::class);
+
         if (!$this->allows(Wicked::MODE_EDIT)) {
             $notification->push(sprintf(_("You don't have permission to create \"%s\"."), $this->referrer()));
         } else {
@@ -150,8 +155,27 @@ class Wicked_Page_NewPage extends Wicked_Page
             }
 
             try {
-                $result = $wicked->newPage($this->referrer(), $text);
+                $result = $pageRepo->createPage($this->referrer(), $text);
                 $notification->push(_("Page Created"), 'horde.success');
+
+                $tagsInput = Util::getFormData('tags');
+                if ($tagsInput !== null && $tagsInput !== '') {
+                    try {
+                        $pageData = $wicked->retrieveByName($this->referrer());
+                        $pageUid = $pageData['page_uid'] ?? '';
+                        if ($pageUid !== '') {
+                            $tagService = $GLOBALS['injector']->getInstance(TagService::class);
+                            $tags = array_map('trim', explode(',', $tagsInput));
+                            $tags = array_filter($tags, 'strlen');
+                            $tagService->tag(
+                                $pageUid,
+                                $tags,
+                                $GLOBALS['registry']->getAuth() ?: '',
+                            );
+                        }
+                    } catch (Throwable) {
+                    }
+                }
             } catch (Wicked_Exception $e) {
                 $notification->push(sprintf(
                     _("Create Failed: %s"),

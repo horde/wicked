@@ -84,6 +84,20 @@ class Wicked_Driver_Sql extends Wicked_Driver
         throw new Wicked_Exception($pagename . ' not found');
     }
 
+    public function retrieveByUid(string $uid): array
+    {
+        $pages = $this->_retrieve(
+            $this->_params['table'],
+            ['page_uid = ?', [$uid]]
+        );
+
+        if (!empty($pages[0])) {
+            return $pages[0];
+        }
+
+        throw new Wicked_Exception('Page with uid ' . $uid . ' not found');
+    }
+
     /**
      * Retrieves a historic version of a page.
      *
@@ -549,6 +563,7 @@ class Wicked_Driver_Sql extends Wicked_Driver
         if ($file['change_author'] === false) {
             $file['change_author'] = null;
         }
+        $identityId = $this->_resolveIdentityId();
 
         $attachments = $this->_retrieve(
             $this->_params['attachmenttable'],
@@ -563,7 +578,7 @@ class Wicked_Driver_Sql extends Wicked_Driver
                 $this->_db->beginDbTransaction();
                 $this->_db->insert(
                     sprintf(
-                        'INSERT INTO %s (page_id, attachment_name, attachment_version, attachment_created, change_author, change_log) SELECT page_id, attachment_name, attachment_version, attachment_created, change_author, change_log FROM %s WHERE page_id = ? AND attachment_name = ?',
+                        'INSERT INTO %s (page_id, attachment_name, attachment_version, attachment_created, change_author, change_log, change_identity_id) SELECT page_id, attachment_name, attachment_version, attachment_created, change_author, change_log, change_identity_id FROM %s WHERE page_id = ? AND attachment_name = ?',
                         $this->_params['attachmenthistorytable'],
                         $this->_params['attachmenttable']
                     ),
@@ -573,13 +588,14 @@ class Wicked_Driver_Sql extends Wicked_Driver
 
                 $this->_db->update(
                     sprintf(
-                        'UPDATE %s SET attachment_version = ?, change_log = ?, change_author = ?, attachment_created = ? WHERE page_id = ? AND attachment_name = ?',
+                        'UPDATE %s SET attachment_version = ?, change_log = ?, change_author = ?, attachment_created = ?, change_identity_id = ? WHERE page_id = ? AND attachment_name = ?',
                         $this->_params['attachmenttable']
                     ),
                     [(int) $version,
                         $this->_convertToDriver($file['change_log']),
                         $this->_convertToDriver($file['change_author']),
                         time(),
+                        $identityId,
                         (int) $file['page_id'],
                         $this->_convertToDriver($file['attachment_name'])]
                 );
@@ -593,14 +609,15 @@ class Wicked_Driver_Sql extends Wicked_Driver
             try {
                 $this->_db->insert(
                     sprintf(
-                        'INSERT INTO %s (page_id, attachment_version, change_log, change_author, attachment_created, attachment_name) VALUES (?, 1, ?, ?, ?, ?)',
+                        'INSERT INTO %s (page_id, attachment_version, change_log, change_author, attachment_created, attachment_name, change_identity_id) VALUES (?, 1, ?, ?, ?, ?, ?)',
                         $this->_params['attachmenttable']
                     ),
                     [(int) $file['page_id'],
                         $this->_convertToDriver($file['change_log']),
                         $this->_convertToDriver($file['change_author']),
                         time(),
-                        $this->_convertToDriver($file['attachment_name'])]
+                        $this->_convertToDriver($file['attachment_name']),
+                        $identityId]
                 );
             } catch (Horde_Db_Exception $e) {
                 throw new Wicked_Exception($e);
@@ -674,17 +691,22 @@ class Wicked_Driver_Sql extends Wicked_Driver
         if ($author === false) {
             $author = null;
         }
+        $identityId = $this->_resolveIdentityId();
+        $pageUid = (string) new Horde_Support_Uuid();
 
         /* Attempt the insertion/update query. */
         try {
             $page_id = $this->_db->insert(
                 'INSERT INTO ' . $this->_params['table']
                 . ' (page_name, page_text, version_created, page_version,'
-                . ' page_hits, change_author) VALUES (?, ?, ?, 1, 0, ?)',
+                . ' page_hits, change_author, page_uid, change_identity_id)'
+                . ' VALUES (?, ?, ?, 1, 0, ?, ?, ?)',
                 [$this->_convertToDriver($pagename),
                     $this->_convertToDriver($text),
                     time(),
-                    $author]
+                    $author,
+                    $pageUid,
+                    $identityId]
             );
         } catch (Horde_Db_Exception $e) {
             throw new Wicked_Exception($e);
@@ -759,12 +781,13 @@ class Wicked_Driver_Sql extends Wicked_Driver
         if ($author === false) {
             $author = null;
         }
+        $identityId = $this->_resolveIdentityId();
 
         try {
             $this->_db->beginDbTransaction();
             $this->_db->insert(
                 sprintf(
-                    'INSERT INTO %s (page_id, page_name, page_text, page_version, version_created, change_author, change_log) SELECT page_id, page_name, page_text, page_version, version_created, change_author, change_log FROM %s WHERE page_name = ?',
+                    'INSERT INTO %s (page_id, page_name, page_text, page_version, version_created, change_author, change_log, page_uid, change_identity_id) SELECT page_id, page_name, page_text, page_version, version_created, change_author, change_log, page_uid, change_identity_id FROM %s WHERE page_name = ?',
                     $this->_params['historytable'],
                     $this->_params['table']
                 ),
@@ -775,12 +798,14 @@ class Wicked_Driver_Sql extends Wicked_Driver
             $this->_db->update(
                 'UPDATE ' . $this->_params['table']
                 . ' SET change_author = ?, page_text = ?, change_log = ?,'
-                . ' version_created = ?, page_version = page_version + 1'
+                . ' version_created = ?, page_version = page_version + 1,'
+                . ' change_identity_id = ?'
                 . ' WHERE page_name = ?',
                 [$author,
                     $this->_convertToDriver($text),
                     $this->_convertToDriver($changelog),
                     time(),
+                    $identityId,
                     $this->_convertToDriver($pagename)]
             );
             $this->_db->commitDbTransaction();
@@ -859,13 +884,15 @@ class Wicked_Driver_Sql extends Wicked_Driver
             $this->_db->update(
                 'UPDATE ' . $this->_params['table'] . ' SET'
                 . ' page_text = ?, page_version = ?,'
-                . ' version_created = ?, change_author = ?, change_log = ?'
+                . ' version_created = ?, change_author = ?, change_log = ?,'
+                . ' change_identity_id = ?'
                 . ' WHERE page_name = ?',
                 [$revision['page_text'],
                     (int) $revision['page_version'],
                     (int) $revision['version_created'],
                     $revision['change_author'],
                     $revision['change_log'],
+                    $revision['change_identity_id'] ?? null,
                     $this->_convertToDriver($pagename)]
             );
 
@@ -891,6 +918,22 @@ class Wicked_Driver_Sql extends Wicked_Driver
         /* Remove attachments and do other cleanup. */
         parent::removeAllVersions($pagename);
 
+        /* Clean up tags if tagger is available. */
+        try {
+            $pageUid = $this->_db->selectValue(
+                'SELECT page_uid FROM ' . $this->_params['table']
+                . ' WHERE page_name = ?',
+                [$this->_convertToDriver($pagename)]
+            );
+            if ($pageUid) {
+                $tagService = $GLOBALS['injector']->getInstance(
+                    Horde\Wicked\Service\TagService::class
+                );
+                $tagService->replaceTags($pageUid, [], $GLOBALS['registry']->getAuth() ?: '');
+            }
+        } catch (Throwable $e) {
+        }
+
         $this->_pageNames = null;
 
         try {
@@ -910,6 +953,27 @@ class Wicked_Driver_Sql extends Wicked_Driver
         } catch (Horde_Db_Exception $e) {
             $this->_db->rollbackDbTransaction();
             throw new Wicked_Exception($e);
+        }
+    }
+
+    /**
+     * Attempts to resolve the current user's identity ID.
+     *
+     * @return string|null  The identity UUID, or null if unavailable.
+     */
+    private function _resolveIdentityId(): ?string
+    {
+        try {
+            $auth = $GLOBALS['registry']->getAuth();
+            if ($auth === false) {
+                return null;
+            }
+            $repo = $GLOBALS['injector']->getInstance('Horde\Identity\IdentityRepository');
+            $identity = $repo->getByUsername($auth);
+
+            return (string) $identity->id;
+        } catch (Throwable) {
+            return null;
         }
     }
 

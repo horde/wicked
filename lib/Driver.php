@@ -76,6 +76,16 @@ abstract class Wicked_Driver
     abstract public function retrieveByName($pagename);
 
     /**
+     * Retrieves a page by its UUID.
+     *
+     * @param string $uid  The page UUID.
+     *
+     * @return array  The page hash.
+     * @throws Wicked_Exception
+     */
+    abstract public function retrieveByUid(string $uid);
+
+    /**
      * Retrieves a historic version of a page.
      *
      * @param string $pagename  The name of the page to retrieve.

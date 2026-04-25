@@ -1,12 +1,22 @@
-<phpunit bootstrap="test/Wicked/bootstrap.php" colors="true">
-  <filter>
-    <whitelist>
-      <directory suffix=".php">lib</directory>
-    </whitelist>
-  </filter>
-  <testsuites>
-    <testsuite>
-      <directory>test</directory>
-    </testsuite>
-  </testsuites>
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.0/phpunit.xsd"
+         bootstrap="test/bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         failOnEmptyTestSuite="true"
+         failOnIncomplete="false"
+         failOnWarning="false"
+         defaultTestSuite="unit">
+    <testsuites>
+        <testsuite name="unit">
+            <directory>test/Unit</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </source>
 </phpunit>
