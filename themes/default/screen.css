@@ -1,35 +1,45 @@
 /* Sidebar images. */
 .wicked-WikiHome {
     background-image: url("graphics/WikiHome.png");
+    background-size: 16px 16px;
 }
 .wicked-WikiUsage {
     background-image: url("graphics/WikiUsage.png");
+    background-size: 16px 16px;
 }
 .wicked-RecentChanges {
     background-image: url("graphics/RecentChanges.png");
+    background-size: 16px 16px;
 }
 .wicked-AllPages {
     background-image: url("graphics/AllPages.png");
+    background-size: 16px 16px;
 }
 .wicked-MostPopular {
     background-image: url("graphics/MostPopular.png");
+    background-size: 16px 16px;
 }
 .wicked-LeastPopular {
     background-image: url("graphics/LeastPopular.png");
+    background-size: 16px 16px;
 }
 
 /* Toolbar images. */
 .wicked-edit {
     background-image: url("graphics/edit.png");
+    background-size: 16px 16px;
 }
 .wicked-lock {
     background-image: url("graphics/locked.png");
+    background-size: 16px 16px;
 }
 .wicked-unlock {
     background-image: url("graphics/unlocked.png");
+    background-size: 16px 16px;
 }
 .wicked-delete {
     background-image: url("graphics/delete.png");
+    background-size: 16px 16px;
 }
 
 .pagelink {
