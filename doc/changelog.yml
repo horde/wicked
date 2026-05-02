@@ -1,4 +1,33 @@
 ---
+3.2.0:
+  api: 3.2.0
+  state:
+    release: stable
+    api: stable
+  date: 2026-05-02
+  license:
+    identifier: GPL-2.0-only
+    uri: https://spdx.org/licenses/GPL-2.0-only.html
+  notes: |-
+    docs: icon license
+    style: Changed CSS and icon assets to Lucide Icons with proper attribution
+    fix: Migrate forgotten templates
+    fix: Explicitly set template path in renderChrome
+    refactor: Delete entrypoint scripts and rely entirely on rampage
+    feat: Improve support for TOC feature
+    feat: Port OpenSearch to controllers and fix preview
+    Merge pull request #17 from horde/TDannhauer-wicked-rampage-fix
+    Update require path to horde/rampage.php
+    Change require path from base to horde
+    Change require path from base to horde
+    Update require statement to use Horde path
+    Update require statement to use horde directory
+    Merge pull request #16 from horde/fix/edit-page-post-params
+    docs: Explain how to work with the rampage framework in subdomain installations
+    refactor: Drop the htaccess file and modify display.php to work with real controllers
+    feat: Add #[Factory] attribute to Wicked_Driver
+    docs: create/update conf.php.dist
+    refactor: Use vanilla javascript instead of prototypejs
 3.1.0:
   api: 3.1.0
   state:
