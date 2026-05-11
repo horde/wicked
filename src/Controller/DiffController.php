@@ -86,6 +86,8 @@ class DiffController implements RequestHandlerInterface
             );
         }
 
+        $this->topbarSearch->apply();
+
         $html = $this->renderChrome(
             sprintf(
                 _("Diff for %s between %s and %s"),
@@ -94,7 +96,6 @@ class DiffController implements RequestHandlerInterface
                 $page->version()
             ),
             function () use ($page, $v1) {
-                $this->topbarSearch->apply();
                 $page->render(Wicked::MODE_DIFF, $v1);
             }
         );

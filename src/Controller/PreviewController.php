@@ -57,10 +57,11 @@ class PreviewController implements RequestHandlerInterface
 
         $this->view->text = $this->engine->transform($text);
 
+        $this->topbarSearch->apply();
+
         $html = $this->renderChrome(
             sprintf(_("Edit %s"), $pageName),
             function () {
-                $this->topbarSearch->apply();
                 $this->view->addTemplatePath($this->registry->get('templates', 'wicked'));
                 echo $this->view->render('edit/preview');
             }
