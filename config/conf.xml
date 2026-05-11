@@ -58,6 +58,7 @@
     <value desc="All Pages">AllPages</value>
     <value desc="Most Popular">MostPopular</value>
     <value desc="Least Popular">LeastPopular</value>
+    <value desc="Search">Search</value>
    </values>
   </configmultienum>
  </configsection>
