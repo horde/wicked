@@ -35,13 +35,15 @@ trait ResponseTrait
 
     private function renderChrome(string $title, callable $renderBody): string
     {
-        ob_start();
+        // Use Horde's buffer tracking so PageOutput::header() doesn't call
+        // flush() in PSR-15 responses before ResponseWriterWeb writes headers.
+        \Horde::startBuffer();
         $this->pageOutput->header(['title' => $title]);
         $this->notification->notify(['listeners' => 'status']);
         $renderBody();
         $this->pageOutput->footer();
 
-        return ob_get_clean();
+        return \Horde::endBuffer();
     }
 
     protected function downloadResponse(
