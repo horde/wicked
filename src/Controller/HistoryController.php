@@ -69,10 +69,11 @@ class HistoryController implements RequestHandlerInterface
             );
         }
 
+        $this->topbarSearch->apply();
+
         $html = $this->renderChrome(
             sprintf(_("History: %s"), $page->pageName()),
             function () use ($page) {
-                $this->topbarSearch->apply();
                 echo $page->render(Wicked::MODE_HISTORY);
             }
         );

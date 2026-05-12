@@ -118,10 +118,11 @@ class AdminAttachmentsController implements RequestHandlerInterface
             }
         }
 
+        $this->topbarSearch->apply();
+
         $html = $this->renderChrome(
             _("Admin: Attachments"),
             function () use ($attachments, $pageNames) {
-                $this->topbarSearch->apply();
                 $this->pageOutput->addScriptFile('tables.js', 'horde');
                 $this->renderAttachmentTable($attachments, $pageNames);
             }

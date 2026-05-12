@@ -86,10 +86,10 @@ class Wicked_Page_Search extends Wicked_Page
         global $injector, $notification, $page_output, $wicked;
 
         $view = $injector->createInstance('Horde_View');
+        $view->searchtext = $searchtext ?? '';
 
         if (!$searchtext) {
-            return $view->render('pagelist/search')
-                . $view->render('pagelist/footer');
+            return $view->render('pagelist/search');
         }
 
         /* Prepare exact match section */
@@ -148,6 +148,7 @@ class Wicked_Page_Search extends Wicked_Page
         $header->th_updated = _("Last Update");
 
         $view = $injector->createInstance('Horde_View');
+        $view->searchtext = $searchtext ?? '';
 
         // Show search form and page header.
         $content = $view->render('pagelist/search');

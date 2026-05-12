@@ -133,6 +133,7 @@ class Wicked_Application extends Horde_Registry_Application
                 'AllPages' => _("_All Pages"),
                 'MostPopular' => _("Most Popular"),
                 'LeastPopular' => _("Least Popular"),
+                'Search' => _("_Search"),
             ];
             foreach ($conf['menu']['pages'] as $pagename) {
                 /* Determine who we should say referred us. */
