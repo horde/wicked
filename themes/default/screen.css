@@ -23,6 +23,10 @@
     background-image: url("graphics/LeastPopular.png");
     background-size: 16px 16px;
 }
+.wicked-Search {
+    background-image: url("../../horde/default/graphics/actions/search.png");
+    background-size: 16px 16px;
+}
 
 /* Toolbar images. */
 .wicked-edit {
