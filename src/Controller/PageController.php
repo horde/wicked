@@ -142,9 +142,9 @@ class PageController implements RequestHandlerInterface
             );
         }
 
-        $html = $this->renderChrome($page->pageTitle(), function () use ($page, $params) {
-            $this->topbarSearch->apply();
+        $this->topbarSearch->apply();
 
+        $html = $this->renderChrome($page->pageTitle(), function () use ($page, $params) {
             $this->pageOutput->addLinkTag([
                 'href' => $this->urlGenerator->absoluteUrlFor('OpenSearch'),
                 'rel' => 'search',
