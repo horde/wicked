@@ -1,4 +1,20 @@
 ---
+3.3.0:
+  api: 3.3.0
+  state:
+    release: stable
+    api: stable
+  date: 2026-05-16
+  license:
+    identifier: GPL-2.0-only
+    uri: https://spdx.org/licenses/GPL-2.0-only.html
+  notes: |-
+    refactor: Explicitly declare the default stack as a prestep to removing fallback logic
+    style: Add icon to optional sidebar search entry
+    Refactor renderChrome to use Horde buffer management
+    Merge pull request #21 from horde/feat/search-page
+    fix: Apply topbar search field before rendering topbar
+    feat: Add search page to sidebar
 3.2.0:
   api: 3.2.0
   state:

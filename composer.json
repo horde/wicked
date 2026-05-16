@@ -31,7 +31,7 @@
         "dokuwiki",
         "creole"
     ],
-    "time": "2026-05-02",
+    "time": "2026-05-16",
     "repositories": [],
     "require": {
         "horde/horde-installer-plugin": "dev-FRAMEWORK_6_0 || ^3 || ^2",
