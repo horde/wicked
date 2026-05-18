@@ -14,7 +14,7 @@
 use Horde\Wicked\WickedEngine;
 use Horde\Util\Util;
 
-use function PHP81_BC\strftime;
+use Horde\Date\Format;
 
 /**
  * Abstract page class.
@@ -267,7 +267,7 @@ class Wicked_Page
         try {
             $v = $this->versionCreated();
             if (!empty($v)) {
-                return strftime($GLOBALS['prefs']->getValue('date_format'), (int) $v);
+                return Format::formatDate((int) $v, $GLOBALS['prefs']->getValue('date_format'), $GLOBALS['language'] ?? 'en_US');
             }
         } catch (Wicked_Exception $e) {
         }
