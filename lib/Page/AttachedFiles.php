@@ -14,7 +14,7 @@
  */
 use Horde\Util\Util;
 
-use function PHP81_BC\strftime;
+use Horde\Date\Format;
 
 /**
  * Displays and handles attached files.
@@ -86,9 +86,10 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
 
         foreach ($attachments as $idx => $attach) {
             $attachments[$idx]['timestamp'] = $attach['attachment_created'];
-            $attachments[$idx]['date'] = strftime(
+            $attachments[$idx]['date'] = Format::formatDate(
+                $attach['attachment_created'],
                 $GLOBALS['prefs']->getValue('date_format'),
-                $attach['attachment_created']
+                $GLOBALS['language'] ?? 'en_US'
             );
 
             $attachments[$idx]['url'] = $registry->downloadUrl(
