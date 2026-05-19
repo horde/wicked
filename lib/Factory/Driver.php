@@ -1,4 +1,5 @@
 <?php
+use Horde\Injector\Injector;
 
 /**
  * Copyright 2011-2026 Horde LLC (http://www.horde.org/)
@@ -30,12 +31,12 @@ class Wicked_Factory_Driver extends Horde_Core_Factory_Injector
     /**
      * Return an Wicked_Driver instance.
      *
-     * @param Horde_Injector $injector  An injector object.
+     * @param Horde_Injector|Injector $injector  An injector object.
      *
      * @return Wicked_Driver  A driver instance.
      * @throws Wicked_Exception
      */
-    public function create(Horde_Injector $injector)
+    public function create(Horde_Injector|Injector $injector)
     {
         $driver = Horde_String::ucfirst($GLOBALS['conf']['storage']['driver']);
         if (empty($driver)) {
@@ -59,7 +60,7 @@ class Wicked_Factory_Driver extends Horde_Core_Factory_Injector
     /**
      * Returns a Horde_Db instance for the SQL backend.
      *
-     * @param Horde_Injector $injector  An injector object.
+     * @param Horde_Injector|Injector $injector  An injector object.
      *
      * @return Horde_Db_Adapter  A correctly configured Horde_Db_Adapter
      *                           instance.
