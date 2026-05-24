@@ -24,6 +24,12 @@ use Horde\Routes\Utils;
  * @license  http://www.horde.org/licenses/gpl GPL
  * @package  Wicked
  */
+/**
+ * NOTE: New code should use Horde\Core\Uri\RouteUrlWriter instead.
+ * RouteUrlWriter consumes the RoutesProvider interface and works in both
+ * Rampage (without legacy bootstrap) and legacy flows. This class remains
+ * for existing callers wired through _bootstrap() in Application.php.
+ */
 class UrlGenerator
 {
     private Utils $utils;
