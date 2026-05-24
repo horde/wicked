@@ -28,7 +28,7 @@ if (!defined('HORDE_BASE')) {
 
 use Horde\Cache\Cache as HordeCache;
 use Horde\Cache\FileStorage;
-use Horde\Routes\Mapper;
+use Horde\Core\Uri\RoutesProvider;
 use Horde\Util\Variables;
 use Horde\Wicked\HordeWikilinkUrlResolver;
 use Horde\Wicked\Service\UrlGenerator;
@@ -97,15 +97,12 @@ class Wicked_Application extends Horde_Registry_Application
         $GLOBALS['injector']->bindClosure(
             UrlGenerator::class,
             function ($injector) {
-                $mapper = new Mapper();
-                require WICKED_BASE . '/config/routes.php';
-                if (file_exists(WICKED_BASE . '/config/routes.local.php')) {
-                    include WICKED_BASE . '/config/routes.local.php';
-                }
+                $provider = $injector->getInstance(RoutesProvider::class);
                 $registry = $injector->getInstance('Horde_Registry');
                 $webroot = $registry->get('webroot', 'wicked');
+                $runtimeProvider = $injector->getInstance(\Horde\Core\RuntimeRoutesProvider::class);
 
-                return new UrlGenerator($mapper, $webroot);
+                return new UrlGenerator($provider, $webroot, $runtimeProvider->environ);
             },
         );
     }
