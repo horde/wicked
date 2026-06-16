@@ -30,6 +30,7 @@ use Horde_Url;
 use Psr\SimpleCache\CacheInterface;
 use Throwable;
 use Wicked_Driver;
+use SplObjectStorage;
 
 /**
  * Wicked wiki engine — new-style AST-based implementation
@@ -330,7 +331,7 @@ class WickedEngine implements WikiEngine
         }, $document, DocumentNode::class);
         $clearChildren();
 
-        $replaceMap = new \SplObjectStorage();
+        $replaceMap = new SplObjectStorage();
         foreach ($replacements as $r) {
             $replaceMap[$r['old']] = $r['new'];
         }

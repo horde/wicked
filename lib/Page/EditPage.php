@@ -127,6 +127,9 @@ class Wicked_Page_EditPage extends Wicked_Page
 
         $view = $GLOBALS['injector']->createInstance('Horde_View');
         $view->action = Wicked::url('EditPage');
+        $view->previewAction = $GLOBALS['injector']
+            ->getInstance(Horde\Core\Uri\RouteUrlWriter::class)
+            ->urlFor('Preview');
         $view->formInput = Util::formInput();
         $view->name = $page->pageName();
         $view->header = $page->pageUrl()->link()

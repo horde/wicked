@@ -100,7 +100,7 @@ class Wicked_Application extends Horde_Registry_Application
                 $provider = $injector->getInstance(RoutesProvider::class);
                 $registry = $injector->getInstance('Horde_Registry');
                 $webroot = $registry->get('webroot', 'wicked');
-                $runtimeProvider = $injector->getInstance(\Horde\Core\RuntimeRoutesProvider::class);
+                $runtimeProvider = $injector->getInstance(Horde\Core\RuntimeRoutesProvider::class);
 
                 return new UrlGenerator($provider, $webroot, $runtimeProvider->environ);
             },

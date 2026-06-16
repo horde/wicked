@@ -13,7 +13,6 @@
  */
 use Horde\Wicked\WickedEngine;
 use Horde\Util\Util;
-
 use Horde\Date\Format;
 
 /**
