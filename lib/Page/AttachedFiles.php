@@ -13,7 +13,6 @@
  * @package  Wicked
  */
 use Horde\Util\Util;
-
 use Horde\Date\Format;
 
 /**
@@ -238,7 +237,7 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
              * WARNING: Horde_Util::dispelMagicQuotes() removed in PSR-4 version
              * Magic quotes are obsolete in PHP 8+. Remove this call.
              */
-$filename = Horde_Util::dispelMagicQuotes($_FILES['attachment_file']['name']);
+            $filename = Horde_Util::dispelMagicQuotes($_FILES['attachment_file']['name']);
         }
 
         try {

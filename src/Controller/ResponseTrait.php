@@ -16,6 +16,7 @@ use Horde\Horde\Traits\RedirectResponseTrait;
 use Horde\Http\Response;
 use Horde\Http\StreamFactory;
 use Psr\Http\Message\ResponseInterface;
+use Horde;
 
 /**
  * Shared response helpers for Wicked PSR-15 controllers.
@@ -37,13 +38,13 @@ trait ResponseTrait
     {
         // Use Horde's buffer tracking so PageOutput::header() doesn't call
         // flush() in PSR-15 responses before ResponseWriterWeb writes headers.
-        \Horde::startBuffer();
+        Horde::startBuffer();
         $this->pageOutput->header(['title' => $title]);
         $this->notification->notify(['listeners' => 'status']);
         $renderBody();
         $this->pageOutput->footer();
 
-        return \Horde::endBuffer();
+        return Horde::endBuffer();
     }
 
     protected function downloadResponse(
