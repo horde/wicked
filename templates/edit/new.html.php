@@ -22,7 +22,7 @@
 
 <div class="horde-form-buttons">
  <input type="submit" value="<?php echo _("Save") ?>" class="horde-default" />
- <input type="button" id="wicked-preview" value="<?php echo _("Preview") ?>" />
+ <input type="button" id="wicked-preview" data-preview-url="<?php echo htmlspecialchars((string) $this->previewAction) ?>" value="<?php echo _("Preview") ?>" />
 </div>
 
 </form>
