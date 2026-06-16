@@ -68,24 +68,32 @@ class Wicked_Page_StandardPage extends Wicked_Page
         try {
             $page = $GLOBALS['wicked']->retrieveByName($pagename);
         } catch (Wicked_Exception $e) {
-            // If we can't load $pagename, see if there's default data for it.
-            // Protect against directory traversion.
-            $pagepath = realpath(WICKED_BASE . '/data/'
-                                 . $GLOBALS['conf']['wicked']['format']);
-            $pagefile = realpath($pagepath . '/' . $pagename);
-            if ($pagefile
-                && Horde_String::common($pagefile, $pagepath) == $pagepath
-                && substr($pagename, 0, 1) != '.'
-                && file_exists($pagefile)
-                && ($text = file_get_contents($pagefile))) {
-                try {
-                    $GLOBALS['wicked']->newPage($pagename, $text);
+            /** If we can't load $pagename, see if there's default seed data
+             * for it shipped under data/<format>/. Only CamelCase wiki names
+             * (one optional Category/Page split) are eligible; everything
+             * else is rejected before any filesystem access. This blocks
+             * `/var/foo`, `../foo`, leading dots, NUL bytes, and other
+             * path-traversal probes that should be blocked before
+             * realpath()/file_get_contents().
+             */
+            if (preg_match('{^[A-Za-z][A-Za-z0-9]*(?:/[A-Za-z][A-Za-z0-9]*)?$}D', $pagename)) {
+                $pagepath = realpath(WICKED_BASE . '/data/'
+                                     . $GLOBALS['conf']['wicked']['format']);
+                $pagefile = $pagepath
+                    ? realpath($pagepath . '/' . $pagename)
+                    : false;
+                if ($pagefile
+                    && str_starts_with($pagefile, $pagepath . DIRECTORY_SEPARATOR)
+                    && ($text = @file_get_contents($pagefile)) !== false) {
                     try {
-                        $page = $GLOBALS['wicked']->retrieveByName($pagename);
+                        $GLOBALS['wicked']->newPage($pagename, $text);
+                        try {
+                            $page = $GLOBALS['wicked']->retrieveByName($pagename);
+                        } catch (Wicked_Exception $e) {
+                            $GLOBALS['notification']->push(sprintf(_("Unable to create %s"), $pagename), 'horde.error');
+                        }
                     } catch (Wicked_Exception $e) {
-                        $GLOBALS['notification']->push(sprintf(_("Unable to create %s"), $pagename), 'horde.error');
                     }
-                } catch (Wicked_Exception $e) {
                 }
             }
         }
