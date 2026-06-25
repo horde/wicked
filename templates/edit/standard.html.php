@@ -9,7 +9,7 @@
 </h1>
 
 <p class="horde-content">
- <textarea class="fixed" style="width:100%" name="page_text" rows="29" cols="100"><?php echo $this->h($this->text) ?></textarea>
+ <textarea class="fixed wicked-page-editor" name="page_text"><?php echo $this->h($this->text) ?></textarea>
 </p>
 
 <p class="horde-content">
