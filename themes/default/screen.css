@@ -1,3 +1,10 @@
+/* Page editor. */
+.wicked-page-editor {
+    width: 100%;
+    height: 29em;
+    box-sizing: border-box;
+}
+
 /* Sidebar images. */
 .wicked-WikiHome {
     background-image: url("graphics/WikiHome.png");
