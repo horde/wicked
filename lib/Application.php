@@ -217,10 +217,13 @@ class Wicked_Application extends Horde_Registry_Application
         }
 
         try {
-            $pages = $GLOBALS['wicked']->getPages();
-            sort($pages);
-            foreach ($pages as $pagename) {
-                $perms['pages:' . $GLOBALS['wicked']->getPageId($pagename)] = [
+            // Real pages only — the pseudo "special" pages above are
+            // seeded explicitly. Walk the id => name map directly to
+            // avoid an O(n) getPageId() call per row.
+            $pages = $GLOBALS['wicked']->getPages(false);
+            asort($pages);
+            foreach ($pages as $pageId => $pagename) {
+                $perms['pages:' . $pageId] = [
                     'title' => $pagename,
                 ];
             }
