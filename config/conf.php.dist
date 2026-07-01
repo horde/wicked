@@ -38,6 +38,8 @@ $conf['wicked']['format'] = 'yawiki';
 $conf['wicked']['lock']['time'] = 10;
 // How many seconds should rendered page HTML be cached? Cache keys include the page version, so edits automatically inv...
 $conf['wicked']['cache']['lifetime'] = 86400;
+// How many seconds should the full page-name list (getAllPages) be cached? Invalidated whenever a page is created, ren...
+$conf['wicked']['cache']['allpages_lifetime'] = 300;
 
 // ----------------------------------------------------------------------
 // Menu Settings
