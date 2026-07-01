@@ -65,6 +65,11 @@ class WickedEngine implements WikiEngine
         string $format = 'yawiki',
         private readonly ?Horde_Core_Factory_BlockCollection $blockFactory = null,
         private readonly ?CacheInterface $cache = null,
+        /**
+         * TTL (seconds) for cached rendered page HTML. Passed as the
+         * PSR-16 TTL argument on set(); 0 means "backend default".
+         */
+        private readonly int $cacheLifetime = 86400,
     ) {
         $this->catalog = $catalog ?? SimpleFormatCatalog::withDefaults();
         $format = $this->normalizeFormat($format);
@@ -107,7 +112,7 @@ class WickedEngine implements WikiEngine
         $html = $renderer->render($document);
 
         if ($cacheKey !== null) {
-            $this->cache->set($cacheKey, $html);
+            $this->cache->set($cacheKey, $html, $this->cacheLifetime);
         }
 
         return $html;
