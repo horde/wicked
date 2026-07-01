@@ -34,11 +34,12 @@ class Wicked_Driver_Sql extends Wicked_Driver
     protected $_db;
 
     /**
-     * A cached list of all available page names (in-request memoization).
+     * In-request memo for {@see self::getPages()}. Stores the
+     * page_id => page_name map (DB rows only, without the "special"
+     * pseudo-pages), primed either from the shared PSR-16 cache or
+     * from the DB. Cleared on every write path.
      *
-     * Used by {@see self::getPages()}; stores a page_id => page_name map.
-     *
-     * @var array
+     * @var array|null
      */
     protected $_pageNames;
 
@@ -74,6 +75,14 @@ class Wicked_Driver_Sql extends Wicked_Driver
     protected int $_allPagesLifetime = 300;
 
     /**
+     * TTL (seconds) for {@see self::CACHE_KEY_PAGENAMES}. Kept in lockstep
+     * with {@see self::$_allPagesLifetime}: both caches derive from the
+     * same page-table snapshot and share the same invalidation trigger,
+     * so different TTLs would only produce brief windows of skew.
+     */
+    protected int $_pageNamesLifetime = 300;
+
+    /**
      * Cache key for the full page-name list. Prefixed with 'wicked.'
      * because the injected PSR-16 cache is a *site-shared* keyspace
      * (Redis on typical Horde installs); no per-app namespace is
@@ -82,14 +91,31 @@ class Wicked_Driver_Sql extends Wicked_Driver
     private const CACHE_KEY_ALLPAGES = 'wicked.driver.allpages';
 
     /**
+     * Cache key for the id => name map returned by
+     * {@see self::getPages()}. Small (~30 KB for ~900 pages) and hit on
+     * essentially every page view via
+     * {@see \Wicked_Driver::getPageId()} / {@see \Wicked_Driver::pageExists()},
+     * so it is the hottest driver-side cache entry by call volume.
+     */
+    private const CACHE_KEY_PAGENAMES = 'wicked.driver.pagenames';
+
+    /**
      * Constructor.
      *
      * @param array $params  A hash containing connection parameters. May
      *                       include:
      *                       - 'cache': a PSR-16 CacheInterface for
-     *                         cross-request caching of getAllPages().
+     *                         cross-request caching of getAllPages() and
+     *                         getPages().
      *                       - 'allpages_lifetime': int seconds, TTL for
-     *                         the getAllPages() cache entry.
+     *                         the getAllPages() cache entry. Also used
+     *                         as the TTL for the getPages() id => name
+     *                         map when 'pagenames_lifetime' is not
+     *                         explicitly set (both derive from the same
+     *                         page-table snapshot).
+     *                       - 'pagenames_lifetime': int seconds, TTL for
+     *                         the getPages() id => name map. Defaults to
+     *                         'allpages_lifetime'.
      */
     public function __construct($params = [])
     {
@@ -106,7 +132,13 @@ class Wicked_Driver_Sql extends Wicked_Driver
 
         if (isset($params['allpages_lifetime'])) {
             $this->_allPagesLifetime = (int) $params['allpages_lifetime'];
+            $this->_pageNamesLifetime = (int) $params['allpages_lifetime'];
             unset($params['allpages_lifetime']);
+        }
+
+        if (isset($params['pagenames_lifetime'])) {
+            $this->_pageNamesLifetime = (int) $params['pagenames_lifetime'];
+            unset($params['pagenames_lifetime']);
         }
 
         $params = array_merge([
@@ -902,9 +934,50 @@ class Wicked_Driver_Sql extends Wicked_Driver
         }
     }
 
+    /**
+     * Returns a map of page_id => page_name for every wiki page.
+     *
+     * Backed by three layers:
+     *   1. {@see self::$_pageNames} — in-request memo, no round-trip.
+     *   2. The injected PSR-16 cache (Redis / APCu / etc.) under
+     *      {@see self::CACHE_KEY_PAGENAMES}.
+     *   3. SELECT page_id, page_name FROM wicked_pages.
+     *
+     * Because getPageId() and pageExists() are invoked on essentially
+     * every wiki page render, this is the hottest driver read. Keeping
+     * it in a small (~30 KB) shared cache separate from the ~2 MB
+     * getAllPages() blob is deliberate — see the class docblock.
+     *
+     * @param bool $special   Include the pseudo "special" pages (AllPages,
+     *                        RecentChanges, MostPopular, etc.) that live
+     *                        as files under lib/Page/ rather than in the
+     *                        database. Special pages are keyed by name
+     *                        instead of numeric id.
+     * @param bool $no_cache  When true, invalidate the shared cache
+     *                        before re-reading. Preserves the old
+     *                        "force a re-read" semantics for callers
+     *                        that want to see their just-written row.
+     *
+     * @return array  page_id => page_name (+ SpecialName => SpecialName
+     *                when $special is true).
+     */
     public function getPages($special = true, $no_cache = false)
     {
-        if (!isset($this->_pageNames) || $no_cache) {
+        if ($no_cache) {
+            $this->_pageNames = null;
+            $this->_cache?->delete(self::CACHE_KEY_PAGENAMES);
+        }
+
+        if ($this->_pageNames === null) {
+            if ($this->_cache !== null) {
+                $cached = $this->_cache->get(self::CACHE_KEY_PAGENAMES);
+                if ($cached !== null) {
+                    $this->_pageNames = $cached;
+                }
+            }
+        }
+
+        if ($this->_pageNames === null) {
             try {
                 $result = $this->_db->selectAssoc(
                     'SELECT page_id, page_name FROM ' . $this->_params['table']
@@ -913,6 +986,11 @@ class Wicked_Driver_Sql extends Wicked_Driver
                 throw new Wicked_Exception($e);
             }
             $this->_pageNames = $this->_convertFromDriver($result);
+            $this->_cache?->set(
+                self::CACHE_KEY_PAGENAMES,
+                $this->_pageNames,
+                $this->_pageNamesLifetime,
+            );
         }
 
         if ($special) {
