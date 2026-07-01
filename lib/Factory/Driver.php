@@ -1,7 +1,5 @@
 <?php
 
-use Horde\Cache\Cache as HordeCache;
-use Horde\Cache\FileStorage;
 use Horde\Injector\Injector;
 use Psr\SimpleCache\CacheInterface;
 
@@ -35,6 +33,12 @@ class Wicked_Factory_Driver extends Horde_Core_Factory_Injector
     /**
      * Return an Wicked_Driver instance.
      *
+     * The SQL driver is handed the site-configured PSR-16 cache
+     * (Horde\Core\Factory\SimpleCacheFactory) rather than a wicked-owned
+     * backend. That backend already honours $conf['cache']['driver'] —
+     * HashTable/Redis, APCu, File, SQL, or NullStorage as a no-op fallback —
+     * so wicked never needs to know or care what storage it lands on.
+     *
      * @param Horde_Injector|Injector $injector  An injector object.
      *
      * @return Wicked_Driver  A driver instance.
@@ -53,7 +57,8 @@ class Wicked_Factory_Driver extends Horde_Core_Factory_Injector
                 case 'Sql':
                     $params = [
                         'db' => $this->getDb($injector),
-                        'cache' => $this->_buildAllPagesCache(),
+                        'cache' => $injector->getInstance(CacheInterface::class),
+                        'allpages_lifetime' => (int) ($GLOBALS['conf']['wicked']['cache']['allpages_lifetime'] ?? 300),
                     ];
                     break;
             }
@@ -62,29 +67,6 @@ class Wicked_Factory_Driver extends Horde_Core_Factory_Injector
         }
 
         return $this->_instances[$signature];
-    }
-
-    /**
-     * Builds the shared PSR-16 cache used by the driver for
-     * getAllPages(). Namespaced as 'wicked' with driver keys living
-     * under 'driver.*'. Returns null when no cache directory is
-     * configured so the driver cleanly falls back to in-request
-     * memoization.
-     */
-    private function _buildAllPagesCache(): ?CacheInterface
-    {
-        $cacheDir = $GLOBALS['conf']['cache']['params']['dir'] ?? '';
-        if ($cacheDir === '') {
-            return null;
-        }
-        $lifetime = (int) ($GLOBALS['conf']['wicked']['cache']['allpages_lifetime'] ?? 300);
-        return new HordeCache(
-            new FileStorage(dir: $cacheDir),
-            [
-                'namespace' => 'wicked',
-                'lifetime' => $lifetime,
-            ],
-        );
     }
 
     /**

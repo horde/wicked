@@ -57,22 +57,39 @@ class Wicked_Driver_Sql extends Wicked_Driver
      * {@see self::getAllPages()}. Null-safe: when unset, the driver falls
      * back to in-request memoization only.
      *
+     * Resolved from the site-configured PSR-16 backend (see
+     * {@see \Horde\Core\Factory\SimpleCacheFactory}) — HashTable/Redis,
+     * APCu, File, SQL, or NullStorage. The driver treats this as an
+     * opaque {@see \Psr\SimpleCache\CacheInterface}: the concrete
+     * storage never leaks into wicked.
+     *
      * @var \Psr\SimpleCache\CacheInterface|null
      */
     protected $_cache;
 
     /**
-     * Cache key (within the backend's namespace) for the full page-name list.
+     * TTL (seconds) for {@see self::CACHE_KEY_ALLPAGES}. Passed as the
+     * third argument to PSR-16 set(); 0 means "backend default".
      */
-    private const CACHE_KEY_ALLPAGES = 'driver.allpages';
+    protected int $_allPagesLifetime = 300;
+
+    /**
+     * Cache key for the full page-name list. Prefixed with 'wicked.'
+     * because the injected PSR-16 cache is a *site-shared* keyspace
+     * (Redis on typical Horde installs); no per-app namespace is
+     * applied by the backend.
+     */
+    private const CACHE_KEY_ALLPAGES = 'wicked.driver.allpages';
 
     /**
      * Constructor.
      *
      * @param array $params  A hash containing connection parameters. May
-     *                       include a 'cache' entry with a PSR-16
-     *                       CacheInterface for cross-request caching of
-     *                       getAllPages().
+     *                       include:
+     *                       - 'cache': a PSR-16 CacheInterface for
+     *                         cross-request caching of getAllPages().
+     *                       - 'allpages_lifetime': int seconds, TTL for
+     *                         the getAllPages() cache entry.
      */
     public function __construct($params = [])
     {
@@ -85,6 +102,11 @@ class Wicked_Driver_Sql extends Wicked_Driver
         if (isset($params['cache'])) {
             $this->_cache = $params['cache'];
             unset($params['cache']);
+        }
+
+        if (isset($params['allpages_lifetime'])) {
+            $this->_allPagesLifetime = (int) $params['allpages_lifetime'];
+            unset($params['allpages_lifetime']);
         }
 
         $params = array_merge([
@@ -179,7 +201,11 @@ class Wicked_Driver_Sql extends Wicked_Driver
             '',
             'page_name'
         );
-        $this->_cache?->set(self::CACHE_KEY_ALLPAGES, $this->_allPages);
+        $this->_cache?->set(
+            self::CACHE_KEY_ALLPAGES,
+            $this->_allPages,
+            $this->_allPagesLifetime,
+        );
         return $this->_allPages;
     }
 

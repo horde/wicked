@@ -26,8 +26,6 @@ if (!defined('HORDE_BASE')) {
     }
 }
 
-use Horde\Cache\Cache as HordeCache;
-use Horde\Cache\FileStorage;
 use Horde\Core\Uri\RoutesProvider;
 use Horde\Util\Variables;
 use Horde\Wicked\HordeWikilinkUrlResolver;
@@ -35,6 +33,7 @@ use Horde\Wicked\Service\UrlGenerator;
 use Horde\Wicked\WickedEngine;
 use Horde\Wicked\WikilinkUrlResolver;
 use Horde\Util\Util;
+use Psr\SimpleCache\CacheInterface;
 
 /* Load the Horde Framework core (needed to autoload
  * Horde_Registry_Application::). */
@@ -73,15 +72,12 @@ class Wicked_Application extends Horde_Registry_Application
                     ? $injector->get('Horde_Core_Factory_BlockCollection')
                     : null;
 
-                $cacheDir = $GLOBALS['conf']['cache']['params']['dir'] ?? '';
-                $cacheLifetime = (int) ($GLOBALS['conf']['wicked']['cache']['lifetime'] ?? 86400);
-                $cache = new HordeCache(
-                    new FileStorage(dir: $cacheDir),
-                    [
-                        'namespace' => 'wicked_render',
-                        'lifetime' => $cacheLifetime,
-                    ],
-                );
+                // Reuse the site-configured PSR-16 cache (HashTable/Redis,
+                // APCu, File, SQL, or NullStorage) resolved by
+                // Horde\Core\Factory\SimpleCacheFactory. Rendered-page
+                // keys are self-namespaced with the 'wicked.render.'
+                // prefix in WickedEngine::transform().
+                $cache = $injector->getInstance(CacheInterface::class);
 
                 return new WickedEngine(
                     storageDriver: $injector->get('Wicked_Driver'),
@@ -90,6 +86,7 @@ class Wicked_Application extends Horde_Registry_Application
                     format: $format,
                     blockFactory: $blockFactory,
                     cache: $cache,
+                    cacheLifetime: (int) ($GLOBALS['conf']['wicked']['cache']['lifetime'] ?? 86400),
                 );
             },
         );
