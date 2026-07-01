@@ -103,11 +103,30 @@ abstract class Wicked_Driver
 
     abstract public function renamePage($pagename, $newname);
 
+    /**
+     * Resolve a page name to its numeric page_id.
+     *
+     * Reads the (cached) id => name map from {@see self::getPages()}
+     * and returns the id via a direct value search — no per-call
+     * array_flip() over the ~30 KB map. For "special" pseudo-pages
+     * (AllPages, RecentChanges, etc.), which have no integer id and
+     * self-map by name in the SpecialPages set, returns the page name
+     * as the identifier to preserve pre-existing caller semantics.
+     *
+     * @param string $pagename
+     *
+     * @return int|string|false  page_id for real pages, page name for
+     *                           special pages, false otherwise.
+     */
     public function getPageId($pagename)
     {
-        $pages = $this->getPages();
-        $ids = array_flip($pages);
-        return $ids[$pagename] ?? false;
+        $id = array_search($pagename, $this->getPages(false), true);
+        if ($id !== false) {
+            return $id;
+        }
+
+        $specials = $this->getSpecialPages();
+        return $specials[$pagename] ?? false;
     }
 
     public function getPage($pagename)
@@ -148,9 +167,21 @@ abstract class Wicked_Driver
         return [];
     }
 
+    /**
+     * Whether the named page exists — either as a real DB row or as a
+     * "special" pseudo-page discovered under lib/Page/.
+     *
+     * Both lookups hit the (cached) id => name map / static special-page
+     * set; there is no direct DB query.
+     */
     public function pageExists($pagename)
     {
-        return in_array($pagename, $this->getPages());
+        if (in_array($pagename, $this->getPages(false), true)) {
+            return true;
+        }
+
+        $specials = $this->getSpecialPages();
+        return isset($specials[$pagename]);
     }
 
     abstract public function getAllPages();
