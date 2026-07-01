@@ -114,9 +114,30 @@ class Wicked_Driver_Sql extends Wicked_Driver
         );
     }
 
+    /**
+     * Returns all pages from the database.
+     *
+     * This method caches results to avoid repeated full table scans.
+     * The cache is invalidated when pages are added/modified/removed.
+     *
+     * @return array  All pages.
+     */
     public function getAllPages()
     {
-        return $this->_retrieve($this->_params['table'], '', 'page_name');
+        if (is_null($this->_pageNames)) {
+            $cached = $this->_cacheGet('wicked.allpages');
+            if ($cached !== null) {
+                $this->_pageNames = $cached;
+            } else {
+                $this->_pageNames = $this->_retrieve(
+                    $this->_params['table'],
+                    '',
+                    'page_name'
+                );
+                $this->_cacheSet('wicked.allpages', $this->_pageNames);
+            }
+        }
+        return $this->_pageNames;
     }
 
     public function getHistory($pagename)
@@ -662,6 +683,9 @@ class Wicked_Driver_Sql extends Wicked_Driver
      */
     public function newPage($pagename, $text)
     {
+        // Invalidate getAllPages() cache when creating new page
+        $this->_pageNames = null;
+
         if (!strlen($pagename)) {
             throw new Wicked_Exception(_("Page name must not be empty"));
         }
@@ -715,6 +739,9 @@ class Wicked_Driver_Sql extends Wicked_Driver
      */
     public function renamePage($pagename, $newname)
     {
+        // Invalidate getAllPages() cache when renaming page
+        $this->_pageNames = null;
+
         try {
             $this->_db->beginDbTransaction();
             $this->_db->update(
@@ -748,6 +775,9 @@ class Wicked_Driver_Sql extends Wicked_Driver
 
     public function updateText($pagename, $text, $changelog)
     {
+        // Invalidate getAllPages() cache when updating page
+        $this->_pageNames = null;
+
         if (!$this->pageExists($pagename)) {
             return $this->newPage($pagename, $text);
         }
