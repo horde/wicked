@@ -1,6 +1,9 @@
 <?php
 
+use Horde\Cache\Cache as HordeCache;
+use Horde\Cache\FileStorage;
 use Horde\Injector\Injector;
+use Psr\SimpleCache\CacheInterface;
 
 /**
  * Copyright 2011-2026 Horde LLC (http://www.horde.org/)
@@ -48,7 +51,10 @@ class Wicked_Factory_Driver extends Horde_Core_Factory_Injector
             $params = [];
             switch ($driver) {
                 case 'Sql':
-                    $params = ['db' => $this->getDb($injector)];
+                    $params = [
+                        'db' => $this->getDb($injector),
+                        'cache' => $this->_buildAllPagesCache(),
+                    ];
                     break;
             }
             $class = 'Wicked_Driver_' . $driver;
@@ -56,6 +62,29 @@ class Wicked_Factory_Driver extends Horde_Core_Factory_Injector
         }
 
         return $this->_instances[$signature];
+    }
+
+    /**
+     * Builds the shared PSR-16 cache used by the driver for
+     * getAllPages(). Namespaced as 'wicked' with driver keys living
+     * under 'driver.*'. Returns null when no cache directory is
+     * configured so the driver cleanly falls back to in-request
+     * memoization.
+     */
+    private function _buildAllPagesCache(): ?CacheInterface
+    {
+        $cacheDir = $GLOBALS['conf']['cache']['params']['dir'] ?? '';
+        if ($cacheDir === '') {
+            return null;
+        }
+        $lifetime = (int) ($GLOBALS['conf']['wicked']['cache']['allpages_lifetime'] ?? 300);
+        return new HordeCache(
+            new FileStorage(dir: $cacheDir),
+            [
+                'namespace' => 'wicked',
+                'lifetime' => $lifetime,
+            ],
+        );
     }
 
     /**
