@@ -34,16 +34,45 @@ class Wicked_Driver_Sql extends Wicked_Driver
     protected $_db;
 
     /**
-     * A cached list of all available page names.
+     * A cached list of all available page names (in-request memoization).
+     *
+     * Used by {@see self::getPages()}; stores a page_id => page_name map.
      *
      * @var array
      */
     protected $_pageNames;
 
     /**
+     * In-request memo for {@see self::getAllPages()}. Stores full page-row
+     * arrays and therefore must be kept separate from {@see self::$_pageNames}
+     * (which stores an id => name map). Both memos are cleared on every
+     * write path.
+     *
+     * @var array|null
+     */
+    protected $_allPages;
+
+    /**
+     * Optional shared PSR-16 cache backend for cross-request caching of
+     * {@see self::getAllPages()}. Null-safe: when unset, the driver falls
+     * back to in-request memoization only.
+     *
+     * @var \Psr\SimpleCache\CacheInterface|null
+     */
+    protected $_cache;
+
+    /**
+     * Cache key (within the backend's namespace) for the full page-name list.
+     */
+    private const CACHE_KEY_ALLPAGES = 'driver.allpages';
+
+    /**
      * Constructor.
      *
-     * @param array $params  A hash containing connection parameters.
+     * @param array $params  A hash containing connection parameters. May
+     *                       include a 'cache' entry with a PSR-16
+     *                       CacheInterface for cross-request caching of
+     *                       getAllPages().
      */
     public function __construct($params = [])
     {
@@ -52,6 +81,11 @@ class Wicked_Driver_Sql extends Wicked_Driver
         }
         $this->_db = $params['db'];
         unset($params['db']);
+
+        if (isset($params['cache'])) {
+            $this->_cache = $params['cache'];
+            unset($params['cache']);
+        }
 
         $params = array_merge([
             'table' => 'wicked_pages',
@@ -117,27 +151,49 @@ class Wicked_Driver_Sql extends Wicked_Driver
     /**
      * Returns all pages from the database.
      *
-     * This method caches results to avoid repeated full table scans.
-     * The cache is invalidated when pages are added/modified/removed.
+     * Results are memoized for the current request and, when a PSR-16
+     * cache backend is configured, cached across requests as well. The
+     * cross-request cache is invalidated by
+     * {@see self::_invalidateAllPagesCache()} on every mutating write
+     * that flows through this driver instance.
+     *
+     * The cached payload is the raw row set: it is user-independent.
+     * Per-page permission filtering happens downstream in Wicked_Page
+     * and must not be embedded here.
      *
      * @return array  All pages.
      */
     public function getAllPages()
     {
-        if (is_null($this->_pageNames)) {
-            $cached = $this->_cacheGet('wicked.allpages');
+        if ($this->_allPages !== null) {
+            return $this->_allPages;
+        }
+        if ($this->_cache !== null) {
+            $cached = $this->_cache->get(self::CACHE_KEY_ALLPAGES);
             if ($cached !== null) {
-                $this->_pageNames = $cached;
-            } else {
-                $this->_pageNames = $this->_retrieve(
-                    $this->_params['table'],
-                    '',
-                    'page_name'
-                );
-                $this->_cacheSet('wicked.allpages', $this->_pageNames);
+                return $this->_allPages = $cached;
             }
         }
-        return $this->_pageNames;
+        $this->_allPages = $this->_retrieve(
+            $this->_params['table'],
+            '',
+            'page_name'
+        );
+        $this->_cache?->set(self::CACHE_KEY_ALLPAGES, $this->_allPages);
+        return $this->_allPages;
+    }
+
+    /**
+     * Drops both the in-request memo and the shared cache entry for
+     * {@see self::getAllPages()}, and also the id => name memo used by
+     * {@see self::getPages()}. Called from every write path that mutates
+     * the page set.
+     */
+    private function _invalidateAllPagesCache(): void
+    {
+        $this->_allPages = null;
+        $this->_pageNames = null;
+        $this->_cache?->delete(self::CACHE_KEY_ALLPAGES);
     }
 
     public function getHistory($pagename)
@@ -684,7 +740,7 @@ class Wicked_Driver_Sql extends Wicked_Driver
     public function newPage($pagename, $text)
     {
         // Invalidate getAllPages() cache when creating new page
-        $this->_pageNames = null;
+        $this->_invalidateAllPagesCache();
 
         if (!strlen($pagename)) {
             throw new Wicked_Exception(_("Page name must not be empty"));
@@ -740,7 +796,7 @@ class Wicked_Driver_Sql extends Wicked_Driver
     public function renamePage($pagename, $newname)
     {
         // Invalidate getAllPages() cache when renaming page
-        $this->_pageNames = null;
+        $this->_invalidateAllPagesCache();
 
         try {
             $this->_db->beginDbTransaction();
@@ -776,7 +832,7 @@ class Wicked_Driver_Sql extends Wicked_Driver
     public function updateText($pagename, $text, $changelog)
     {
         // Invalidate getAllPages() cache when updating page
-        $this->_pageNames = null;
+        $this->_invalidateAllPagesCache();
 
         if (!$this->pageExists($pagename)) {
             return $this->newPage($pagename, $text);
@@ -921,7 +977,7 @@ class Wicked_Driver_Sql extends Wicked_Driver
         /* Remove attachments and do other cleanup. */
         parent::removeAllVersions($pagename);
 
-        $this->_pageNames = null;
+        $this->_invalidateAllPagesCache();
 
         try {
             $this->_db->beginDbTransaction();
