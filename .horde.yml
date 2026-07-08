@@ -23,7 +23,7 @@ authors:
     active: false
     role: lead
 version:
-  release: 3.3.1-RC1
+  release: 3.3.1-RC2
   api: 3.0.0
 state:
   release: RC
@@ -82,7 +82,7 @@ keywords:
 vendor: horde
 ci-platform:
   '8.1':
-    - php: '>=7.2'
+    - php: '>=8.1'
     - composer-plugin-api: ^2.2.0
     - ext-ctype
     - ext-dom
@@ -100,7 +100,7 @@ ci-platform:
     - ext-spl
     - ext-xml
   '8.2':
-    - php: '>=7.2'
+    - php: '>=8.1'
     - composer-plugin-api: ^2.2.0
     - ext-ctype
     - ext-dom
@@ -118,7 +118,7 @@ ci-platform:
     - ext-spl
     - ext-xml
   '8.3':
-    - php: '>=7.2'
+    - php: '>=8.1'
     - composer-plugin-api: ^2.2.0
     - ext-ctype
     - ext-dom
@@ -136,7 +136,7 @@ ci-platform:
     - ext-spl
     - ext-xml
   '8.4':
-    - php: '>=7.2'
+    - php: '>=8.1'
     - composer-plugin-api: ^2.2.0
     - ext-ctype
     - ext-dom
@@ -154,7 +154,7 @@ ci-platform:
     - ext-spl
     - ext-xml
   '8.5':
-    - php: '>=7.2'
+    - php: '>=8.1'
     - composer-plugin-api: ^2.2.0
     - ext-ctype
     - ext-dom
@@ -172,7 +172,7 @@ ci-platform:
     - ext-spl
     - ext-xml
   '8.6':
-    - php: '>=7.2'
+    - php: '>=8.1'
     - composer-plugin-api: ^2.2.0
     - ext-ctype
     - ext-dom
