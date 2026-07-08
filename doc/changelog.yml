@@ -1,4 +1,14 @@
 ---
+3.3.1-RC2:
+  api: 3.3.1-RC2
+  state:
+    release: RC
+    api: RC
+  date: 2026-07-08
+  license:
+    identifier: GPL-2.0-only
+    uri: https://spdx.org/licenses/GPL-2.0-only.html
+  notes: "perf(driver): simplify name/id lookup via cached map\nperf(driver): invalidate both page caches on writes and drop prewarm\nperf(driver): back getPages() with PSR-16 cache and in-request memo\nrefactor: Honor global cache settings rather than hardcoding file cache\nfeat(factory): wire PSR-16 cache into SQL driver\nperf(driver): use PSR-16 cache for getAllPages and split memoization\nfeat(config): add wicked.cache.allpages_lifetime setting"
 3.3.1-RC1:
   api: 3.3.1-RC1
   state:
