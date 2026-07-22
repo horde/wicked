@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Horde\Wicked\Controller;
 
-use Horde\Core\Session\HordeSession;
+use Horde\Core\Session\SessionAccess;
 use Horde\Wicked\Service\TopbarSearch;
 use Horde\Wicked\Service\UrlGenerator;
 use Horde_Notification_Handler;
@@ -42,7 +42,7 @@ class PageController implements RequestHandlerInterface
     public function __construct(
         private readonly Horde_Notification_Handler $notification,
         private readonly Horde_PageOutput $pageOutput,
-        private readonly HordeSession $session,
+        private readonly SessionAccess $session,
         private readonly Wicked_Driver $driver,
         private readonly Horde_Registry $registry,
         private readonly UrlGenerator $urlGenerator,
