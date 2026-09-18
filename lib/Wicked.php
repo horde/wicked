@@ -108,7 +108,7 @@ class Wicked
     {
         global $registry;
 
-        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
+        $config = $GLOBALS['injector']->get(WickedConfig::class);
 
         /* Make sure there's a place configured to send the email. */
         if (empty($config->get('wicked.notify_address'))) {
