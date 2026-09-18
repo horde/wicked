@@ -119,9 +119,11 @@ class Wicked_Application extends Horde_Registry_Application
      */
     public function menu($menu)
     {
-        global $conf, $page;
+        global $page;
 
-        if (!empty($conf['menu']['pages'])) {
+        $config = $GLOBALS['injector']->get(WickedConfig::class);
+
+        if (!empty($config->get('menu.pages'))) {
             $pages = [
                 'Wiki/Home' => _("_Home"),
                 'Wiki/Usage' => _("_Usage"),
@@ -131,7 +133,7 @@ class Wicked_Application extends Horde_Registry_Application
                 'LeastPopular' => _("Least Popular"),
                 'Search' => _("_Search"),
             ];
-            foreach ($conf['menu']['pages'] as $pagename) {
+            foreach ($config->get('menu.pages') as $pagename) {
                 /* Determine who we should say referred us. */
                 $curpage = isset($page) ? $page->pageName() : null;
                 $referrer = Util::getFormData('referrer', $curpage);
