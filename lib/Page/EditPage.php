@@ -1,6 +1,7 @@
 <?php
 
 use Horde\Util\Util;
+use Horde\Wicked\WickedConfig;
 
 /**
  * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
@@ -45,7 +46,8 @@ class Wicked_Page_EditPage extends Wicked_Page
     public function __construct($referrer)
     {
         $this->_referrer = $referrer;
-        if ($GLOBALS['conf']['lock']['driver'] != 'none') {
+        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
+        if ($config->get('lock.driver') != 'none') {
             $this->supportedModes[Wicked::MODE_LOCKING] = $this->supportedModes[Wicked::MODE_UNLOCKING] = true;
         }
     }
@@ -146,7 +148,8 @@ class Wicked_Page_EditPage extends Wicked_Page
             ->add('actionID', 'unlock')
             ->link(['class' => 'horde-cancel'])
             . _("Cancel") . '</a>';
-        if (!empty($GLOBALS['conf']['wicked']['require_change_log'])) {
+        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
+        if (!empty($config->get('wicked.require_change_log'))) {
             /**
              * ARCHITECTURE VIOLATION: Using deprecated Horde::img()
              * @deprecated Use Horde_Themes_Image::tag() instead
@@ -157,11 +160,11 @@ class Wicked_Page_EditPage extends Wicked_Page
                 _("Changelog is required")
             );
         }
-        if (!empty($GLOBALS['conf']['wicked']['captcha'])
+        if (!empty($config->get('wicked.captcha'))
             && !$GLOBALS['registry']->getAuth()) {
             $figlet = new Text_Figlet();
             Horde_Exception_Pear::catchError($figlet->loadFont(
-                $GLOBALS['conf']['wicked']['figlet_font']
+                $config->get('wicked.figlet_font')
             ));
             $view->captcha = $figlet->lineEcho(Wicked::getCAPTCHA(true));
         }
@@ -208,7 +211,9 @@ class Wicked_Page_EditPage extends Wicked_Page
 
     public function handleAction(): ?string
     {
-        global $notification, $conf;
+        global $notification;
+
+        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
 
         $page = Wicked_Page::getPage($this->referrer());
         if (!$this->allows(Wicked::MODE_EDIT)) {
@@ -216,7 +221,7 @@ class Wicked_Page_EditPage extends Wicked_Page
             return (string) Wicked::url($this->referrer(), true);
         }
 
-        if (!empty($GLOBALS['conf']['wicked']['captcha'])
+        if (!empty($config->get('wicked.captcha'))
             && !$GLOBALS['registry']->getAuth()
             && (Horde_String::lower(Util::getFormData('wicked_captcha') ?? '') != Horde_String::lower(Wicked::getCAPTCHA()))) {
             $notification->push(_("Random string did not match."), 'horde.error');
@@ -224,7 +229,7 @@ class Wicked_Page_EditPage extends Wicked_Page
         }
         $text = Util::getFormData('page_text') ?? '';
         $changelog = Util::getFormData('changelog') ?? '';
-        if ($conf['wicked']['require_change_log'] && empty($changelog)) {
+        if ($config->get('wicked.require_change_log') && empty($changelog)) {
             $notification->push(_("You must provide a change log."), 'horde.error');
             $GLOBALS['page_output']->addInlineScript([
                 'if (document.editform && document.editform.changelog) document.editform.changelog.focus()',

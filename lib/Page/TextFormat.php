@@ -13,6 +13,7 @@ declare(strict_types=1);
  * @package  Wicked
  */
 
+use Horde\Wicked\WickedConfig;
 use Horde\Wicked\WickedEngine;
 
 /**
@@ -47,7 +48,8 @@ class Wicked_Page_TextFormat extends Wicked_Page
     public function __construct(?string $referrer = null)
     {
         $this->_referrer = $referrer;
-        $this->format = $GLOBALS['conf']['wicked']['format'] ?? 'yawiki';
+        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
+        $this->format = $config->get('wicked.format', 'yawiki');
     }
 
     public function pageName(): string

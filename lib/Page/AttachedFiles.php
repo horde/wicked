@@ -14,6 +14,7 @@
  */
 use Horde\Util\Util;
 use Horde\Date\Format;
+use Horde\Wicked\WickedConfig;
 
 /**
  * Displays and handles attached files.
@@ -114,7 +115,9 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
      */
     public function display()
     {
-        global $registry, $wicked, $notification, $conf;
+        global $registry, $wicked, $notification;
+
+        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
 
         try {
             $attachments = $this->content();
@@ -161,7 +164,7 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
         $view->files = $files;
         $view->canUpdate = $this->allows(Wicked::MODE_EDIT) && count($files);
         $view->canAttach = $this->allows(Wicked::MODE_EDIT);
-        $view->requireChangelog = $conf['wicked']['require_change_log'];
+        $view->requireChangelog = $config->get('wicked.require_change_log');
 
         /**
          * ARCHITECTURE VIOLATION: Using deprecated Horde::img()
@@ -195,7 +198,9 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
      */
     public function handleAction(): ?string
     {
-        global $notification, $wicked, $registry, $conf;
+        global $notification, $wicked, $registry;
+
+        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
 
         // Only allow POST commands.
         $cmd = Util::getPost('cmd');
@@ -271,7 +276,7 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
             return null;
         }
 
-        if ($conf['wicked']['require_change_log'] && empty($change_log)) {
+        if ($config->get('wicked.require_change_log') && empty($change_log)) {
             $notification->push(
                 _("You must enter a change description to attach this file."),
                 'horde.error'

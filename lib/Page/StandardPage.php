@@ -1,6 +1,7 @@
 <?php
 
 use Horde\Util\Util;
+use Horde\Wicked\WickedConfig;
 
 /**
  * Copyright 2003-2026 Horde LLC (http://www.horde.org/)
@@ -64,6 +65,7 @@ class Wicked_Page_StandardPage extends Wicked_Page
             return;
         }
 
+        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
         $page = null;
         try {
             $page = $GLOBALS['wicked']->retrieveByName($pagename);
@@ -78,7 +80,7 @@ class Wicked_Page_StandardPage extends Wicked_Page
              */
             if (preg_match('{^[A-Za-z][A-Za-z0-9]*(?:/[A-Za-z][A-Za-z0-9]*)?$}D', $pagename)) {
                 $pagepath = realpath(WICKED_BASE . '/data/'
-                                     . $GLOBALS['conf']['wicked']['format']);
+                                     . $config->get('wicked.format'));
                 $pagefile = $pagepath
                     ? realpath($pagepath . '/' . $pagename)
                     : false;
@@ -135,7 +137,7 @@ class Wicked_Page_StandardPage extends Wicked_Page
             $perms->addPermission($perm);
         }
 
-        if ($GLOBALS['conf']['lock']['driver'] != 'none') {
+        if ($config->get('lock.driver') != 'none') {
             $this->supportedModes[Wicked::MODE_LOCKING] = $this->supportedModes[Wicked::MODE_UNLOCKING] = true;
             $this->_locks = $GLOBALS['injector']->getInstance('Horde_Lock');
             $locks = $this->_locks->getLocks('wicked', $pagename, Horde_Lock::TYPE_EXCLUSIVE);
@@ -488,7 +490,8 @@ class Wicked_Page_StandardPage extends Wicked_Page
     public function lock()
     {
         if ($this->_locks) {
-            $id = $this->_locks->setLock(Wicked::lockUser(), 'wicked', $this->pageName(), $GLOBALS['conf']['wicked']['lock']['time'] * 60, Horde_Lock::TYPE_EXCLUSIVE);
+            $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
+            $id = $this->_locks->setLock(Wicked::lockUser(), 'wicked', $this->pageName(), $config->get('wicked.lock.time') * 60, Horde_Lock::TYPE_EXCLUSIVE);
             if ($id) {
                 $this->_lock = $this->_locks->getLockInfo($id);
             } else {
