@@ -65,7 +65,7 @@ class Wicked_Page_StandardPage extends Wicked_Page
             return;
         }
 
-        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
+        $config = $GLOBALS['injector']->get(WickedConfig::class);
         $page = null;
         try {
             $page = $GLOBALS['wicked']->retrieveByName($pagename);
@@ -490,7 +490,7 @@ class Wicked_Page_StandardPage extends Wicked_Page
     public function lock()
     {
         if ($this->_locks) {
-            $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
+            $config = $GLOBALS['injector']->get(WickedConfig::class);
             $id = $this->_locks->setLock(Wicked::lockUser(), 'wicked', $this->pageName(), $config->get('wicked.lock.time') * 60, Horde_Lock::TYPE_EXCLUSIVE);
             if ($id) {
                 $this->_lock = $this->_locks->getLockInfo($id);

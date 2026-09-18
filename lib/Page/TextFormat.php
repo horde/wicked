@@ -48,7 +48,7 @@ class Wicked_Page_TextFormat extends Wicked_Page
     public function __construct(?string $referrer = null)
     {
         $this->_referrer = $referrer;
-        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
+        $config = $GLOBALS['injector']->get(WickedConfig::class);
         $this->format = $config->get('wicked.format', 'yawiki');
     }
 
