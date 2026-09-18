@@ -177,7 +177,7 @@ class Wicked_Api extends Horde_Registry_Api
         if (!$page->allows(Wicked::MODE_EDIT)) {
             throw new Wicked_Exception(sprintf(_("You don't have permission to edit \"%s\"."), $pagename));
         }
-        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
+        $config = $GLOBALS['injector']->get(WickedConfig::class);
         if ($config->get('wicked.require_change_log')
             && empty($changelog)) {
             throw new Wicked_Exception(_("You must provide a change log."));
