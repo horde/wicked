@@ -117,7 +117,7 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
     {
         global $registry, $wicked, $notification;
 
-        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
+        $config = $GLOBALS['injector']->get(WickedConfig::class);
 
         try {
             $attachments = $this->content();

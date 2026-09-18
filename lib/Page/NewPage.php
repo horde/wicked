@@ -100,7 +100,7 @@ class Wicked_Page_NewPage extends Wicked_Page
         $view->action = Wicked::url('NewPage');
         $view->formInput = Util::formInput();
         $view->referrer = $this->referrer();
-        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
+        $config = $GLOBALS['injector']->get(WickedConfig::class);
         if (!empty($config->get('wicked.captcha'))
             && !$GLOBALS['registry']->getAuth()) {
             $figlet = new Text_Figlet();
@@ -135,7 +135,7 @@ class Wicked_Page_NewPage extends Wicked_Page
     {
         global $notification, $wicked;
 
-        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
+        $config = $GLOBALS['injector']->get(WickedConfig::class);
 
         if (!$this->allows(Wicked::MODE_EDIT)) {
             $notification->push(sprintf(_("You don't have permission to create \"%s\"."), $this->referrer()));

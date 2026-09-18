@@ -46,7 +46,7 @@ class Wicked_Page_EditPage extends Wicked_Page
     public function __construct($referrer)
     {
         $this->_referrer = $referrer;
-        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
+        $config = $GLOBALS['injector']->get(WickedConfig::class);
         if ($config->get('lock.driver') != 'none') {
             $this->supportedModes[Wicked::MODE_LOCKING] = $this->supportedModes[Wicked::MODE_UNLOCKING] = true;
         }
@@ -148,7 +148,7 @@ class Wicked_Page_EditPage extends Wicked_Page
             ->add('actionID', 'unlock')
             ->link(['class' => 'horde-cancel'])
             . _("Cancel") . '</a>';
-        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
+        $config = $GLOBALS['injector']->get(WickedConfig::class);
         if (!empty($config->get('wicked.require_change_log'))) {
             /**
              * ARCHITECTURE VIOLATION: Using deprecated Horde::img()
@@ -213,7 +213,7 @@ class Wicked_Page_EditPage extends Wicked_Page
     {
         global $notification;
 
-        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
+        $config = $GLOBALS['injector']->get(WickedConfig::class);
 
         $page = Wicked_Page::getPage($this->referrer());
         if (!$this->allows(Wicked::MODE_EDIT)) {
