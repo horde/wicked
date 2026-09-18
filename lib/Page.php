@@ -222,7 +222,7 @@ class Wicked_Page
      */
     public static function getPage($pagename, $pagever = null, $referrer = null)
     {
-        global $conf, $notification, $wicked;
+        global $notification, $wicked;
 
         if (empty($pagename)) {
             $pagename = 'Wiki/Home';
