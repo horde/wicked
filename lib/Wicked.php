@@ -11,6 +11,7 @@
  * @author   Tyler Colbert <tyler@colberts.us>
  * @package  Wicked
  */
+use Horde\Wicked\WickedConfig;
 
 /**
  * Wicked Base Class.
@@ -105,10 +106,12 @@ class Wicked
      */
     public static function mail($message, $headers = [])
     {
-        global $conf, $registry;
+        global $registry;
+
+        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
 
         /* Make sure there's a place configured to send the email. */
-        if (empty($conf['wicked']['notify_address'])) {
+        if (empty($config->get('wicked.notify_address'))) {
             return;
         }
 
@@ -122,9 +125,9 @@ class Wicked
         /* In case we don't get a user's email address to send the
          * notification from, what should we fall back to for the From:
          * header? */
-        $default_from_addr = !empty($conf['wicked']['guest_address'])
-            ? $conf['wicked']['guest_address']
-            : $conf['wicked']['notify_address'];
+        $default_from_addr = !empty($config->get('wicked.guest_address'))
+            ? $config->get('wicked.guest_address')
+            : $config->get('wicked.notify_address');
         if ($GLOBALS['registry']->getAuth()) {
             $identity = $GLOBALS['injector']->getInstance('Horde_Core_Factory_Identity')->create();
             $from = $identity->getValue('fullname');
@@ -142,7 +145,7 @@ class Wicked
 
         $mail = new Horde_Mime_Mail([
             'body' => $message,
-            'To' => $conf['wicked']['notify_address'],
+            'To' => $config->get('wicked.notify_address'),
             'From' => $from . '<' . $from_addr . '>',
             'User-Agent' => 'Wicked ' . $GLOBALS['registry']->getVersion(),
             'Precedence' => 'bulk',
