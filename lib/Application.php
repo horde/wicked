@@ -26,6 +26,7 @@ if (!defined('HORDE_BASE')) {
     }
 }
 
+use Horde\Core\Config\LegacyMergedConfig;
 use Horde\Core\Uri\RoutesProvider;
 use Horde\Util\Variables;
 use Horde\Wicked\HordeWikilinkUrlResolver;
@@ -287,7 +288,8 @@ class Wicked_Application extends Horde_Registry_Application
             exit;
         }
 
-        $type = Horde_Mime_Magic::analyzeData($data, $conf['mime']['magic_db'] ?? null);
+        $config = $GLOBALS['injector']->get(LegacyMergedConfig::class);
+        $type = Horde_Mime_Magic::analyzeData($data, $config->get('mime.magic_db'));
         if ($type === false) {
             $type = Horde_Mime_Magic::filenameToMime($vars->file, false);
         }
