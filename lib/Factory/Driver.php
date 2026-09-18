@@ -1,6 +1,7 @@
 <?php
 
 use Horde\Injector\Injector;
+use Horde\Wicked\WickedConfig;
 use Psr\SimpleCache\CacheInterface;
 
 /**
@@ -46,11 +47,12 @@ class Wicked_Factory_Driver extends Horde_Core_Factory_Injector
      */
     public function create(Horde_Injector|Injector $injector)
     {
-        $driver = Horde_String::ucfirst($GLOBALS['conf']['storage']['driver']);
+        $config = $injector->getInstance(WickedConfig::class);
+        $driver = Horde_String::ucfirst($config->get('storage.driver', ''));
         if (empty($driver)) {
             throw new Wicked_Exception('Wicked is not configured');
         }
-        $signature = serialize([$driver, $GLOBALS['conf']['storage']['params']['driverconfig']]);
+        $signature = serialize([$driver, $config->get('storage.params.driverconfig')]);
         if (empty($this->_instances[$signature])) {
             $params = [];
             switch ($driver) {
@@ -58,7 +60,7 @@ class Wicked_Factory_Driver extends Horde_Core_Factory_Injector
                     $params = [
                         'db' => $this->getDb($injector),
                         'cache' => $injector->getInstance(CacheInterface::class),
-                        'allpages_lifetime' => (int) ($GLOBALS['conf']['wicked']['cache']['allpages_lifetime'] ?? 300),
+                        'allpages_lifetime' => (int) $config->get('wicked.cache.allpages_lifetime', 300),
                     ];
                     break;
             }
@@ -81,7 +83,8 @@ class Wicked_Factory_Driver extends Horde_Core_Factory_Injector
     public function getDb(Horde_Injector $injector)
     {
         try {
-            if ($GLOBALS['conf']['storage']['params']['driverconfig'] == 'horde') {
+            $config = $injector->getInstance(WickedConfig::class);
+            if ($config->get('storage.params.driverconfig') == 'horde') {
                 return $injector->getInstance('Horde_Db_Adapter');
             }
             return $injector->getInstance('Horde_Core_Factory_Db')
