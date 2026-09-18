@@ -200,7 +200,7 @@ class Wicked_Page_AttachedFiles extends Wicked_Page
     {
         global $notification, $wicked, $registry;
 
-        $config = $GLOBALS['injector']->getInstance(WickedConfig::class);
+        $config = $GLOBALS['injector']->get(WickedConfig::class);
 
         // Only allow POST commands.
         $cmd = Util::getPost('cmd');

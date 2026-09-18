@@ -47,7 +47,7 @@ class Wicked_Factory_Driver extends Horde_Core_Factory_Injector
      */
     public function create(Horde_Injector|Injector $injector)
     {
-        $config = $injector->getInstance(WickedConfig::class);
+        $config = $injector->get(WickedConfig::class);
         $driver = Horde_String::ucfirst($config->get('storage.driver', ''));
         if (empty($driver)) {
             throw new Wicked_Exception('Wicked is not configured');
@@ -83,7 +83,7 @@ class Wicked_Factory_Driver extends Horde_Core_Factory_Injector
     public function getDb(Horde_Injector $injector)
     {
         try {
-            $config = $injector->getInstance(WickedConfig::class);
+            $config = $injector->get(WickedConfig::class);
             if ($config->get('storage.params.driverconfig') == 'horde') {
                 return $injector->getInstance('Horde_Db_Adapter');
             }
