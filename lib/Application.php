@@ -30,6 +30,7 @@ use Horde\Core\Uri\RoutesProvider;
 use Horde\Util\Variables;
 use Horde\Wicked\HordeWikilinkUrlResolver;
 use Horde\Wicked\Service\UrlGenerator;
+use Horde\Wicked\WickedConfig;
 use Horde\Wicked\WickedEngine;
 use Horde\Wicked\WikilinkUrlResolver;
 use Horde\Util\Util;
@@ -67,7 +68,8 @@ class Wicked_Application extends Horde_Registry_Application
         $GLOBALS['injector']->bindClosure(
             WickedEngine::class,
             function ($injector) {
-                $format = $GLOBALS['conf']['wicked']['format'] ?? 'yawiki';
+                $config = $injector->get(WickedConfig::class);
+                $format = $config->get('wicked.format', 'yawiki');
                 $blockFactory = $injector->has('Horde_Core_Factory_BlockCollection')
                     ? $injector->get('Horde_Core_Factory_BlockCollection')
                     : null;
@@ -86,7 +88,7 @@ class Wicked_Application extends Horde_Registry_Application
                     format: $format,
                     blockFactory: $blockFactory,
                     cache: $cache,
-                    cacheLifetime: (int) ($GLOBALS['conf']['wicked']['cache']['lifetime'] ?? 86400),
+                    cacheLifetime: (int) $config->get('wicked.cache.lifetime', 86400),
                 );
             },
         );
