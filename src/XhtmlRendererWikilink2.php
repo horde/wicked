@@ -7,6 +7,7 @@ use Horde\Text\Wiki\XhtmlRendererWikilink;
 use Wicked_Driver;
 use Horde_Registry;
 use Wicked;
+use Horde\Wicked\WickedConfig;
 
 /**
  * @package Wicked
@@ -50,6 +51,7 @@ class XhtmlRendererWikilink2 extends XhtmlRendererWikilink
             // use the callback function
             $exists = call_user_func($callback, $page);
         } else {
+        $config = $injector->get('WickedConfig');
             // no callback, go to the naive page array.
             $list = $this->getConf('pages');
             if (is_array($list)) {
@@ -68,7 +70,7 @@ class XhtmlRendererWikilink2 extends XhtmlRendererWikilink
 
         // Does the page exist?
         if ($exists) {
-            //            $href = sprintf(preg_replace('/%(?!s)/', '%%', $this->getConf('view_url')), $GLOBALS['conf']['urls']['pretty'] == 'rewrite' ? htmlspecialchars($page) : $this->urlEncode($page)) . $anchor;
+            //            $href = sprintf(preg_replace('/%(?!s)/', '%%', $this->getConf('view_url')), $config->get('urls.pretty') == 'rewrite' ? htmlspecialchars($page) : $this->urlEncode($page)) . $anchor;
             $href = Wicked::url($page);
 
             // get the CSS class and generate output
@@ -77,12 +79,13 @@ class XhtmlRendererWikilink2 extends XhtmlRendererWikilink
             $start = '<a' . $css . ' href="' . $this->textEncode($href) . '">';
             $end = '</a>';
         } else {
+        $config = $injector->get('WickedConfig');
             $new_url = $this->getConf('new_url');
             if (!$new_url) {
                 return $this->textEncode($text);
             }
 
-            //            $href = sprintf(preg_replace('/%(?!s)/', '%%', $new_url), $GLOBALS['conf']['urls']['pretty'] == 'rewrite' ? htmlspecialchars($page) : $this->urlEncode($page));
+            //            $href = sprintf(preg_replace('/%(?!s)/', '%%', $new_url), $config->get('urls.pretty') == 'rewrite' ? htmlspecialchars($page) : $this->urlEncode($page));
             $href = Wicked::url($page);
 
             // get the appropriate CSS class and new-link text
