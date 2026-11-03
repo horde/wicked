@@ -80,7 +80,7 @@ class Wicked_Factory_Driver extends Horde_Core_Factory_Injector
      *                           instance.
      * @throws Wicked_Exception
      */
-    public function getDb(Horde_Injector $injector)
+    public function getDb(Horde_Injector|Injector $injector)
     {
         try {
             $config = $injector->get(WickedConfig::class);
